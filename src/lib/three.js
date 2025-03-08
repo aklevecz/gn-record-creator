@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import idb from './idb';
 import { CURRENT_TEXTURE } from '$lib';
 // import modelStorage from "$lib/idb";
