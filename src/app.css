@@ -1,1 +1,21 @@
 @import 'tailwindcss';
+
+:root {
+    --primary-color: black;
+    --secondary-color: white;
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+button {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 10px 20px;
+}
