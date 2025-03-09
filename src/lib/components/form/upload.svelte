@@ -186,12 +186,12 @@
 		<div class="dropzone-content">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="12"
-				height="12"
+				width="16"
+				height="16"
 				viewBox="0 0 24 24"
 				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
+				stroke="black"
+				stroke-width="3"
 				stroke-linecap="round"
 				stroke-linejoin="round"
 			>
@@ -245,7 +245,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.2rem;
-		color: #4a5568;
+		color: black;
+        font-weight: 500;
 	}
 
 	.dropzone-content svg {
@@ -255,7 +256,8 @@
 
 	.dropzone-content p {
 		/* margin: 0.5rem 0; */
-		font-size: 0.75rem;
+		font-size: 1rem;
+        font-weight: bold;
 	}
 
 	.hint {
