@@ -61,6 +61,7 @@
 			files = files.map((file) => {
 				if (!file.preview) {
 					const url = URL.createObjectURL(file);
+                    console.log('url', url)
 					file.preview = url;
 					threeModel.updateMaterialTexture(url);
 				}

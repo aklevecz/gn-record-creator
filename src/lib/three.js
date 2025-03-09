@@ -6,6 +6,7 @@ import { CURRENT_TEXTURE } from '$lib';
 // import modelStorage from "$lib/idb";
 
 class ThreeScene {
+	/** @param {HTMLElement} container */
 	constructor(container) {
 		this.width = container.clientWidth;
 		this.height = container.clientHeight;
@@ -15,12 +16,13 @@ class ThreeScene {
 		this.renderer.pixelRatio = window.devicePixelRatio;
 		this.controls = null;
 		this.model = null;
+		/** @type {*} */
 		this.mixer = null;
 		this.clock = new THREE.Clock();
 		this.testCube = null;
 		this.currentTexture = null;
 
-		this.loadedModels = [];
+		// this.loadedModels = [];
 
 		this.materials = {
 			standard: new THREE.MeshStandardMaterial({
@@ -68,7 +70,7 @@ class ThreeScene {
 
 	init(container) {
 		this.setupScene(container);
-		this.addLights();
+		// this.addLights();
 		window.addEventListener('resize', () => this.onWindowResize(), false);
 	}
 
@@ -89,12 +91,19 @@ class ThreeScene {
 	}
 
 	addLights() {
-		const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-		const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-		directionalLight.position.set(0, 1, 0);
-
+		// Increase ambient light for more even illumination
+		const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased from 0.3
 		this.scene.add(ambientLight);
+
+		// Reduce directional light intensity
+		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4); // Reduced from 0.7
+		directionalLight.position.set(1, 1, 0);
 		this.scene.add(directionalLight);
+
+		// Reduce second directional light
+		const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3); // Reduced from 0.5
+		directionalLight2.position.set(-1, 0.5, 1);
+		this.scene.add(directionalLight2);
 	}
 
 	createTestCube() {
@@ -171,25 +180,41 @@ class ThreeScene {
 	}
 
 	updateMaterialTexture(textureUrl) {
-		this.currentTexture = this.textureLoader.load(textureUrl);
-		this.currentTexture.wrapS = THREE.RepeatWrapping;
-		this.currentTexture.wrapT = THREE.RepeatWrapping;
+		this.textureLoader.load(textureUrl, (texture) => {
+			// Preserve color fidelity
+      texture.colorSpace = THREE.SRGBColorSpace
+			texture.encoding = THREE.sRGBEncoding;
+			texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
-		this.materials.standard = new THREE.MeshStandardMaterial({
-			map: this.currentTexture,
-			metalness: this.materials.standard.metalness,
-			roughness: this.materials.standard.roughness
-		});
+			// Prevent mipmapping from diluting colors
+			texture.minFilter = THREE.LinearFilter;
+			texture.magFilter = THREE.LinearFilter;
 
-		if (this.model) {
-			this.model.traverse((child) => {
-				child.material = this.materials.standard.clone();
+			// Prevent color filtering
+			texture.generateMipmaps = false;
+
+			// Standard wrapping
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+
+			// Create material with 100% color saturation
+			this.materials.standard = new THREE.MeshBasicMaterial({
+				map: texture,
+				color: 0xffffff // Pure white base to not affect texture colors
 			});
-		}
 
-		if (this.testCube) {
-			this.testCube.material = this.materials.standard;
-		}
+			if (this.model) {
+				this.model.traverse((child) => {
+					if (child.isMesh) {
+						child.material = this.materials.standard.clone();
+					}
+				});
+			}
+
+			if (this.testCube) {
+				this.testCube.material = this.materials.standard;
+			}
+		});
 	}
 
 	handleTextureUpload(event) {
@@ -202,9 +227,9 @@ class ThreeScene {
 	}
 
 	onWindowResize() {
-		this.camera.aspect = window.innerWidth / window.innerHeight;
-		this.camera.updateProjectionMatrix();
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		// this.camera.aspect = window.innerWidth / window.innerHeight;
+		// this.camera.updateProjectionMatrix();
+		// this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
 	animate() {
