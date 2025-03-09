@@ -8,5 +8,5 @@
 	});
 </script>
 
-<img class="w-50 p-2 invert" src="logos/gn-logo.svg" />
+<img class="w-50 h-[40px] p-2 invert" src="logos/gn-logo.svg" />
 {@render children()}
