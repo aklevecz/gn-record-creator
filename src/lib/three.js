@@ -19,7 +19,7 @@ class ThreeScene {
 		/** @type {*} */
 		this.mixer = null;
 		this.clock = new THREE.Clock();
-		this.testCube = null;
+		this.recordCover = null;
 		this.currentTexture = null;
 
 		// this.loadedModels = [];
@@ -49,7 +49,6 @@ class ThreeScene {
 
 		this.textureLoader = new THREE.TextureLoader();
 
-		this.createTestCube();
 		idb.getTexture(CURRENT_TEXTURE).then((textureFile) => {
 			if (!textureFile) {
 				console.log('THERE IS NO CURRENT TEXTURE');
@@ -68,12 +67,23 @@ class ThreeScene {
 		this.init(container);
 	}
 
+	/** @param {HTMLElement} container */
 	init(container) {
 		this.setupScene(container);
-		// this.addLights();
+		const record = this.createVinylRecord();
+		record.position.set(0, 20, 0);
+		record.rotation.x = -Math.PI / 2;
+		record.rotation.z = Math.PI / 2;
+		this.scene.add(record);
+
+		this.createRecordCover();
+
+		this.addLights();
+
 		window.addEventListener('resize', () => this.onWindowResize(), false);
 	}
 
+	/** @param {HTMLElement} container */
 	setupScene(container) {
 		this.scene.background = new THREE.Color(0x000000);
 
@@ -86,6 +96,7 @@ class ThreeScene {
 
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.controls.autoRotate = true;
+		this.controls.enableZoom = false;
 		this.controls.target.set(0, 20, 0);
 		this.controls.update();
 	}
@@ -106,14 +117,22 @@ class ThreeScene {
 		this.scene.add(directionalLight2);
 	}
 
-	createTestCube() {
+	createRecordCover() {
 		const geometry = new THREE.BoxGeometry(1, 20, 20);
-		const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-		this.testCube = new THREE.Mesh(geometry, material);
-		this.testCube.position.set(0, 20, 0);
-		this.scene.add(this.testCube);
+		const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+		this.recordCover = new THREE.Mesh(geometry, material);
+		this.recordCover.position.set(0, 20, 0);
+		this.scene.add(this.recordCover);
+		this.recordCoverAnimation = {
+			startTime: 0,
+			duration: 2000, // 2 seconds
+			startPosition: { x: 0, y: 0, z: 0 },
+			endPosition: { x: 0, y: 20, z: 0 }, // End position slightly to the left of center
+			active: true // Flag to track if animation is still running
+		};
 	}
 
+	/** @param {string} modelUrl */
 	loadModel(modelUrl) {
 		console.log(`Loading model: ${modelUrl}`);
 		const loader = new FBXLoader();
@@ -128,6 +147,7 @@ class ThreeScene {
 			(object) => {
 				this.model = object;
 				this.model.traverse((child) => {
+					// @ts-ignore
 					child.material = this.materials.standard.clone();
 				});
 
@@ -143,11 +163,12 @@ class ThreeScene {
 	removeModel() {
 		if (this.model) {
 			this.scene.remove(this.model);
-			this.loadedModels = this.loadedModels.filter((m) => m !== this.model);
+			this.loadedModels = this.loadedModels.filter((/** @type {THREE.Object3D} */ m) => m !== this.model);
 			this.model = null;
 		}
 	}
 
+	/** @param {Event} event */
 	handleModelUpload(event) {
 		// const file = event.target.files[0];
 		// modelStorage.saveModel(file);
@@ -164,6 +185,7 @@ class ThreeScene {
 		// }
 	}
 
+	/** @param {THREE.Object3D} object */
 	adjustCameraToModel(object) {
 		const box = new THREE.Box3().setFromObject(object);
 		const center = box.getCenter(new THREE.Vector3());
@@ -175,15 +197,17 @@ class ThreeScene {
 
 		this.camera.position.set(center.x, center.y, center.z + cameraZ);
 		this.camera.lookAt(center);
-		this.controls.target.copy(center);
-		this.controls.update();
+		if (this.controls) {
+			this.controls.target.copy(center);
+			this.controls.update();
+		}
 	}
-
+	/** @param {string} textureUrl */
 	updateMaterialTexture(textureUrl) {
 		this.textureLoader.load(textureUrl, (texture) => {
 			// Preserve color fidelity
-      texture.colorSpace = THREE.SRGBColorSpace
-			texture.encoding = THREE.sRGBEncoding;
+			texture.colorSpace = THREE.SRGBColorSpace;
+			// texture.encoding = THREE.sRGBEncoding;
 			texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
 			// Prevent mipmapping from diluting colors
@@ -198,29 +222,37 @@ class ThreeScene {
 			texture.wrapT = THREE.RepeatWrapping;
 
 			// Create material with 100% color saturation
-			this.materials.standard = new THREE.MeshBasicMaterial({
-				map: texture,
-				color: 0xffffff // Pure white base to not affect texture colors
-			});
+			// this.materials.standard = new THREE.MeshBasicMaterial({
+			// 	map: texture,
+			// 	color: 0xffffff // Pure white base to not affect texture colors
+			// });
 
-			if (this.model) {
-				this.model.traverse((child) => {
-					if (child.isMesh) {
-						child.material = this.materials.standard.clone();
-					}
-				});
-			}
+      const basicMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        color: 0xffffff, // Pure white base to not affect texture colors,
 
-			if (this.testCube) {
-				this.testCube.material = this.materials.standard;
+      });
+
+			// if (this.model) {
+			// 	this.model.traverse((child) => {
+			// 		if (child.isMesh) {
+			// 			child.material = this.materials.standard.clone();
+			// 		}
+			// 	});
+			// }
+
+			if (this.recordCover) {
+				this.recordCover.material = basicMaterial
 			}
 		});
 	}
 
+  /** @param {*} event */
 	handleTextureUpload(event) {
 		const file = event.target.files[0];
 		if (file) {
 			const reader = new FileReader();
+      /** @ts-ignore */
 			reader.onload = (e) => this.updateMaterialTexture(e.target.result);
 			reader.readAsDataURL(file);
 		}
@@ -232,13 +264,46 @@ class ThreeScene {
 		// this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
+  /** @param {number} x */
+	easeOutCubic(x) {
+		return 1 - Math.pow(1 - x, 3);
+	}
 	animate() {
 		requestAnimationFrame(() => this.animate());
+
+		if (this.recordCover && this.recordCoverAnimation && this.recordCoverAnimation.active) {
+			// Initialize start time on first frame
+			if (!this.recordCoverAnimation.startTime) {
+				this.recordCoverAnimation.startTime = Date.now();
+			}
+
+			// Calculate animation progress
+			const elapsed = Date.now() - this.recordCoverAnimation.startTime;
+			const progress = Math.min(elapsed / this.recordCoverAnimation.duration, 1);
+
+			// Use easing function for smoother motion
+			const easedProgress = this.easeOutCubic(progress);
+
+			// Update position
+			// console.log(this.recordCover)
+			this.recordCover.position.y =
+				this.recordCoverAnimation.startPosition.y +
+				(this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) *
+					easedProgress;
+
+			// End animation when complete
+			if (progress === 1) {
+				this.recordCoverAnimation.active = false;
+			}
+		}
+
 		if (this.mixer) this.mixer.update(this.clock.getDelta());
-		this.controls.update();
+
+		this.controls && this.controls.update();
 		this.renderer.render(this.scene, this.camera);
 	}
 
+  /** @param {string} modelId */
 	async loadModelById(modelId) {
 		// const modelObject = await modelStorage.getModel(modelId);
 		// if (!modelObject) {
@@ -251,10 +316,70 @@ class ThreeScene {
 		// this.loadModel(blobUrl);
 	}
 
+	createVinylRecord() {
+		// Create a group to hold all parts of the record
+		const recordGroup = new THREE.Group();
+
+		// Record disc - main black part
+		const recordGeometry = new THREE.CylinderGeometry(5.9, 5.9, 0.08, 64);
+		const recordMaterial = new THREE.MeshStandardMaterial({
+			color: 0xfff,
+			roughness: 0.5,
+			metalness: 0.2
+		});
+		const record = new THREE.Mesh(recordGeometry, recordMaterial);
+		recordGroup.add(record);
+
+		// Label in the center
+		const labelGeometry = new THREE.CylinderGeometry(2, 2, 0.09, 64);
+		const labelMaterial = new THREE.MeshStandardMaterial({
+			color: 0xeeeeee,
+			roughness: 0.8,
+			metalness: 0.1
+		});
+		const label = new THREE.Mesh(labelGeometry, labelMaterial);
+		label.position.y = 0.005;
+		recordGroup.add(label);
+
+		// Center hole
+		const holeGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 32);
+		const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+		const hole = new THREE.Mesh(holeGeometry, holeMaterial);
+		recordGroup.add(hole);
+
+		// Create grooves as rings
+		this.addGrooves(recordGroup);
+
+		return recordGroup;
+	}
+
+	/** @param {THREE.Group} recordGroup */
+	addGrooves(recordGroup) {
+		const startRadius = 2.2;
+		const endRadius = 5.8;
+		const numGrooves = 80;
+		const spacing = (endRadius - startRadius) / numGrooves;
+
+		for (let i = 0; i < numGrooves; i++) {
+			const radius = startRadius + i * spacing;
+			const grooveGeometry = new THREE.RingGeometry(radius, radius + 0.02, 64);
+			const grooveMaterial = new THREE.MeshBasicMaterial({
+				color: 0x000000,
+				side: THREE.DoubleSide,
+				transparent: true,
+				opacity: 0.3
+			});
+			const groove = new THREE.Mesh(grooveGeometry, grooveMaterial);
+			groove.rotation.x = Math.PI / 2;
+			groove.position.y = 0.041;
+			recordGroup.add(groove);
+		}
+	}
+
 	dispose() {
 		// Clean up resources
 		this.renderer.dispose();
-		this.scene.traverse((object) => {
+		this.scene.traverse((/** @type {*} */ object) => {
 			if (object.geometry) {
 				object.geometry.dispose();
 			}

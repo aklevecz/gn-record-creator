@@ -13,9 +13,12 @@
 	onMount(async () => {
 		if (container && browser) {
 			idb.init().then(() => {
-				threeModel = new ThreeScene(container);
-				threeModel.init(container);
-				threeModel.animate();
+				if (container) {
+					threeModel = new ThreeScene(container);
+					threeModel.animate();
+				} else {
+					console.error('No container found');
+				}
 			});
 		}
 	});

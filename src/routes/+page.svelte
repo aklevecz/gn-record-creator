@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="mt-4 flex flex-col gap-4">
-		<Detail />
+		<Detail label={'Your Name'} key={'your_name'}/>
 		<Detail />
 	</div>
 </div>

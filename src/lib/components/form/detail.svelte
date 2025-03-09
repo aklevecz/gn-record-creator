@@ -17,7 +17,10 @@
 
 <style lang="postcss">
     @reference "tailwindcss/theme";
+    label {
+        @apply font-semibold;
+    }
 	input {
-        @apply border-1 border-white w-full text-lg px-2 py-1 max-w-[500px];
+        @apply border-1 border-white w-full text-lg px-2 py-1 max-w-[300px];
 	}
 </style>

@@ -36,7 +36,7 @@
         @apply flex flex-wrap gap-2;
     }
 	button {
-		@apply w-[150px] rounded-md;
+		@apply w-[150px] text-xl font-bold rounded-md;
 	}
     button.isSelected {
         @apply bg-red-500;

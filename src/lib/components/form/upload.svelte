@@ -1,14 +1,13 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import idb from '$lib/idb';
-	import ThreeScene from '$lib/three';
 
 	let {
 		multiple = false,
 		accept = 'image/*',
 		maxSizeMB = 5,
 		previewEnabled = false,
-		threeModel = new ThreeScene()
+		threeModel = null
 	} = $props();
 
 	/**
