@@ -126,7 +126,7 @@ class ThreeScene {
 		this.recordCoverAnimation = {
 			startTime: 0,
 			duration: 2000, // 2 seconds
-			startPosition: { x: 0, y: 0, z: 0 },
+			startPosition: { x: 0, y: -20, z: 0 },
 			endPosition: { x: 0, y: 20, z: 0 }, // End position slightly to the left of center
 			active: true // Flag to track if animation is still running
 		};
