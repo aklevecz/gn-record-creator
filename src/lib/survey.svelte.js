@@ -9,15 +9,15 @@ const questions = {
 			{ img: '', text: 'No' }
 		]
 	},
-	// which_vinyl: {
-	// 	label: 'Whats your favorite color?',
-	// 	options: [
-	// 		{ img: 'records/green.png', text: 'Green' },
-	// 		{ img: 'records/orange.png', text: 'Orange' },
-	// 		{ img: 'records/red.png', text: 'Red' },
-	// 		{ img: 'records/yellow.png', text: 'Yellow' }
-	// 	]
-	// }
+	which_vinyl: {
+		label: 'Whats your favorite color?',
+		options: [
+			{ img: 'records/green.png', text: 'Green' },
+			{ img: 'records/orange.png', text: 'Orange' },
+			{ img: 'records/red.png', text: 'Red' },
+			{ img: 'records/yellow.png', text: 'Yellow' }
+		]
+	}
 };
 
 /**

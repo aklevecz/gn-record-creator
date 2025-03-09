@@ -6,7 +6,7 @@
 </script>
 
 <div class="mx-auto max-w-[750px] p-3">
-	<RecordDesigner />
+	<!-- <RecordDesigner /> -->
 
 	<div class="m-auto block p-0">
 		{#each Object.entries(survey.state.questions) as [key, question]}
