@@ -1,17 +1,4 @@
-/**
- * @typedef Option
- * @property {string} img
- * @property {string} text
- */
 
-/**
- * @typedef Question
- * @type {{label: string, options: Option[]}}
- */
-
-/**
- * @typedef Questions @type {Record<string, Question>}
- */
 
 /** @type {Questions} */
 const questions = {
@@ -22,15 +9,15 @@ const questions = {
 			{ img: '', text: 'No' }
 		]
 	},
-	which_vinyl: {
-		label: 'Whats your favorite color?',
-		options: [
-			{ img: 'records/green.png', text: 'Green' },
-			{ img: 'records/orange.png', text: 'Orange' },
-			{ img: 'records/red.png', text: 'Red' },
-			{ img: 'records/yellow.png', text: 'Yellow' }
-		]
-	}
+	// which_vinyl: {
+	// 	label: 'Whats your favorite color?',
+	// 	options: [
+	// 		{ img: 'records/green.png', text: 'Green' },
+	// 		{ img: 'records/orange.png', text: 'Orange' },
+	// 		{ img: 'records/red.png', text: 'Red' },
+	// 		{ img: 'records/yellow.png', text: 'Yellow' }
+	// 	]
+	// }
 };
 
 /**
