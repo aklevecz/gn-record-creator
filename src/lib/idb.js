@@ -250,6 +250,39 @@ class IDBStorage {
 			this.db = null;
 		}
 	}
+	/**
+	 * Delete the entire IndexedDB database
+	 * @returns {Promise<void>} A promise that resolves when the database is deleted
+	 */
+	async deleteDatabase() {
+		// First close any open connections
+		this.close();
+
+		return new Promise((resolve, reject) => {
+			// Request to delete the database
+			const deleteRequest = indexedDB.deleteDatabase(this.dbName);
+
+			deleteRequest.onsuccess = (event) => {
+				console.log(`Successfully deleted database "${this.dbName}"`);
+				resolve();
+			};
+
+			deleteRequest.onerror = (event) => {
+				console.error(`Error deleting database "${this.dbName}"`, event.target.error);
+				reject(event.target.error);
+			};
+
+			deleteRequest.onblocked = (event) => {
+				console.warn(
+					`Database deletion was blocked. Close all other tabs/connections to "${this.dbName}" and try again.`
+				);
+				alert(
+					'Database deletion blocked. Please close all other tabs of this application and try again.'
+				);
+				reject(new Error('Database deletion blocked'));
+			};
+		});
+	}
 }
 
 // Create and export a singleton instance
