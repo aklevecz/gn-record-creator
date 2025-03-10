@@ -14,6 +14,7 @@
  * @property {string} value
  */
 
+// UNSTRUCTURED DATA
 /** @type {Record<string, Detail>} */
 const detailsDict = {
     project_name: {
@@ -52,7 +53,17 @@ const createDetails = () => {
 		/** @param {string} key @param {string} value */
 		set(key, value) {
 			details.details[key].value = value;
-		}
+		},
+        remapDetails() {
+            const responses = Object.entries(details.details).reduce(
+                (/** @type {Record<string, string>} */ acc, [key, obj]) => {
+                    acc[key] = obj.value;
+                    return acc;
+                },
+                {}
+            );
+            return responses
+        }
 	};
 };
 

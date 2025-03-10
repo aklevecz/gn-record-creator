@@ -1,0 +1,12 @@
+npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_survey (
+  id TEXT PRIMARY KEY,
+  is_mastered TEXT,
+  which_vinyl TEXT,
+  project_name TEXT,
+  company_name TEXT,
+  your_name TEXT,
+  email TEXT,
+  phone_number TEXT,
+  artist_name TEXT,
+  project_title TEXT
+);"

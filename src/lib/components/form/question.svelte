@@ -36,10 +36,10 @@
         @apply flex flex-wrap gap-2;
     }
 	button {
-		@apply w-[150px] text-xl font-bold rounded-md;
+		@apply w-[150px] text-xl font-bold rounded-md capitalize;
 	}
     button.isSelected {
-        @apply bg-red-500;
+        @apply bg-[var(--accent-color)];
     }
 	img {
 		@apply w-full;

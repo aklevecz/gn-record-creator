@@ -1,13 +1,14 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import idb from '$lib/idb';
+	import ThreeScene from '$lib/three';
 
 	let {
 		multiple = false,
 		accept = 'image/*',
 		maxSizeMB = 5,
 		previewEnabled = false,
-		threeModel = null
+		threeScene = new ThreeScene()
 	} = $props();
 
 	/**
@@ -62,7 +63,8 @@
 					const url = URL.createObjectURL(file);
                     console.log('url', url)
 					file.preview = url;
-					threeModel.updateMaterialTexture(url);
+					console.log(url)
+					threeScene.updateMaterialTexture(url);
 				}
 				// const textureId = crypto.randomUUID(); // Generate a unique ID
                 const textureId = CURRENT_TEXTURE

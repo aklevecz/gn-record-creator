@@ -6,12 +6,14 @@ import { CURRENT_TEXTURE } from '$lib';
 // import modelStorage from "$lib/idb";
 
 class ThreeScene {
-	constructor() {
-		this.width = 0;
-		this.height = 0;
+	/** @param {HTMLElement} container */
+	constructor(container) {
+		this.width = container.clientWidth;
+		this.height = container.clientHeight;
 		this.scene = new THREE.Scene();
-		this.camera = new THREE.PerspectiveCamera();
-		
+		this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 200000);
+		this.renderer = new THREE.WebGLRenderer({ antialias: true });
+		this.renderer.pixelRatio = window.devicePixelRatio;
 		this.controls = null;
 		this.model = null;
 		/** @type {*} */
@@ -47,32 +49,26 @@ class ThreeScene {
 
 		this.textureLoader = new THREE.TextureLoader();
 
+		idb.getTexture(CURRENT_TEXTURE).then((textureFile) => {
+			if (!textureFile) {
+				console.log('THERE IS NO CURRENT TEXTURE');
+				return;
+			}
+			const url = URL.createObjectURL(textureFile.imgFile);
+			this.updateMaterialTexture(url);
+		});
+
 		this.handleModelUpload = this.handleModelUpload.bind(this);
 		this.handleTextureUpload = this.handleTextureUpload.bind(this);
 		this.loadModel = this.loadModel.bind(this);
 		this.animate = this.animate.bind(this);
 		this.onWindowResize = this.onWindowResize.bind(this);
 
-		// this.init(container);
+		this.init(container);
 	}
 
 	/** @param {HTMLElement} container */
 	init(container) {
-		this.width = container.clientWidth;
-		this.height = container.clientHeight;
-		this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 200000);
-		this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		this.renderer.pixelRatio = window.devicePixelRatio;
-
-		// idb.getTexture(CURRENT_TEXTURE).then((textureFile) => {
-		// 	if (!textureFile) {
-		// 		console.log('THERE IS NO CURRENT TEXTURE');
-		// 		return;
-		// 	}
-		// 	const url = URL.createObjectURL(textureFile.imgFile);
-		// 	this.updateMaterialTexture(url);
-		// });
-
 		this.setupScene(container);
 		const record = this.createVinylRecord();
 		record.position.set(0, 20, 0);
@@ -91,10 +87,8 @@ class ThreeScene {
 	setupScene(container) {
 		this.scene.background = new THREE.Color(0x000000);
 
-		this.camera.position.set(45, 20, 0);
-		if (!this.renderer) {
-			this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		}
+		this.camera.position.set(35, 20, 0);
+
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(this.width, this.height);
 		this.renderer.shadowMap.enabled = true;
@@ -124,7 +118,7 @@ class ThreeScene {
 	}
 
 	createRecordCover() {
-		const geometry = new THREE.BoxGeometry(.25, 20, 20);
+		const geometry = new THREE.BoxGeometry(1, 20, 20);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 		this.recordCover = new THREE.Mesh(geometry, material);
 		this.recordCover.position.set(0, 20, 0);
@@ -169,9 +163,7 @@ class ThreeScene {
 	removeModel() {
 		if (this.model) {
 			this.scene.remove(this.model);
-			this.loadedModels = this.loadedModels.filter(
-				(/** @type {THREE.Object3D} */ m) => m !== this.model
-			);
+			this.loadedModels = this.loadedModels.filter((/** @type {THREE.Object3D} */ m) => m !== this.model);
 			this.model = null;
 		}
 	}
@@ -212,12 +204,7 @@ class ThreeScene {
 	}
 	/** @param {string} textureUrl */
 	updateMaterialTexture(textureUrl) {
-		console.log(this)
 		this.textureLoader.load(textureUrl, (texture) => {
-			if (!this.renderer) {
-				console.log("render missing in updateMaterialTexture")
-				return
-			}
 			// Preserve color fidelity
 			texture.colorSpace = THREE.SRGBColorSpace;
 			// texture.encoding = THREE.sRGBEncoding;
@@ -240,10 +227,11 @@ class ThreeScene {
 			// 	color: 0xffffff // Pure white base to not affect texture colors
 			// });
 
-			const basicMaterial = new THREE.MeshBasicMaterial({
-				map: texture,
-				color: 0xffffff // Pure white base to not affect texture colors,
-			});
+      const basicMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        color: 0xffffff, // Pure white base to not affect texture colors,
+
+      });
 
 			// if (this.model) {
 			// 	this.model.traverse((child) => {
@@ -254,17 +242,17 @@ class ThreeScene {
 			// }
 
 			if (this.recordCover) {
-				this.recordCover.material = basicMaterial;
+				this.recordCover.material = basicMaterial
 			}
 		});
 	}
 
-	/** @param {*} event */
+  /** @param {*} event */
 	handleTextureUpload(event) {
 		const file = event.target.files[0];
 		if (file) {
 			const reader = new FileReader();
-			/** @ts-ignore */
+      /** @ts-ignore */
 			reader.onload = (e) => this.updateMaterialTexture(e.target.result);
 			reader.readAsDataURL(file);
 		}
@@ -276,7 +264,7 @@ class ThreeScene {
 		// this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
-	/** @param {number} x */
+  /** @param {number} x */
 	easeOutCubic(x) {
 		return 1 - Math.pow(1 - x, 3);
 	}
@@ -312,10 +300,10 @@ class ThreeScene {
 		if (this.mixer) this.mixer.update(this.clock.getDelta());
 
 		this.controls && this.controls.update();
-		this.renderer && this.renderer.render(this.scene, this.camera);
+		this.renderer.render(this.scene, this.camera);
 	}
 
-	/** @param {string} modelId */
+  /** @param {string} modelId */
 	async loadModelById(modelId) {
 		// const modelObject = await modelStorage.getModel(modelId);
 		// if (!modelObject) {
@@ -390,10 +378,6 @@ class ThreeScene {
 
 	dispose() {
 		// Clean up resources
-		if (!this.renderer) {
-			console.log('No renderer');
-			return
-		}
 		this.renderer.dispose();
 		this.scene.traverse((/** @type {*} */ object) => {
 			if (object.geometry) {

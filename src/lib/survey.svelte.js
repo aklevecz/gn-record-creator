@@ -1,21 +1,20 @@
-
-
+// STRUCTURED DATA
 /** @type {Questions} */
 const questions = {
 	is_mastered: {
 		label: 'Is your audio mastered for vinyl',
 		options: [
-			{ img: '', text: 'Yes' },
-			{ img: '', text: 'No' }
+			{ img: '', text: 'yes' },
+			{ img: '', text: 'no' }
 		]
 	},
 	which_vinyl: {
 		label: 'Whats your favorite color?',
 		options: [
-			{ img: 'records/green.png', text: 'Green' },
-			{ img: 'records/orange.png', text: 'Orange' },
-			{ img: 'records/red.png', text: 'Red' },
-			{ img: 'records/yellow.png', text: 'Yellow' }
+			{ img: 'records/green.png', text: 'green' },
+			{ img: 'records/orange.png', text: 'orange' },
+			{ img: 'records/red.png', text: 'red' },
+			{ img: 'records/yellow.png', text: 'yellow' }
 		]
 	}
 };
@@ -42,6 +41,16 @@ const createSurvey = () => {
 		/** @param {string} questionKey @param {string} answer */
 		answer(questionKey, answer) {
 			survey.answers[questionKey] = answer;
+		},
+		remapResponses() {
+			const responses = Object.entries(survey.answers).reduce(
+				(/** @type {Record<string, string>} */ acc, [key, value]) => {
+					acc[key] = value;
+					return acc;
+				},
+				{}
+			);
+            return responses
 		}
 	};
 };

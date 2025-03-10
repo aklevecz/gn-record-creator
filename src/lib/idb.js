@@ -10,7 +10,8 @@ class IDBStorage {
 		this.db = null;
 
 		this.stores = {
-			textures: 'textures'
+			textures: 'textures',
+			generatedImgs: 'generatedImgs'
 		};
 	}
 
@@ -47,6 +48,10 @@ class IDBStorage {
 				// Create generated images store
 				if (!db.objectStoreNames.contains(this.stores.textures)) {
 					db.createObjectStore(this.stores.textures, { keyPath: 'id' });
+				}
+
+				if (!db.objectStoreNames.contains(this.stores.generatedImgs)) {
+					db.createObjectStore(this.stores.generatedImgs, { keyPath: 'id' });
 				}
 			};
 		});
@@ -91,6 +96,51 @@ class IDBStorage {
 
 			const transaction = this.db.transaction(this.stores.textures, 'readonly');
 			const store = transaction.objectStore(this.stores.textures);
+			const request = store.getAll();
+
+			request.onerror = () => {
+				reject(new Error('Error fetching models'));
+			};
+
+			request.onsuccess = () => {
+				// Return all models but exclude the actual file data
+				const models = request.result.map(({ base64Url, ...metadata }) => metadata);
+				resolve(models);
+			};
+		});
+	}
+
+	/** @param {{imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
+	async addGeneratedImg(entry) {
+		const id = `${entry.prompt.replace(/[^a-zA-Z0-9]/g, '_')}_${entry.seed}`;
+		await this.set(this.stores.generatedImgs, {
+			...entry,
+			fileName: id,
+			id,
+			fileType: entry.imgBlob.type,
+			lastModified: Date.now()
+		});
+		// await this.set(this.stores.generatedImgs, {
+		// 	...entry,
+		// 	id: `${entry.prompt.replace(/[^a-zA-Z0-9]/g, '_')}_${entry.seed}`
+		// });
+	}
+
+	/** @param {string} id */
+	async getGeneratedImg(id) {
+		return this.get(this.stores.generatedImgs, id);
+	}
+
+	async getAllGeneratedImgs() {
+		// await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(this.stores.generatedImgs, 'readonly');
+			const store = transaction.objectStore(this.stores.generatedImgs);
 			const request = store.getAll();
 
 			request.onerror = () => {
