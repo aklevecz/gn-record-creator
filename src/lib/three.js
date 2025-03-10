@@ -1,9 +1,6 @@
 import * as THREE from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import idb from './idb';
-import { CURRENT_TEXTURE } from '$lib';
-// import modelStorage from "$lib/idb";
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 class ThreeScene {
 	constructor() {
@@ -11,7 +8,7 @@ class ThreeScene {
 		this.height = 0;
 		this.scene = new THREE.Scene();
 		this.camera = new THREE.PerspectiveCamera();
-		
+
 		this.controls = null;
 		this.model = null;
 		/** @type {*} */
@@ -47,6 +44,13 @@ class ThreeScene {
 
 		this.textureLoader = new THREE.TextureLoader();
 
+		this.useShader = false;
+		this.shaderMaterial = null;
+		this.shaderTime = 0;
+
+		this.toggleShader = this.toggleShader.bind(this);
+		this.createShaderMaterial = this.createShaderMaterial.bind(this);
+
 		this.handleModelUpload = this.handleModelUpload.bind(this);
 		this.handleTextureUpload = this.handleTextureUpload.bind(this);
 		this.loadModel = this.loadModel.bind(this);
@@ -64,16 +68,8 @@ class ThreeScene {
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.pixelRatio = window.devicePixelRatio;
 
-		// idb.getTexture(CURRENT_TEXTURE).then((textureFile) => {
-		// 	if (!textureFile) {
-		// 		console.log('THERE IS NO CURRENT TEXTURE');
-		// 		return;
-		// 	}
-		// 	const url = URL.createObjectURL(textureFile.imgFile);
-		// 	this.updateMaterialTexture(url);
-		// });
-
 		this.setupScene(container);
+
 		const record = this.createVinylRecord();
 		record.position.set(0, 20, 0);
 		record.rotation.x = -Math.PI / 2;
@@ -124,7 +120,7 @@ class ThreeScene {
 	}
 
 	createRecordCover() {
-		const geometry = new THREE.BoxGeometry(.25, 20, 20);
+		const geometry = new THREE.BoxGeometry(0.25, 20, 20);
 		const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 		this.recordCover = new THREE.Mesh(geometry, material);
 		this.recordCover.position.set(0, 20, 0);
@@ -133,7 +129,7 @@ class ThreeScene {
 			startTime: 0,
 			duration: 2000, // 2 seconds
 			startPosition: { x: 0, y: -20, z: 0 },
-			endPosition: { x: 0, y: 20, z: 0 }, // End position slightly to the left of center
+			endPosition: { x: 0, y: 22, z: 0 }, // End position slightly to the left of center
 			active: true // Flag to track if animation is still running
 		};
 	}
@@ -212,11 +208,10 @@ class ThreeScene {
 	}
 	/** @param {string} textureUrl */
 	updateMaterialTexture(textureUrl) {
-		console.log(this)
 		this.textureLoader.load(textureUrl, (texture) => {
 			if (!this.renderer) {
-				console.log("render missing in updateMaterialTexture")
-				return
+				console.log('render missing in updateMaterialTexture');
+				return;
 			}
 			// Preserve color fidelity
 			texture.colorSpace = THREE.SRGBColorSpace;
@@ -234,24 +229,10 @@ class ThreeScene {
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.wrapT = THREE.RepeatWrapping;
 
-			// Create material with 100% color saturation
-			// this.materials.standard = new THREE.MeshBasicMaterial({
-			// 	map: texture,
-			// 	color: 0xffffff // Pure white base to not affect texture colors
-			// });
-
 			const basicMaterial = new THREE.MeshBasicMaterial({
 				map: texture,
 				color: 0xffffff // Pure white base to not affect texture colors,
 			});
-
-			// if (this.model) {
-			// 	this.model.traverse((child) => {
-			// 		if (child.isMesh) {
-			// 			child.material = this.materials.standard.clone();
-			// 		}
-			// 	});
-			// }
 
 			if (this.recordCover) {
 				this.recordCover.material = basicMaterial;
@@ -282,6 +263,11 @@ class ThreeScene {
 	}
 	animate() {
 		requestAnimationFrame(() => this.animate());
+
+		if (this.useShader && this.shaderMaterial) {
+			this.shaderTime += 0.01;
+			this.shaderMaterial.uniforms.time.value = this.shaderTime;
+		}
 
 		if (this.recordCover && this.recordCoverAnimation && this.recordCoverAnimation.active) {
 			// Initialize start time on first frame
@@ -388,11 +374,85 @@ class ThreeScene {
 		}
 	}
 
+	createShaderMaterial() {
+		// Define shader code
+		const vertexShader = `
+		  varying vec2 vUv;
+		  
+		  void main() {
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		  }
+		`;
+
+		const fragmentShader = `
+		  uniform float time;
+		  varying vec2 vUv;
+		  
+		  void main() {
+			// Center the UV coordinates
+			vec2 uv = vUv - 0.5;
+			
+			// Calculate distance from center
+			float dist = length(uv);
+			
+			// Create concentric circles that move outward
+			float rings = sin(dist * 20.0 - time * 2.0) * 0.5 + 0.5;
+			
+			// Add some color variation
+			vec3 color1 = vec3(0.2, 0.4, 0.8); // Blue
+			vec3 color2 = vec3(0.8, 0.2, 0.5); // Pink
+			
+			// Mix colors based on time and position
+			vec3 color = mix(color1, color2, sin(time * 0.5 + dist * 5.0) * 0.5 + 0.5);
+			
+			// Apply the ring pattern to the color
+			color *= rings;
+			
+			// Add a subtle glow from the center
+			color += vec3(0.1, 0.1, 0.2) * (1.0 - dist * 2.0);
+			
+			gl_FragColor = vec4(color, 1.0);
+		  }
+		`;
+		console.log('creating shader');
+		// Create the shader material
+		return new THREE.ShaderMaterial({
+			uniforms: {
+				time: { value: 0.0 }
+			},
+			vertexShader: vertexShader,
+			fragmentShader: fragmentShader,
+			side: THREE.DoubleSide
+		});
+	}
+
+	toggleShader() {
+		this.useShader = !this.useShader;
+
+		if (this.useShader) {
+			// Create shader material if it doesn't exist
+			if (!this.shaderMaterial) {
+				this.shaderMaterial = this.createShaderMaterial();
+			}
+
+			// Apply shader material to record cover
+			if (this.recordCover) {
+				this.recordCover.material = this.shaderMaterial;
+			}
+		} else {
+			// Revert to basic material
+			// if (this.recordCover) {
+			// 	this.recordCover.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			// }
+		}
+	}
+
 	dispose() {
 		// Clean up resources
 		if (!this.renderer) {
 			console.log('No renderer');
-			return
+			return;
 		}
 		this.renderer.dispose();
 		this.scene.traverse((/** @type {*} */ object) => {

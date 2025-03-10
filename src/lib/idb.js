@@ -266,7 +266,7 @@ class IDBStorage {
 				console.log(`Successfully deleted database "${this.dbName}"`);
 				resolve();
 			};
-
+			/** @param {*} event */
 			deleteRequest.onerror = (event) => {
 				console.error(`Error deleting database "${this.dbName}"`, event.target.error);
 				reject(event.target.error);

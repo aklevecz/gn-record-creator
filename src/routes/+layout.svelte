@@ -12,6 +12,7 @@
 		<ul class="flex gap-4">
 			<li><a href="/">Home</a></li>
 			<li><a href="/studio">Studio</a></li>
+			<li><a href="/test">Test</a></li>
 		</ul>
 	</nav>
 </header>

@@ -3,6 +3,7 @@
 	import Upload from '$lib/components/form/upload.svelte';
 	import generate from '$lib/generate.svelte';
 	import ThreeScene from '$lib/three';
+	import { onMount } from 'svelte';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -12,7 +13,7 @@
 	let threeScene = new ThreeScene();
 
 	/**
-	 * @typedef ButtonView @type { 'ai' | 'upload' }
+	 * @typedef ButtonView @type { 'ai' | 'upload' | 'history' }
 	 */
 
 	/** @type {ButtonView} buttonView*/
@@ -27,6 +28,8 @@
 	let isMinimized = $state(false);
 
 	async function onGenerate() {
+		threeScene.toggleShader();
+
 		const model = 'black-forest-labs/flux-schnell';
 		try {
 			let data = await generate.createGeneration(prompt, model);
@@ -51,12 +54,28 @@
 		canceled: 'Canceled',
 		failed: 'Failed'
 	};
+
+	let buttonContainerHeight = $state('auto');
+	onMount(() => {
+		const rect = document.querySelector('.buttons-container')?.getBoundingClientRect();
+		if (rect) {
+			buttonContainerHeight = `${rect.height}px`;
+		}
+	});
+
+	/** @param {string} imgUrl */
+	function showImgOnCover(imgUrl) {
+		threeScene.updateMaterialTexture(imgUrl);
+	}
 </script>
 
 <div class="h-[80vh]">
-	<RecordDesigner {threeScene} />
+	<RecordDesigner {threeScene} loadCachedType="ai" />
 
-	<div class:minimized={isMinimized} class="buttons-container">
+	<div
+		style={isMinimized ? 'height: 50px' : `height: ${buttonContainerHeight} `}
+		class="buttons-container"
+	>
 		<div class="view-button-container">
 			<button
 				class="view-button"
@@ -68,8 +87,15 @@
 				class:active={buttonView === 'upload'}
 				onclick={() => toggleView('upload')}>Upload</button
 			>
+			<button
+				class="view-button"
+				class:active={buttonView === 'history'}
+				onclick={() => toggleView('history')}>History</button
+			>
 			<div class="flex-1"></div>
-			<button onclick={() => (isMinimized = !isMinimized)} class="view-button">{isMinimized ? 'Maximize' : 'Minimize'}</button>
+			<button onclick={() => (isMinimized = !isMinimized)} class="view-button"
+				>{isMinimized ? 'Maximize' : 'Minimize'}</button
+			>
 		</div>
 		{#if !isMinimized}
 			{#if buttonView === 'upload'}
@@ -78,10 +104,10 @@
 			{/if}
 			{#if buttonView === 'ai'}
 				<div class="view">
-					<div class="generate-status">
-						{generatingMessages[generate.state.status] || generate.state.status}
-					</div>
 					<div class="percent-bar-container">
+						<div class="generate-status">
+							{generatingMessages[generate.state.status] || generate.state.status}
+						</div>
 						<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
 					</div>
 					<textarea
@@ -98,6 +124,19 @@
 					>
 				</div>
 			{/if}
+			{#if buttonView === 'history'}
+				<div class="history-container">
+					{#each generate.state.cachedImgs as gen}
+						{@const url = URL.createObjectURL(gen.imgBlob)}
+						<img
+							onclick={() => showImgOnCover(url)}
+							src={url}
+							alt=""
+							class="history-img"
+						/>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -107,15 +146,15 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-		@apply absolute bottom-4 left-0 z-1 flex h-[350px] w-full flex-col items-center bg-[var(--primary-color)] py-3;
+		@apply absolute bottom-0 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
 	}
 
 	.buttons-container.minimized {
-		@apply h-[90px];
+		@apply h-[50px];
 	}
 
 	.view-button-container {
-		@apply mb-4 flex gap-2 w-[80%];
+		@apply mb-4 flex w-[80%] gap-2;
 	}
 
 	button.view-button {
@@ -131,7 +170,7 @@
 	}
 
 	.generate-status {
-		@apply text-sm font-bold;
+		@apply bg-black text-center text-sm font-bold;
 	}
 
 	button.generating {
@@ -143,10 +182,19 @@
 	}
 
 	.percent-bar-container {
-		@apply m-2 h-4 w-3/4 bg-white border-[var(--secondary-color)];
+		@apply m-2 h-4 w-3/4 border-[var(--secondary-color)] bg-white;
 	}
 
 	.percent-bar {
+		transition: width 500ms ease-in-out;
 		@apply h-full bg-[var(--accent-color)];
+	}
+
+	.history-container {
+		@apply grid grid-cols-3 gap-2;
+	}
+
+	.history-img {
+		@apply w-full;
 	}
 </style>

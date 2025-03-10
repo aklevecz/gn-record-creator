@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
     import idb from '$lib/idb';
     
     let isDeleting = false;
@@ -20,7 +19,7 @@
         // Optional: Reinitialize database after deletion
         await idb.init();
         status += ' Database has been reinitialized.';
-      } catch (error) {
+      } catch (/** @type {*} */ error) {
         console.error('Error deleting database:', error);
         status = `Error: ${error.message}`;
       } finally {

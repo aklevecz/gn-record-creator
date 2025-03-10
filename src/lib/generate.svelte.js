@@ -116,6 +116,10 @@ const createGenerateStore = () => {
 							seed: seed || '',
 							prompt: prompt || ''
 						});
+
+						const id = `${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
+
+						await idb.saveTexture({ imgFile: blob, seed: seed || '', id, fileName: id });
 						cb(imgUrl);
 						// threeScene.updateMaterialTexture(URL.createObjectURL(blob))
 						await refreshAllGeneratedImgs();
