@@ -97,5 +97,33 @@ export function serializeDeep(obj, seen = new WeakMap()) {
 	return plainObj;
 }
 
-// Usage:
-// const plainState = serializeDeep(myProxyObject);
+/**
+ * Creates a debounced function that delays invoking the provided function until after
+ * the specified wait time has elapsed since the last time it was invoked.
+ * @template {Object} T - The type of the 'this' context
+ * @param {function(this:T, ...any):void} func - The function to debounce
+ * @param {number} wait - The number of milliseconds to delay
+ * @return {function(this:T, ...any):void} The debounced function
+ */
+export function debounce(func, wait) {
+	/** @type {ReturnType<typeof setTimeout>|undefined} */
+	let timeout = undefined;
+
+	/**
+	 * @this {T}
+	 * @param {...any} args
+	 * @return {void}
+	 */
+	return function (...args) {
+		const later = () => {
+			clearTimeout(timeout);
+			func.apply(this, args);
+		};
+
+		if (timeout !== null) {
+			clearTimeout(timeout);
+		}
+
+		timeout = setTimeout(later, wait);
+	};
+}

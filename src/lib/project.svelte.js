@@ -3,6 +3,7 @@ import { serializeDeep } from "./utils";
 
 /** @type {Project} */
 const defaultProjectState = {
+	id: '',
 	name: 'default',
 	createdAt: new Date(),
 	details: null,
@@ -25,11 +26,13 @@ const createProject = () => {
          * @returns {Project}
         */
 		create({ name, details, survey }) {
+            project.id = crypto.randomUUID();
 			project.name = name;
 			project.details = details;
 			project.survey = survey;
 			project.createdAt = new Date();
 			return {
+				id: project.id,
 				name: project.name,
 				details: project.details,
 				survey: project.survey,

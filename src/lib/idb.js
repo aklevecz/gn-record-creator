@@ -192,7 +192,7 @@ class IDBStorage {
 	async addProject(project) {
 		const plainProject = serializeDeep(project)
 		await this.set(this.stores.projects, {
-			id: project.name,
+			// id: project.name,
 			...plainProject,
 			lastModified: Date.now()
 		});

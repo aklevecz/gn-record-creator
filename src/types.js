@@ -65,10 +65,36 @@
  * @property {string} prompt
  */
 
-/** 
+/**
  * @typedef {Object} Project
+ * @property {string} id
  * @property {string} name
  * @property {Date} createdAt
  * @property {Details | null} details
  * @property {Survey | null} survey
+ */
+
+/**
+ * @typedef {object} Submission
+ * @property {string} id - Unique identifier for the submission
+ * @property {string} project_name - Name of the project
+ * @property {string} contact_name - Name of the contact person
+ * @property {string} contact_email - Email address of the contact
+ * @property {string} phone - Phone number
+ * @property {string} label - Record label
+ * @property {string} artist - Artist name
+ * @property {string} catalog_number - Catalog number for the release
+ * @property {string} release_date - Date of release
+ * @property {string} depot_date - Date for depot arrival
+ * @property {string} shipping_address - Address for shipping finished goods
+ * @property {string} shipping_logistics - Whether GN handles shipping logistics
+ * @property {string} total_units - Total number of units to manufacture
+ * @property {string} records_per_set - Number of records per set
+ * @property {string} record_format - RPM / Record format
+ * @property {string} record_color - Color(s) of the records
+ * @property {string} lacquers - Whether lacquers are handled by service
+ * @property {string} metalwork - Type of stampers needed
+ * @property {string} test_prints - Number of test pressings required
+ * @property {string} packaging - Type of LP jacket to print
+ * @property {string} notes - Additional project details, comments, and requests
  */

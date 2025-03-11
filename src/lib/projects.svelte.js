@@ -2,6 +2,7 @@ import survey from './survey.svelte';
 import details from './details.svelte';
 import project from './project.svelte';
 import idb from './idb';
+import { debounce } from './utils';
 
 /** @type {{activeProject: string, projects: Project[]}} */
 const defaultProjectsState = {
@@ -26,15 +27,17 @@ const createProjects = () => {
 				return;
 			}
 
+			// THIS A BIT JANKY
 			const allProjects = await idb.getAllProjects();
 			let defaultProject = null;
 			if (allProjects.length) {
 				console.log('REGISTER EXSTING');
-				for (const project of allProjects) {
-					if (project.name === 'default') {
-						defaultProject = project;
+				for (const cachedProject of allProjects) {
+					if (cachedProject.name === 'default') {
+						defaultProject = cachedProject;
+						project.set(defaultProject);
 					}
-					this.registerProject(project);
+					this.registerProject(cachedProject);
 				}
 			} else {
 				console.log('REGISTER NEW');
@@ -47,24 +50,8 @@ const createProjects = () => {
 				this.registerProject(defaultProject);
 			}
 
-			// /** @type {Project | null} */
-			// let defaultProject = null;
-			// const cachedProjectDefault = await idb.getProject('default');
-
-			// if (cachedProjectDefault) {
-			// 	defaultProject = project.create({
-			// 		name: 'default',
-			// 		details: { ...cachedProjectDefault.details },
-			// 		survey: { ...cachedProjectDefault.survey }
-			// 	});
-			// } else {
-
-			// }
-
-			defaultProject.survey && survey.set(defaultProject.survey);
+			// defaultProject.survey && survey.set(defaultProject.survey);
 			defaultProject.details && details.set(defaultProject.details);
-
-			// this.registerProject(defaultProject);
 		},
 		/** @param {Project} project */
 		registerProject(project) {
@@ -80,9 +67,13 @@ const createProjects = () => {
 					}
 					return p;
 				});
-				idb.addProject(project);
+
+				this.debouncedSaveToIDB(project);
 			}
 		},
+		debouncedSaveToIDB: debounce(function (project) {
+			idb.addProject(project);
+		}, 1000),
 		/** @param {string} projectName */
 		activateProject(projectName) {
 			const existingProject = projects.projects.find((project) => project.name === projectName);

@@ -34,7 +34,7 @@ const detailsDict = {
 		type: 'text'
 	},
 	artist: {
-		label: 'Aritst',
+		label: 'Artist',
 		description: '',
 		value: '',
 		type: 'text'

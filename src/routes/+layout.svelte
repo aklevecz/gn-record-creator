@@ -7,7 +7,7 @@
 </script>
 
 <header class="flex items-center">
-	<a href="/"><img class="h-[40px] w-50 p-2 invert" src="logos/gn-logo.svg" alt="good neighbor logo"/></a>
+	<a href="/"><img class="h-[40px] w-50 p-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo"/></a>
 	<nav>
 		<ul class="flex gap-4">
 			<li><a href="/studio">Studio</a></li>

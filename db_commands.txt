@@ -1,6 +1,6 @@
 npx wrangler d1 execute DB --local --command "DROP TABLE gn_request_form;"
 npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_request_form (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   project_name TEXT,
   contact_name TEXT,
   contact_email TEXT,
