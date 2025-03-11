@@ -15,6 +15,6 @@ export async function GET({ platform, request }) {
         })
     }
 	const db = platform.env.DB;
-	const res = await dbSurvey(db).getAll();
-	return json(res);
+	const {results} = await dbSurvey(db).getAll();
+	return json(results);
 }
