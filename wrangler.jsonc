@@ -17,7 +17,7 @@
 		  "database_id": "476fa768-0f3f-4121-9820-7cf92be3ee6b",
 		  "preview_database_id": "04cee095-7ba4-4be0-9bba-b63db8b8e08b"
 		}
-	  ],
+	  ]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
