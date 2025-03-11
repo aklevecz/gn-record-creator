@@ -1,17 +1,20 @@
 // import { calculateHash } from './utils';
 
+import { serializeDeep } from "./utils";
+
 class IDBStorage {
 	constructor() {
 		/** @type {string} */
 		this.dbName = 'assetStorage';
 		/** @type {number} */
-		this.version = 1;
+		this.version = 2;
 		/** @type {IDBDatabase | null} */
 		this.db = null;
 
 		this.stores = {
 			textures: 'textures',
-			generatedImgs: 'generatedImgs'
+			generatedImgs: 'generatedImgs',
+			projects: 'projects'
 		};
 	}
 
@@ -52,6 +55,10 @@ class IDBStorage {
 
 				if (!db.objectStoreNames.contains(this.stores.generatedImgs)) {
 					db.createObjectStore(this.stores.generatedImgs, { keyPath: 'id' });
+				}
+
+				if (!db.objectStoreNames.contains(this.stores.projects)) {
+					db.createObjectStore(this.stores.projects, { keyPath: 'id' });
 				}
 			};
 		});
@@ -110,13 +117,11 @@ class IDBStorage {
 		});
 	}
 
-	/** @param {{imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
+	/** @param {{id: string, imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
 	async addGeneratedImg(entry) {
-		const id = `${entry.prompt.replace(/[^a-zA-Z0-9]/g, '_')}_${entry.seed}`;
 		await this.set(this.stores.generatedImgs, {
 			...entry,
-			fileName: id,
-			id,
+			fileName: entry.id,
 			fileType: entry.imgBlob.type,
 			lastModified: Date.now()
 		});
@@ -155,6 +160,43 @@ class IDBStorage {
 		});
 	}
 
+	/** @param {string} id */
+	async getProject(id) {
+		return this.get(this.stores.projects, id);
+	}
+
+	async getAllProjects() {
+		// await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(this.stores.projects, 'readonly');
+			const store = transaction.objectStore(this.stores.projects);
+			const request = store.getAll();
+
+			request.onerror = () => {
+				reject(new Error('Error fetching models'));
+			};
+
+			request.onsuccess = () => {
+				resolve(request.result);
+			};
+		});
+	}
+
+
+	/** @param {Project} project */
+	async addProject(project) {
+		const plainProject = serializeDeep(project)
+		await this.set(this.stores.projects, {
+			id: project.name,
+			...plainProject,
+			lastModified: Date.now()
+		});
+	}
 	/**
 	 * Generic method to get a value from a store
 	 * @private
@@ -225,10 +267,10 @@ class IDBStorage {
 				reject(new Error('Database not initialized'));
 				return;
 			}
-			console.log(`Storing ${value} in ${storeName}`);
+			console.log(`Storing ${JSON.stringify(value).slice(0,50)} in ${storeName}`);
 			const transaction = this.db.transaction(storeName, 'readwrite');
 			const store = transaction.objectStore(storeName);
-			console.log(`Store is ${store}`);
+			// console.log(`Store is ${store}`);
 			const request = store.put(value);
 
 			request.onerror = () => {

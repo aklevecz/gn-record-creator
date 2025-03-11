@@ -1,18 +1,19 @@
 <script>
 	import details from '$lib/details.svelte';
 
-	let { label = 'Company Name', key = 'company_name' } = $props();
+	let { label, key, description } = $props();
 
 	/** @param {*} e */
 	function onInput(e) {   
-		details.set(key, e.target.value);
+		details.setValue(key, e.target.value);
 	}
 </script>
 
 <div class="flex flex-col">
-	<label for={key} class="mb-1"
+	<label for={key} class="mb-0"
     >{label}</label>
-	<input name={key} oninput={onInput} type="text" />
+	<div class="opacity-50 text-xs mb-2">{description}</div>
+	<input id={key} name={key} oninput={onInput} type="text" bind:value={details.state.details[key].value} />
 </div>
 
 <style lang="postcss">

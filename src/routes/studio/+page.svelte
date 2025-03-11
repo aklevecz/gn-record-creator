@@ -104,14 +104,14 @@
 			{/if}
 			{#if buttonView === 'ai'}
 				<div class="view">
-					<div class="percent-bar-container">
-						<div class="generate-status">
-							{generatingMessages[generate.state.status] || generate.state.status}
-						</div>
-						<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
-					</div>
+					{#if generate.state.status !== 'idle'}<div class="percent-bar-container">
+							<div class="generate-status">
+								{generatingMessages[generate.state.status] || generate.state.status}
+							</div>
+							<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
+						</div>{/if}
 					<textarea
-						class="border-1 border-white"
+						class="border-1 border-white mt-2"
 						onkeydown={(e) => e.key === 'Enter' && onGenerate()}
 						name="prompt"
 						bind:value={prompt}
@@ -128,12 +128,7 @@
 				<div class="history-container">
 					{#each generate.state.cachedImgs as gen}
 						{@const url = URL.createObjectURL(gen.imgBlob)}
-						<img
-							onclick={() => showImgOnCover(url)}
-							src={url}
-							alt=""
-							class="history-img"
-						/>
+						<img onclick={() => showImgOnCover(url)} src={url} alt="" class="history-img" />
 					{/each}
 				</div>
 			{/if}

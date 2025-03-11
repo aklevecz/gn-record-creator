@@ -1,12 +1,13 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import idb from '$lib/idb';
+	import projects from '$lib/projects.svelte';
 	import ThreeScene from '$lib/three';
 
 	let {
 		multiple = false,
 		accept = 'image/*',
-		maxSizeMB = 5,
+		maxSizeMB = 15,
 		previewEnabled = false,
 		threeScene = new ThreeScene()
 	} = $props();
@@ -61,13 +62,11 @@
 			files = files.map((file) => {
 				if (!file.preview) {
 					const url = URL.createObjectURL(file);
-                    console.log('url', url)
 					file.preview = url;
-					console.log(url)
 					threeScene.updateMaterialTexture(url);
 				}
 				// const textureId = crypto.randomUUID(); // Generate a unique ID
-                const textureId = CURRENT_TEXTURE
+                const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`
 				// Save the file itself to IDB
 				idb.saveTexture({
 					imgFile: file, // Save the actual File object

@@ -13,6 +13,25 @@
  * @typedef Questions @type {Record<string, Question>}
  */
 
+/**
+ * @typedef Survey
+ * @property {Questions} questions
+ * @property {Record<string, string>} answers
+ */
+
+/**
+ * @typedef Detail
+ * @property {string} label
+ * @property {string} description
+ * @property {string} value
+ * @property {string} type
+ */
+
+/**
+ * @typedef Details
+ * @property {Record<string, Detail>} details
+ */
+
 /** @typedef {('idle'|'starting'|'processing'|'succeeded'|'failed'|'canceled')} Status */
 
 /**
@@ -44,4 +63,12 @@
  * @property {string} imgUrl
  * @property {string} seed
  * @property {string} prompt
+ */
+
+/** 
+ * @typedef {Object} Project
+ * @property {string} name
+ * @property {Date} createdAt
+ * @property {Details | null} details
+ * @property {Survey | null} survey
  */

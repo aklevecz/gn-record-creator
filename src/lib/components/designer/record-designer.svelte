@@ -3,6 +3,7 @@
 	import { CURRENT_TEXTURE } from '$lib';
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
+	import projects from '$lib/projects.svelte';
 	import ThreeScene from '$lib/three';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -23,7 +24,7 @@
 					threeScene.init(container);
 					threeScene.animate();
 					if (loadCachedType === 'texture') {
-						idb.getTexture(CURRENT_TEXTURE).then((textureFile) => {
+						idb.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`).then((textureFile) => {
 							if (!textureFile) {
 								console.log('THERE IS NO CURRENT TEXTURE');
 								return;

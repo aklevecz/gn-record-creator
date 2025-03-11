@@ -438,6 +438,7 @@ class ThreeScene {
 
 			// Apply shader material to record cover
 			if (this.recordCover) {
+				// @ts-ignore
 				this.recordCover.material = this.shaderMaterial;
 			}
 		} else {

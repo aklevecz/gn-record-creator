@@ -9,7 +9,6 @@
 		survey.answer(key, option.text);
 	}
 </script>
-
 <div class="question-container">
 	<div class="label">{label}</div>
 	<div class="buttons-container">
@@ -36,12 +35,12 @@
         @apply flex flex-wrap gap-2;
     }
 	button {
-		@apply w-[150px] text-xl font-bold rounded-md capitalize;
+		@apply w-[150px] text-base font-bold rounded-md capitalize select-none;
 	}
     button.isSelected {
         @apply bg-[var(--accent-color)];
     }
 	img {
-		@apply w-full;
+		@apply w-full mb-1;
 	}
 </style>

@@ -2,6 +2,7 @@ import generateApi from '$lib/api/generate';
 import idb from '$lib/idb';
 // import storage from "$lib/storage";
 import { fetchImageAsBlob } from '$lib/utils';
+import projects from './projects.svelte';
 // import history from "./history.svelte";
 
 export const GenerationErrors = {
@@ -25,7 +26,6 @@ const createGenerateStore = () => {
 	let generate = $state({ ...defaultState });
 
 	async function refreshAllGeneratedImgs() {
-		console.log('refreshing cached images');
 		const generatedImgs = await idb.getAllGeneratedImgs();
 		generate.cachedImgs = generatedImgs.sort(
 			(/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
@@ -109,15 +109,16 @@ const createGenerateStore = () => {
 					// history.add(data.output[0]);
 					const imgUrl = data.output[0];
 
+					const id = `${projects.state.activeProject}-${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
+
 					fetchImageAsBlob(imgUrl).then(async function (blob) {
 						await idb.addGeneratedImg({
+							id,
 							imgUrl,
 							imgBlob: blob,
 							seed: seed || '',
 							prompt: prompt || ''
 						});
-
-						const id = `${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
 
 						await idb.saveTexture({ imgFile: blob, seed: seed || '', id, fileName: id });
 						cb(imgUrl);

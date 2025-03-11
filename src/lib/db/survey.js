@@ -1,4 +1,3 @@
-import { getAll } from 'three/examples/jsm/libs/tween.module.js';
 
 /** @param {import('@cloudflare/workers-types').D1Database} db */
 const dbSurvey = (db) => {
