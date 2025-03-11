@@ -56,8 +56,6 @@ class ThreeScene {
 		this.loadModel = this.loadModel.bind(this);
 		this.animate = this.animate.bind(this);
 		this.onWindowResize = this.onWindowResize.bind(this);
-
-		// this.init(container);
 	}
 
 	/** @param {HTMLElement} container */
@@ -104,16 +102,13 @@ class ThreeScene {
 	}
 
 	addLights() {
-		// Increase ambient light for more even illumination
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased from 0.3
 		this.scene.add(ambientLight);
 
-		// Reduce directional light intensity
 		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4); // Reduced from 0.7
 		directionalLight.position.set(1, 1, 0);
 		this.scene.add(directionalLight);
 
-		// Reduce second directional light
 		const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3); // Reduced from 0.5
 		directionalLight2.position.set(-1, 0.5, 1);
 		this.scene.add(directionalLight2);
@@ -127,10 +122,10 @@ class ThreeScene {
 		this.scene.add(this.recordCover);
 		this.recordCoverAnimation = {
 			startTime: 0,
-			duration: 2000, // 2 seconds
+			duration: 2000,
 			startPosition: { x: 0, y: -20, z: 0 },
-			endPosition: { x: 0, y: 22, z: 0 }, // End position slightly to the left of center
-			active: true // Flag to track if animation is still running
+			endPosition: { x: 0, y: 22, z: 0 },
+			active: true
 		};
 	}
 
@@ -375,7 +370,6 @@ class ThreeScene {
 	}
 
 	createShaderMaterial() {
-		// Define shader code
 		const vertexShader = `
 		  varying vec2 vUv;
 		  
@@ -415,8 +409,6 @@ class ThreeScene {
 			gl_FragColor = vec4(color, 1.0);
 		  }
 		`;
-		console.log('creating shader');
-		// Create the shader material
 		return new THREE.ShaderMaterial({
 			uniforms: {
 				time: { value: 0.0 }
@@ -431,12 +423,10 @@ class ThreeScene {
 		this.useShader = !this.useShader;
 
 		if (this.useShader) {
-			// Create shader material if it doesn't exist
 			if (!this.shaderMaterial) {
 				this.shaderMaterial = this.createShaderMaterial();
 			}
 
-			// Apply shader material to record cover
 			if (this.recordCover) {
 				// @ts-ignore
 				this.recordCover.material = this.shaderMaterial;
@@ -450,7 +440,6 @@ class ThreeScene {
 	}
 
 	dispose() {
-		// Clean up resources
 		if (!this.renderer) {
 			console.log('No renderer');
 			return;
@@ -465,7 +454,6 @@ class ThreeScene {
 				object.material.dispose();
 			}
 		});
-		// Remove event listener
 		window.removeEventListener('resize', () => this.onWindowResize(), false);
 	}
 }

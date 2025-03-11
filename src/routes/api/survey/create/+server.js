@@ -18,6 +18,7 @@ export async function POST({ platform, request }) {
 	}
 	const db = platform.env.DB;
 	const { responses } = await request.json();
+	console.log(responses);
 	dbSurvey(db).save(responses);
 	return new Response();
 }

@@ -1,12 +1,26 @@
-npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_survey (
-  id TEXT PRIMARY KEY,
-  is_mastered TEXT,
-  which_vinyl TEXT,
+npx wrangler d1 execute DB --local --command "DROP TABLE gn_request_form;"
+npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_request_form (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   project_name TEXT,
-  company_name TEXT,
-  your_name TEXT,
-  email TEXT,
-  phone_number TEXT,
-  artist_name TEXT,
-  project_title TEXT
+  contact_name TEXT,
+  contact_email TEXT,
+  phone TEXT,
+  label TEXT,
+  artist TEXT,
+  catalog_number TEXT,
+  release_date TEXT,
+  depot_date TEXT,
+  shipping_address TEXT,
+  shipping_logistics TEXT,
+  total_units TEXT,
+  records_per_set TEXT,
+  record_format TEXT,
+  record_color TEXT,
+  lacquers TEXT,
+  metalwork TEXT,
+  test_prints TEXT,
+  packaging TEXT,
+  notes TEXT
 );"
+
+npx wrangler d1 execute DB --local --command "DELETE FROM gn_request_form;"

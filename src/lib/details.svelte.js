@@ -1,16 +1,5 @@
-// const detailItems = [
-// 	{ key: 'project_name', label: 'Project Name' },
-// 	{ key: 'company_name', label: 'Company Name' },
-// 	{ key: 'your_name', label: 'Your Name' },
-// 	{ key: 'email', label: 'Email Address' },
-// 	{ key: 'phone_number', label: 'Phone Number' },
-// 	{ key: 'artist_name', label: 'Artist Name' },
-// 	{ key: 'project_title', label: 'Project Title' }
-// ];
-
 import project from './project.svelte';
 
-// UNSTRUCTURED DATA
 /** @type {Record<string, Detail>} */
 const detailsDict = {
 	project_name: {
@@ -82,7 +71,6 @@ const detailsDict = {
 			'Or would you prefer to arrange your own pickup via your preferred transit company?',
 		value: '',
 		type: 'select'
-		// Yes, please handle the logistics for me | No, thank you - I will arrange the pickup | Not sure, let's chat
 	},
 	total_units: {
 		label: 'How many total units would you like to manufacture? Our minimum run is 500 units',
@@ -97,14 +85,12 @@ const detailsDict = {
 			"Is this a single LP or perhaps a double-LP product? We usually recommend each side of a record doesn't go beyond 22 minutes in duration",
 		value: '',
 		type: 'select'
-		// 1LP | 2LP | 3LP | 4LP | Not sure, let's setup a call
 	},
 	record_format: {
 		label: 'RPM / Record Format',
 		description: 'Please note only make 12in 180g records at this time',
 		value: '',
 		type: 'select'
-		// 33 12in/180g | 45 12in/180g | Not sure, let's setup a call
 	},
 	record_color: {
 		label: 'What color(s) would you like your records to be?',
@@ -112,7 +98,6 @@ const detailsDict = {
 			'Our records can be manufactured as solid or translucent colors. If unsure, please leave blank. Color options here: https://www.goodneighbormusic.com',
 		value: '',
 		type: 'select'
-		// a bunch
 	},
 	lacquers: {
 		label: 'Lacquers: Would you like us to handle this for you?',
@@ -120,7 +105,6 @@ const detailsDict = {
 			'Do you already have someone cutting the master? If not, we work with some of the best cutters in the world and can help!',
 		value: '',
 		type: 'select'
-		// Yes, please handle on our behalf | No, we have this handled and will ship them to you | Not sure, let's discuss this on a call
 	},
 	metalwork: {
 		label: 'Metalwork: What type of stampers do you need?',
@@ -128,7 +112,6 @@ const detailsDict = {
 			'Making stampers is a standard step in the record making process. For optimal quality, we recommend that we make your stampers.',
 		value: '',
 		type: 'select'
-		// 2 Step Stamper | 3 Step Stamper | Not sure, let's discuss this on a call | Not required, we already have stampers and can ship them to you
 	},
 	test_prints: {
 		label: '# of Test Pressings required?',
@@ -141,7 +124,6 @@ const detailsDict = {
 		description: '',
 		value: '',
 		type: 'select'
-		// Single Pocket | Gatefold | Single Pocket with Wide Spine (2LP) | No Packaging Required - we'll supply it to you ourselves | Not sure, let's set up a call
 	},
 	notes: {
 		label: 'Add your project details, comments and/or requests below.',

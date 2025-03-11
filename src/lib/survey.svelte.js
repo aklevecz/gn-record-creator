@@ -3,7 +3,7 @@
 import project from './project.svelte';
 
 /** @type {Questions} */
-const questions = {
+export const questions = {
 	shipping_logistics: {
 		label: 'Should GN handle the shipping logistics of the finished goods?',
 		options: [
@@ -81,6 +81,7 @@ const defaultSurveyState = {
 	answers: {}
 };
 
+// DEPRECATED IN FAVOR OF USING DETAILS STORE?
 const createSurvey = () => {
 	let survey = $state({ ...defaultSurveyState });
 
@@ -95,7 +96,6 @@ const createSurvey = () => {
 		/** @param {string} questionKey @param {string} answer */
 		answer(questionKey, answer) {
 			survey.answers[questionKey] = answer;
-
 			project.updateSurvey(survey);
 		},
 		remapResponses() {

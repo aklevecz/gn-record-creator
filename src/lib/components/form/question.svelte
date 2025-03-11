@@ -1,4 +1,5 @@
 <script>
+	import details from '$lib/details.svelte';
 	import survey from '$lib/survey.svelte';
 
 	/** @type {{label: string, options: Option[], key: string}}*/
@@ -6,7 +7,8 @@
 
 	/** @param {Option} option */
 	function handleAnswer(option) {
-		survey.answer(key, option.text);
+		// survey.answer(key, option.text);
+		details.setValue(key, option.text);
 	}
 </script>
 <div class="question-container">
@@ -14,7 +16,7 @@
 	<div class="buttons-container">
 		{#each options as option}
         <!-- {JSON.stringify(survey.state.answers[key] === option.text)} -->
-			<button class:isSelected={survey.state.answers[key] === option.text} onclick={() => handleAnswer(option)}>
+			<button class:isSelected={details.state.details[key].value === option.text} onclick={() => handleAnswer(option)}>
 				{#if option.img}
 					<img src={option.img} alt={option.text} />
 				{/if}{option.text}</button

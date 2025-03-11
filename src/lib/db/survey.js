@@ -1,16 +1,15 @@
 
 /** @param {import('@cloudflare/workers-types').D1Database} db */
 const dbSurvey = (db) => {
-	const tableName = 'gn_survey';
+	const tableName = 'gn_request_form';
 	return {
 		/** @param {*} responses */
 		save: async (responses) => {
-            const id = crypto.randomUUID();
 			const keys = Object.keys(responses);
             const values = Object.values(responses);
 			await db
-				.prepare(`INSERT INTO ${tableName} (id, ${keys.join(',')}) VALUES (?,${keys.map(() => '?').join(',')})`)
-				.bind(id, ...values)
+				.prepare(`INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${keys.map(() => '?').join(',')})`)
+				.bind(...values)
 				.run();
 		},
         getAll: async () => {

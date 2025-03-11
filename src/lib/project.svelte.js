@@ -62,7 +62,6 @@ const createProject = () => {
 		/** @param {Survey} survey */
 		updateSurvey(survey) {
 			project.survey = survey;
-
             projects.updateProject(serializeDeep(project));
 		}
 	};
