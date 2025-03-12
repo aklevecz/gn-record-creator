@@ -75,11 +75,11 @@
 </script>
 
 <div class="h-[80vh]">
-	<div style={!isMinimized ? 'height: 70%' : `height:100%`}>
+	<div style={!isMinimized ? 'height: 65%' : `height:93%`}>
 		<RecordDesigner {threeScene} loadCachedType="ai" />
 	</div>
 	<div
-		style={isMinimized ? 'height: 50px' : `height: ${buttonContainerHeight} `}
+		style={isMinimized ? 'height: 80px' : `height: ${buttonContainerHeight} `}
 		class="buttons-container"
 	>
 		<div class="view-button-container">
@@ -111,9 +111,9 @@
 			{#if buttonView === 'ai'}
 				<div class="view">
 					{#if generate.state.status !== 'idle'}<div class="percent-bar-container">
-							<div class="generate-status">
+							<!-- <div class="generate-status">
 								{generatingMessages[generate.state.status] || generate.state.status}
-							</div>
+							</div> -->
 							<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
 						</div>{/if}
 					<textarea
@@ -126,7 +126,10 @@
 					<button
 						disabled={generate.state.generating}
 						class:generating={generate.state.generating}
-						onclick={onGenerate}>{generate.state.generating ? 'GENERATING...' : 'GENERATE'}</button
+						onclick={onGenerate}
+						>{generate.state.generating
+							? generatingMessages[generate.state.status]
+							: 'GENERATE'}</button
 					>
 				</div>
 			{/if}
@@ -147,7 +150,7 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-		@apply fixed bottom-0 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
+		@apply  bottom-10 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
 	}
 
 	.buttons-container.minimized {
@@ -183,7 +186,7 @@
 	}
 
 	.percent-bar-container {
-		@apply m-2 h-4 w-3/4 border-[var(--secondary-color)] bg-white;
+		@apply fixed top-10 m-2 h-4 w-3/4 border-[var(--secondary-color)] bg-white;
 	}
 
 	.percent-bar {
@@ -192,7 +195,7 @@
 	}
 
 	.history-container {
-		@apply grid grid-cols-3 gap-2;
+		@apply grid grid-cols-3 p-2 gap-2;
 	}
 
 	.history-img {

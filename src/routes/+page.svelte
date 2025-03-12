@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { CURRENT_TEXTURE } from '$lib';
 	import surveyApi from '$lib/api/survey';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import Detail from '$lib/components/form/detail.svelte';
@@ -9,11 +10,13 @@
 	import idb from '$lib/idb';
 	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
-	import { questions } from '$lib/survey.svelte';
+	import survey, { questions } from '$lib/survey.svelte';
 	import ThreeScene from '$lib/three';
+	import threeScenes from '$lib/three.svelte';
 	import { onMount } from 'svelte';
 
 	let threeScene = new ThreeScene();
+	threeScenes['form'] = threeScene;
 
 	function submitInfo() {
 		// const surveyResponses = survey.remapResponses();
@@ -29,9 +32,14 @@
 			projects.init();
 		});
 	});
+
+	$effect(() => {
+		console.log(projects.state.activeProject);
+	});
 </script>
 
 <div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6">
+	
 	<h1 class="text-2xl font-bold">Good Neighbor Record Setup Form</h1>
 	<div class="text-xs">
 		Please fill out the following information so we can set up your project in our system, verify
@@ -62,7 +70,7 @@
 		{/each}
 	</div> -->
 	<div class="mt-20">
-		<div class="text-center mb-2">All done?</div>
+		<div class="mb-2 text-center">All done?</div>
 		<button onclick={submitInfo} class="mx-auto block text-2xl">Submit</button>
 	</div>
 </div>

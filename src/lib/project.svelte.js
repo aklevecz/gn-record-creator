@@ -22,12 +22,13 @@ const createProject = () => {
             project = newState
         },
 		/** 
-         * @param {{name: string, details: Details, survey: Survey}} props
+         * @param {{name?: string, details: Details, survey: Survey}} props
          * @returns {Project}
         */
 		create({ name, details, survey }) {
-            project.id = crypto.randomUUID();
-			project.name = name;
+			const id = crypto.randomUUID();
+            project.id = id
+			project.name = name || id
 			project.details = details;
 			project.survey = survey;
 			project.createdAt = new Date();
@@ -60,6 +61,7 @@ const createProject = () => {
 		/** @param {Details} details */
 		updateDetails(details) {
 			project.details = details;
+			project.name = project.details?.details.project_name.value || project.name
             projects.updateProject(serializeDeep(project))
 		},
 		/** @param {Survey} survey */

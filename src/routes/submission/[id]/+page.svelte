@@ -92,7 +92,7 @@
         @apply text-2xl font-bold;
     }
     h3 {
-        @apply text-xl font-bold mb-2;
+        @apply text-xl font-bold mb-0;
     }
     .submission-section {
         @apply mb-4;

@@ -21,9 +21,8 @@ const createProjects = () => {
 			return projects.projects.find((project) => project.name === projects.activeProject);
 		},
 		async init() {
-			const defaultExists = projects.projects.find((project) => project.name === 'default');
-			if (defaultExists) {
-				console.log('already initialized');
+			if (projects.projects.length) {
+				console.log('Projects already loaded');
 				return;
 			}
 
@@ -32,11 +31,14 @@ const createProjects = () => {
 			let defaultProject = null;
 			if (allProjects.length) {
 				console.log('REGISTER EXSTING');
+				defaultProject = allProjects[0]
+				project.set(defaultProject);
+				// this.registerProject(defaultProject)
 				for (const cachedProject of allProjects) {
-					if (cachedProject.name === 'default') {
-						defaultProject = cachedProject;
-						project.set(defaultProject);
-					}
+					// if (cachedProject.name === 'default') {
+					// 	defaultProject = cachedProject;
+					// 	project.set(defaultProject);
+					// }
 					this.registerProject(cachedProject);
 				}
 			} else {
@@ -52,14 +54,20 @@ const createProjects = () => {
 
 			// defaultProject.survey && survey.set(defaultProject.survey);
 			defaultProject.details && details.set(defaultProject.details);
+			this.activateProject(defaultProject.name);
 		},
 		/** @param {Project} project */
 		registerProject(project) {
 			projects.projects = [...projects.projects, project];
 		},
+		/** @param {string} projectId */
+		removeProject(projectId) {
+			projects.projects = projects.projects.filter((p) => p.id !== projectId);
+		},
 		/** @param {Project} project */
 		updateProject(project) {
-			const projectExists = projects.projects.find((p) => p.name === project.name);
+			// const projectExists = projects.projects.find((p) => p.name === project.name);
+			const projectExists = projects.projects.find((p) => p.id === project.id);
 			if (projectExists) {
 				projects.projects = projects.projects.map((p) => {
 					if (p.name === project.name) {
@@ -69,13 +77,15 @@ const createProjects = () => {
 				});
 
 				this.debouncedSaveToIDB(project);
+				this.activateProject(project.name);
 			}
 		},
 		debouncedSaveToIDB: debounce(function (project) {
 			idb.addProject(project);
-		}, 1000),
+		}, 500),
 		/** @param {string} projectName */
 		activateProject(projectName) {
+			// SHOULD USE ID
 			const existingProject = projects.projects.find((project) => project.name === projectName);
 			if (!existingProject) {
 				throw new Error(`Project ${projectName} does not exist`);
@@ -84,6 +94,10 @@ const createProjects = () => {
 			project.set(existingProject);
 			existingProject.survey && survey.set(existingProject.survey);
 			existingProject.details && details.set(existingProject.details);
+		},
+		reset() {
+			projects.projects = [];
+			projects.activeProject = 'default';
 		}
 	};
 };

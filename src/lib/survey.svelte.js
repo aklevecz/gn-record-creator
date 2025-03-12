@@ -107,6 +107,9 @@ const createSurvey = () => {
 				{}
 			);
 			return responses;
+		},
+		reset() {
+			survey = { ...defaultSurveyState };
 		}
 	};
 };

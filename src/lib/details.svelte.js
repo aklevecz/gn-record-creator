@@ -164,6 +164,9 @@ const createDetails = () => {
 				{}
 			);
 			return responses;
+		},
+		reset() {
+			details = { ...defaultDetailState };
 		}
 	};
 };

@@ -1,6 +1,6 @@
 // import { calculateHash } from './utils';
 
-import { serializeDeep } from "./utils";
+import { serializeDeep } from './utils';
 
 class IDBStorage {
 	constructor() {
@@ -187,16 +187,22 @@ class IDBStorage {
 		});
 	}
 
-
 	/** @param {Project} project */
 	async addProject(project) {
-		const plainProject = serializeDeep(project)
+		const plainProject = serializeDeep(project);
 		await this.set(this.stores.projects, {
 			// id: project.name,
 			...plainProject,
+			name: project.details?.details.project_name.value || project.name,
 			lastModified: Date.now()
 		});
 	}
+
+	/** @param {string} projectId */
+	async deleteProject(projectId) {
+		await this.delete(this.stores.projects, projectId);
+	}
+
 	/**
 	 * Generic method to get a value from a store
 	 * @private
@@ -267,7 +273,7 @@ class IDBStorage {
 				reject(new Error('Database not initialized'));
 				return;
 			}
-			console.log(`Storing ${JSON.stringify(value).slice(0,50)} in ${storeName}`);
+			console.log(`Storing ${JSON.stringify(value).slice(0, 50)} in ${storeName}`);
 			const transaction = this.db.transaction(storeName, 'readwrite');
 			const store = transaction.objectStore(storeName);
 			// console.log(`Store is ${store}`);
@@ -278,6 +284,36 @@ class IDBStorage {
 			};
 
 			request.onsuccess = () => {
+				resolve();
+			};
+		});
+	}
+
+	/**
+	 * Generic method to delete a value from a store
+	 * @private
+	 * @param {string} storeName
+	 * @param {string} key
+	 * @returns {Promise<void>}
+	 */
+	async delete(storeName, key) {
+		// await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(storeName, 'readwrite');
+			const store = transaction.objectStore(storeName);
+			const request = store.delete(key);
+
+			request.onerror = () => {
+				reject(new Error(`Error deleting from ${storeName}`));
+			};
+
+			request.onsuccess = () => {
+				console.log(`Successfully deleted item with key "${key}" from ${storeName}`);
 				resolve();
 			};
 		});
