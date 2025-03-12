@@ -4,6 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 class ThreeScene {
 	constructor() {
+		console.log('THREE CONSTRUCTION');
 		this.width = 0;
 		this.height = 0;
 		this.scene = new THREE.Scene();
@@ -124,7 +125,7 @@ class ThreeScene {
 			startTime: 0,
 			duration: 2000,
 			startPosition: { x: 0, y: -20, z: 0 },
-			endPosition: { x: 0, y: 22, z: 0 },
+			endPosition: { x: 0, y: 20, z: 0 },
 			active: true
 		};
 	}

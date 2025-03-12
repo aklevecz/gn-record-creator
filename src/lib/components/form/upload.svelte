@@ -1,7 +1,9 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import idb from '$lib/idb';
+	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
+	import uploadApi from '$lib/api/upload';
 	import ThreeScene from '$lib/three';
 
 	let {
@@ -66,13 +68,15 @@
 					threeScene.updateMaterialTexture(url);
 				}
 				// const textureId = crypto.randomUUID(); // Generate a unique ID
-                const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`
+				const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`;
 				// Save the file itself to IDB
 				idb.saveTexture({
 					imgFile: file, // Save the actual File object
 					seed: 'user-upload', // Or whatever metadata you want
 					id: textureId
 				});
+
+				uploadApi.uploadTexture({ id: project.state.id, image: file });
 
 				return file;
 			});
@@ -247,7 +251,7 @@
 		justify-content: center;
 		gap: 0.2rem;
 		color: black;
-        font-weight: 500;
+		font-weight: 500;
 	}
 
 	.dropzone-content svg {
@@ -258,7 +262,7 @@
 	.dropzone-content p {
 		/* margin: 0.5rem 0; */
 		font-size: 1rem;
-        font-weight: bold;
+		font-weight: bold;
 	}
 
 	.hint {
