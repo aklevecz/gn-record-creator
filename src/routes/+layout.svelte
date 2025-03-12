@@ -8,8 +8,8 @@
 </script>
 
 <header class="flex items-center gap-4">
-	<a href="/"
-		><img class="w-60 m-1 p-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a
+	<a class="flex-[1_0_150px]" href="/"
+		><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a
 	>
 	<nav class="">
 		<ul class="flex gap-4">
