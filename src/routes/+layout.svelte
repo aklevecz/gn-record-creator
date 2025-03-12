@@ -7,6 +7,13 @@
 	onMount(() => {});
 </script>
 
+<svelte:head>
+	<title>Good Neighbor | Record Creator</title>
+	<meta name="description" content="Good Neighbor Record Creator" />
+	<meta name="og:title" content="Good Neighbor | Record Creator" />
+	<meta name="og:description" content="Good Neighbor Record Creator" />
+	<meta name="og:image" content="/records/purple-haze.png" />
+</svelte:head>
 <header class="flex items-center gap-4">
 	<a class="flex-[1_0_150px]" href="/"
 		><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a
@@ -19,14 +26,14 @@
 			<li class="opacity-0"><a href="/test">Test</a></li>
 		</ul>
 	</nav>
-	<ChangeProjectDropdown/>
+	<ChangeProjectDropdown />
 </header>
 
 {@render children()}
 
 <style>
 	.icon-link {
-		filter: saturate(100%) contrast(150%) brightness(250%) blur(.75px) hue-rotate(45deg);
+		filter: saturate(100%) contrast(150%) brightness(250%) blur(0.75px) hue-rotate(45deg);
 		font-size: 1rem;
 	}
 </style>
