@@ -23,25 +23,35 @@
 				if (container) {
 					threeScene.init(container);
 					threeScene.animate();
-					if (loadCachedType === 'texture') {
-						idb.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`).then((textureFile) => {
-							if (!textureFile) {
-								console.log('THERE IS NO CURRENT TEXTURE');
-								return;
-							}
-							const url = URL.createObjectURL(textureFile.imgFile);
-							threeScene.updateMaterialTexture(url);
-						});
+
+					const lastTexture = await idb.getTexture('last-texture');
+					if (lastTexture) {
+						const url = URL.createObjectURL(lastTexture.imgFile);
+						threeScene.updateMaterialTexture(url);
 					}
 
-					if (loadCachedType === 'ai') {
-						const cachedImg = generate.state.cachedImgs[generate.state.cachedImgs.length - 1];
-						if (cachedImg) {
-							const url = URL.createObjectURL(cachedImg.imgBlob);
-							threeScene.updateMaterialTexture(url);
+					if (!lastTexture) {
+						if (loadCachedType === 'texture') {
+							idb
+								.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`)
+								.then((textureFile) => {
+									if (!textureFile) {
+										console.log('THERE IS NO CURRENT TEXTURE');
+										return;
+									}
+									const url = URL.createObjectURL(textureFile.imgFile);
+									threeScene.updateMaterialTexture(url);
+								});
+						}
+
+						if (loadCachedType === 'ai') {
+							const cachedImg = generate.state.cachedImgs[generate.state.cachedImgs.length - 1];
+							if (cachedImg) {
+								const url = URL.createObjectURL(cachedImg.imgBlob);
+								threeScene.updateMaterialTexture(url);
+							}
 						}
 					}
-
 				} else {
 					console.error('No container found');
 				}

@@ -67,11 +67,17 @@
 	function showImgOnCover(imgUrl) {
 		threeScene.updateMaterialTexture(imgUrl);
 	}
+
+	$effect(() => {
+		isMinimized;
+		threeScene.resize();
+	});
 </script>
 
 <div class="h-[80vh]">
-	<RecordDesigner {threeScene} loadCachedType="ai" />
-
+	<div style={!isMinimized ? 'height: 70%' : `height:100%`}>
+		<RecordDesigner {threeScene} loadCachedType="ai" />
+	</div>
 	<div
 		style={isMinimized ? 'height: 50px' : `height: ${buttonContainerHeight} `}
 		class="buttons-container"
@@ -111,7 +117,7 @@
 							<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
 						</div>{/if}
 					<textarea
-						class="border-1 border-white mt-2"
+						class="mt-2 border-1 border-white"
 						onkeydown={(e) => e.key === 'Enter' && onGenerate()}
 						name="prompt"
 						bind:value={prompt}
@@ -141,7 +147,7 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-		@apply absolute bottom-0 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
+		@apply fixed bottom-0 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
 	}
 
 	.buttons-container.minimized {

@@ -22,7 +22,10 @@ export async function POST({ platform, request }) {
 			httpMetadata: {
 				'Cache-Control': 'max-age=31536000',
 				contentType
-			}
+			},
+            customMetadata: {
+
+            }
 		})
 	);
 

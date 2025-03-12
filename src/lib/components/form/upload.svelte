@@ -76,6 +76,12 @@
 					id: textureId
 				});
 
+				idb.saveTexture({
+					imgFile: file,
+					seed: 'user-upload',
+					id: 'last-texture'
+				})
+
 				uploadApi.uploadTexture({ id: project.state.id, image: file });
 
 				return file;

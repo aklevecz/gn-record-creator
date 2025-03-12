@@ -121,6 +121,12 @@ const createGenerateStore = () => {
 						});
 
 						await idb.saveTexture({ imgFile: blob, seed: seed || '', id, fileName: id });
+						await idb.saveTexture({
+							imgFile: blob,
+							seed: seed || '',
+							id: 'last-texture',
+							fileName: id
+						});
 						cb(imgUrl);
 						// threeScene.updateMaterialTexture(URL.createObjectURL(blob))
 						await refreshAllGeneratedImgs();

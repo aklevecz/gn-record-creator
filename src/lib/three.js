@@ -5,6 +5,8 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 class ThreeScene {
 	constructor() {
 		console.log('THREE CONSTRUCTION');
+		/** @type {HTMLElement | null} */
+		this.container = null
 		this.width = 0;
 		this.height = 0;
 		this.scene = new THREE.Scene();
@@ -61,6 +63,7 @@ class ThreeScene {
 
 	/** @param {HTMLElement} container */
 	init(container) {
+		this.container = container
 		this.width = container.clientWidth;
 		this.height = container.clientHeight;
 		this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 200000);
@@ -251,6 +254,22 @@ class ThreeScene {
 		// this.camera.aspect = window.innerWidth / window.innerHeight;
 		// this.camera.updateProjectionMatrix();
 		// this.renderer.setSize(window.innerWidth, window.innerHeight);
+	}
+
+	resize() {
+		if (!this.container) {
+			console.log("Container missing for resize")
+			return
+		}
+		if (!this.renderer) {
+			console.log("Renderer is missing")
+			return
+		}
+		this.width = this.container.clientWidth;
+		this.height = this.container.clientHeight;
+		this.camera.aspect = this.width / this.height;
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(this.width , this.height);
 	}
 
 	/** @param {number} x */
