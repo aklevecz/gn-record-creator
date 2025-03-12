@@ -1,9 +1,12 @@
 <script>
+	import { onMount } from 'svelte';
+
 	
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
 	/** @type {Submission} */
 	let submission = data.submission;
+
 </script>
 
 <div class="flex items-center gap-4 justify-center">
@@ -17,11 +20,13 @@
 		<div class="submission-header">
 			<h2>Submission Details</h2>
 			<div class="submission-id">Id: {submission.id}</div>
+        <img class="w-50" src={`/api/upload/${submission.id}`} alt="Submission" />
 		</div>
+
 
 		{#snippet submissionField(/** @type {*} */ props)}
 			<div class="field">
-				<div class="label">{props.label}:</div>
+				<div class="label">{props.label}</div>
 				<span id={props.label}>{props.value}</span>
 			</div>
 		{/snippet}
@@ -78,7 +83,7 @@
 		@apply mx-auto mt-4 flex w-full flex-col items-center justify-center gap-4;
 	}
 	.submission-container {
-		@apply bg-[var(--secondary-color)] px-10 py-6 text-[var(--primary-color)];
+		@apply bg-[var(--secondary-color)] px-6 py-6 text-[var(--primary-color)];
 	}
     .submission-header {
         @apply mb-6;
@@ -93,7 +98,7 @@
         @apply mb-4;
     }
     .field {
-        @apply flex gap-4 pl-0 mb-1;
+        @apply flex gap-4 pl-0 mb-1 items-end;
     }
     .field > .label {
         @apply font-semibold text-sm;

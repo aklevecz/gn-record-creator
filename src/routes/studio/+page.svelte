@@ -165,7 +165,7 @@
 	}
 
 	.generate-status {
-		@apply bg-black text-center text-sm font-bold;
+		@apply bg-[var(--primary-color)] text-center text-sm font-bold;
 	}
 
 	button.generating {

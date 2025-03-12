@@ -21,8 +21,8 @@
 	"r2_buckets": [
 		{
 			"binding": "R2",
-			"bucket_name": "secret-tix",
-			"preview_bucket_name": "secret-tix"
+			"bucket_name": "goodneighbor",
+			"preview_bucket_name": "goodneighbor"
 		}]
 	/**
 	 * Smart Placement

@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import surveyApi from '$lib/api/survey';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import Detail from '$lib/components/form/detail.svelte';
@@ -8,7 +9,7 @@
 	import idb from '$lib/idb';
 	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
-	import survey, { questions } from '$lib/survey.svelte';
+	import { questions } from '$lib/survey.svelte';
 	import ThreeScene from '$lib/three';
 	import { onMount } from 'svelte';
 
@@ -20,6 +21,7 @@
 		// console.log(project.state.id);
 		// console.log(project.state)
 		surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		goto(`/submission/${project.state.id}`);
 	}
 
 	onMount(() => {

@@ -84,7 +84,7 @@ class ThreeScene {
 
 	/** @param {HTMLElement} container */
 	setupScene(container) {
-		this.scene.background = new THREE.Color(0x000000);
+		this.scene.background = new THREE.Color(0x1e1e1e);
 
 		this.camera.position.set(45, 20, 0);
 		if (!this.renderer) {
