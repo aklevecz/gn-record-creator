@@ -4,10 +4,11 @@ import project from './project.svelte';
 import idb from './idb';
 import { debounce } from './utils';
 
-/** @type {{activeProject: string, projects: Project[]}} */
+/** @type {{activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
 	activeProject: 'default',
-	projects: []
+	projects: [],
+	cachedTextures: []
 };
 
 const createProjects = () => {
@@ -84,7 +85,7 @@ const createProjects = () => {
 			idb.addProject(project);
 		}, 500),
 		/** @param {string} projectName */
-		activateProject(projectName) {
+		async activateProject(projectName) {
 			// SHOULD USE ID
 			const existingProject = projects.projects.find((project) => project.name === projectName);
 			if (!existingProject) {
@@ -94,6 +95,19 @@ const createProjects = () => {
 			project.set(existingProject);
 			existingProject.survey && survey.set(existingProject.survey);
 			existingProject.details && details.set(existingProject.details);
+
+			const cachedTextures = await idb.getTexturesByProjectId(existingProject.id);
+			
+			// projects.cachedTextures = cachedTextures.sort(
+			// 	(/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
+			// 		a.lastModified - b.lastModified
+			// );
+
+			projects.cachedTextures = cachedTextures.map(texture => {
+				const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
+				const url = URL.createObjectURL(blobFromBuffer);
+				return url
+			})
 		},
 		reset() {
 			projects.projects = [];

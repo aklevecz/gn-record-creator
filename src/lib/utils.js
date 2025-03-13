@@ -131,7 +131,7 @@ export function debounce(func, wait) {
 /**
  * Crops an image to a square from the center
  * @param {File} file - The original image file
- * @returns {Promise<File>} - A promise that resolves to the cropped file
+ * @returns {Promise<Blob>} - A promise that resolves to the cropped blob
  */
 export const cropImageToSquare = (file) => {
 	return new Promise((resolve, reject) => {
@@ -144,41 +144,84 @@ export const cropImageToSquare = (file) => {
 				reject(new Error('Failed to create canvas for cropping'));
 				return;
 			}
-
 			// Determine the size of the square (use the smaller dimension)
 			const size = Math.min(img.width, img.height);
-
 			// Set canvas size to our target square size
 			canvas.width = size;
 			canvas.height = size;
-
 			// Calculate centering offset
 			const offsetX = (img.width - size) / 2;
 			const offsetY = (img.height - size) / 2;
-
 			// Draw the centered square portion onto the canvas
 			ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
-
-			// Convert canvas back to a Blob, then to a File
+			// Convert canvas directly to a Blob and resolve with it
 			canvas.toBlob((blob) => {
 				if (!blob) {
-					reject(new Error('Failed to create cropped file'));
-					return file;
+					reject(new Error('Failed to create cropped blob'));
+					return;
 				}
-				// Create a new file with the same name but cropped content
-				const croppedFile = new File([blob], file.name, {
-					type: file.type,
-					lastModified: file.lastModified
-				});
-				resolve(croppedFile);
+				// Just resolve with the blob directly
+				resolve(blob);
 			}, file.type);
 		};
-
 		img.onerror = () => {
 			reject(new Error('Failed to load image for cropping'));
 		};
-
 		// Load the image from the file
 		img.src = URL.createObjectURL(file);
 	});
 };
+// /**
+//  * Crops an image to a square from the center
+//  * @param {File} file - The original image file
+//  * @returns {Promise<File>} - A promise that resolves to the cropped file
+//  */
+// export const cropImageToSquare = (file) => {
+// 	return new Promise((resolve, reject) => {
+// 		const img = new Image();
+// 		img.onload = () => {
+// 			// Create canvas for cropping
+// 			const canvas = document.createElement('canvas');
+// 			const ctx = canvas.getContext('2d');
+// 			if (!ctx) {
+// 				reject(new Error('Failed to create canvas for cropping'));
+// 				return;
+// 			}
+
+// 			// Determine the size of the square (use the smaller dimension)
+// 			const size = Math.min(img.width, img.height);
+
+// 			// Set canvas size to our target square size
+// 			canvas.width = size;
+// 			canvas.height = size;
+
+// 			// Calculate centering offset
+// 			const offsetX = (img.width - size) / 2;
+// 			const offsetY = (img.height - size) / 2;
+
+// 			// Draw the centered square portion onto the canvas
+// 			ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+
+// 			// Convert canvas back to a Blob, then to a File
+// 			canvas.toBlob((blob) => {
+// 				if (!blob) {
+// 					reject(new Error('Failed to create cropped file'));
+// 					return file;
+// 				}
+// 				// Create a new file with the same name but cropped content
+// 				const croppedFile = new File([blob], file.name, {
+// 					type: file.type,
+// 					lastModified: file.lastModified
+// 				});
+// 				resolve(croppedFile);
+// 			}, file.type);
+// 		};
+
+// 		img.onerror = () => {
+// 			reject(new Error('Failed to load image for cropping'));
+// 		};
+
+// 		// Load the image from the file
+// 		img.src = URL.createObjectURL(file);
+// 	});
+// };

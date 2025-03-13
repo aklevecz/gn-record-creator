@@ -4,7 +4,7 @@ const uploadApi = () => {
 	};
 
 	return {
-        /** @param {{id: string, image: File}} props */
+        /** @param {{id: string, image: Blob}} props */
         uploadTexture({id, image}) {
             const formData = new FormData();
             formData.append('image', image)

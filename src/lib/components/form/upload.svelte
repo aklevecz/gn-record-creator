@@ -82,61 +82,6 @@
 			errorMessage = `Error processing image: ${error.message}`;
 			console.error('Error cropping image:', error);
 		}
-
-		// /** @type {(File & FileWithPreview)[]} */
-		// const selectedFiles = Array.from(event.target.files || []);
-
-		// if (!selectedFiles.length) return;
-
-		// // Validate files
-		// const validFiles = selectedFiles.filter((file) => {
-		// 	// Check file size
-		// 	if (file.size > maxSizeMB * 1024 * 1024) {
-		// 		errorMessage = `File "${file.name}" exceeds maximum size of ${maxSizeMB}MB`;
-		// 		return false;
-		// 	}
-
-		// 	// Check file type
-		// 	if (!file.type.startsWith('image/')) {
-		// 		errorMessage = `File "${file.name}" is not an image`;
-		// 		return false;
-		// 	}
-
-		// 	return true;
-		// });
-
-		// if (validFiles.length) {
-		// 	// files = multiple ? [...files, ...validFiles] : [validFiles[0]];
-		// 	files = validFiles;
-		// 	// Create URL previews
-		// 	files = files.map((file) => {
-		// 		if (!file.preview) {
-		// 			const url = URL.createObjectURL(file);
-		// 			file.preview = url;
-		// 			threeScene.updateMaterialTexture(url);
-		// 		}
-		// 		// const textureId = crypto.randomUUID(); // Generate a unique ID
-		// 		const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`;
-		// 		// Save the file itself to IDB
-		// 		idb.saveTexture({
-		// 			imgFile: file, // Save the actual File object
-		// 			seed: 'user-upload', // Or whatever metadata you want
-		// 			id: textureId
-		// 		});
-
-		// 		idb.saveTexture({
-		// 			imgFile: file,
-		// 			seed: 'user-upload',
-		// 			id: 'last-texture'
-		// 		});
-
-		// 		uploadApi.uploadTexture({ id: project.state.id, image: file });
-
-		// 		return file;
-		// 	});
-		// 	// Emit files to parent
-		// 	// dispatch('filesSelected', { files });
-		// }
 	};
 
 	/** @param {*} event */

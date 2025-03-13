@@ -90,6 +90,7 @@ class IDBStorage {
 			projectId: entry.projectId,
 			fileName: entry.fileName || (entry.imgFile instanceof File ? entry.imgFile.name : 'texture'),
 			fileType: entry.imgFile.type,
+			arrayBuffer: entry.imgFile instanceof Blob ? await entry.imgFile.arrayBuffer() : entry.imgFile,
 			lastModified: Date.now()
 		});
 	}
@@ -155,7 +156,7 @@ class IDBStorage {
 			const request = store.getAll();
 
 			request.onerror = () => {
-				reject(new Error('Error fetching models'));
+				reject(new Error('Error fetching models'));	
 			};
 
 			request.onsuccess = () => {
