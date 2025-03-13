@@ -1,17 +1,23 @@
 <script>
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
+	import idb from '$lib/idb';
+	import projects from '$lib/projects.svelte';
 	import { onMount } from 'svelte';
 	import '../app.css';
 	let { children } = $props();
 
-	onMount(() => {});
+	onMount(() => {
+		idb.init().then(() => {
+			projects.init();
+		});
+	});
 </script>
 
 <svelte:head>
-	<title>Good Neighbor | Record Creator</title>
-	<meta name="description" content="Good Neighbor Record Creator" />
-	<meta name="og:title" content="Good Neighbor | Record Creator" />
-	<meta name="og:description" content="Good Neighbor Record Creator" />
+	<title>good neighbor record creator</title>
+	<meta name="description" content="good neighbor record creator" />
+	<meta name="og:title" content="good neighbor record creator" />
+	<meta name="og:description" content="good neighbor record creator" />
 	<meta name="og:image" content="/records/purple-haze.png" />
 </svelte:head>
 <header class="flex items-center gap-4">

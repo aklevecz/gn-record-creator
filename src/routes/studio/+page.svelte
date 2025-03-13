@@ -111,10 +111,11 @@
 			{#if buttonView === 'ai'}
 				<div class="view">
 					{#if generate.state.status !== 'idle'}<div class="percent-bar-container">
-							<!-- <div class="generate-status">
-								{generatingMessages[generate.state.status] || generate.state.status}
-							</div> -->
+	
 							<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
+							<div class="generate-status">
+								{generatingMessages[generate.state.status] || generate.state.status}
+							</div>
 						</div>{/if}
 					<textarea
 						class="mt-2 border-1 border-white"
@@ -174,7 +175,7 @@
 	}
 
 	.generate-status {
-		@apply bg-[var(--primary-color)] text-center text-sm font-bold;
+		@apply bg-[var(--primary-color)] text-center text-sm font-bold mt-1;
 	}
 
 	button.generating {

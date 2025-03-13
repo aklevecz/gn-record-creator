@@ -65,13 +65,16 @@
 			idb.saveTexture({
 				imgFile: croppedFile, // Save the actual File object
 				seed: 'user-upload', // Or whatever metadata you want
-				id: textureId
+				// id: textureId,
+				id: selectedFile.name,
+				projectId: projects.activeProject?.id || 'no-project-id-found'
 			});
 
 			idb.saveTexture({
 				imgFile: croppedFile,
 				seed: 'user-upload',
-				id: 'last-texture'
+				id: 'last-texture',
+				projectId: 'active'
 			});
 
 			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });

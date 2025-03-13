@@ -27,20 +27,17 @@
 		goto(`/submission/${project.state.id}`);
 	}
 
-	onMount(() => {
-		idb.init().then(() => {
-			projects.init();
-		});
-	});
+	// onMount(() => {
+	// 	idb.init().then(() => {
+	// 		projects.init();
+	// 	});
+	// });
 
-	$effect(() => {
-		console.log(projects.state.activeProject);
-	});
 </script>
 
 <div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6">
 	
-	<h1 class="text-2xl font-bold">Good Neighbor Record Setup Form</h1>
+	<h1 class="text-2xl font-bold">Record Setup Form</h1>
 	<div class="text-xs">
 		Please fill out the following information so we can set up your project in our system, verify
 		production schedule and get you quotes.

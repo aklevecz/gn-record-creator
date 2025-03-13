@@ -1,5 +1,5 @@
-import projects from "./projects.svelte";
-import { serializeDeep } from "./utils";
+import projects from './projects.svelte';
+import { serializeDeep } from './utils';
 
 /** @type {Project} */
 const defaultProjectState = {
@@ -17,18 +17,18 @@ const createProject = () => {
 		get state() {
 			return project;
 		},
-        /** @param {Project} newState */
-        set(newState) {
-            project = newState
-        },
-		/** 
-         * @param {{name?: string, details: Details, survey: Survey}} props
-         * @returns {Project}
-        */
+		/** @param {Project} newState */
+		set(newState) {
+			project = newState;
+		},
+		/**
+		 * @param {{name?: string, details: Details, survey: Survey}} props
+		 * @returns {Project}
+		 */
 		create({ name, details, survey }) {
 			const id = crypto.randomUUID();
-            project.id = id
-			project.name = name || id
+			project.id = id;
+			project.name = name || id;
 			project.details = details;
 			project.survey = survey;
 			project.createdAt = new Date();
@@ -56,21 +56,23 @@ const createProject = () => {
 		/** @param {string} name */
 		updateName(name) {
 			project.name = name;
-            projects.updateProject(serializeDeep(project))
+			projects.updateProject(serializeDeep(project));
 		},
 		/** @param {Details} details */
 		updateDetails(details) {
 			project.details = details;
-			project.name = project.details?.details.project_name.value || project.name
-            projects.updateProject(serializeDeep(project))
+			project.name = project.details?.details.project_name.value || project.name;
+			projects.updateProject(serializeDeep(project));
 		},
 		/** @param {Survey} survey */
 		updateSurvey(survey) {
 			project.survey = survey;
-            projects.updateProject(serializeDeep(project));
+			projects.updateProject(serializeDeep(project));
 		}
 	};
 };
 
 const project = createProject();
 export default project;
+
+export { createProject };

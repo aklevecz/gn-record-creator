@@ -109,22 +109,31 @@ const createGenerateStore = () => {
 					// history.add(data.output[0]);
 					const imgUrl = data.output[0];
 
-					const id = `${projects.state.activeProject}-${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
-
+					const id = `${projects.activeProject?.id}-${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
 					fetchImageAsBlob(imgUrl).then(async function (blob) {
 						await idb.addGeneratedImg({
 							id,
+							projectId: projects.activeProject?.id || 'missing-project-id',
 							imgUrl,
 							imgBlob: blob,
 							seed: seed || '',
 							prompt: prompt || ''
 						});
 
-						await idb.saveTexture({ imgFile: blob, seed: seed || '', id, fileName: id });
+						await idb.saveTexture({
+							imgFile: blob,
+							seed: seed || '',
+							id,
+							fileName: id,
+							projectId: projects.activeProject?.id || 'missing-project-id'
+						});
+
+						// UNIVERSAL TEXTURE
 						await idb.saveTexture({
 							imgFile: blob,
 							seed: seed || '',
 							id: 'last-texture',
+							projectId: 'active',
 							fileName: id
 						});
 						cb(imgUrl);

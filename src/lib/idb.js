@@ -50,11 +50,15 @@ class IDBStorage {
 
 				// Create generated images store
 				if (!db.objectStoreNames.contains(this.stores.textures)) {
-					db.createObjectStore(this.stores.textures, { keyPath: 'id' });
+					const textureStore = db.createObjectStore(this.stores.textures, { keyPath: 'id' });
+					textureStore.createIndex('projectId', 'projectId', { unique: false });
 				}
 
 				if (!db.objectStoreNames.contains(this.stores.generatedImgs)) {
-					db.createObjectStore(this.stores.generatedImgs, { keyPath: 'id' });
+					const generatedImgsStore = db.createObjectStore(this.stores.generatedImgs, {
+						keyPath: 'id'
+					});
+					generatedImgsStore.createIndex('projectId', 'projectId', { unique: false });
 				}
 
 				if (!db.objectStoreNames.contains(this.stores.projects)) {
@@ -76,12 +80,14 @@ class IDBStorage {
 	 *   imgFile: File | Blob,
 	 *   seed: string,
 	 *   id: string,
+	 *   projectId: string
 	 *   fileName?: string
 	 * }} entry
 	 */
 	async saveTexture(entry) {
 		await this.set(this.stores.textures, {
 			...entry,
+			projectId: entry.projectId,
 			fileName: entry.fileName || (entry.imgFile instanceof File ? entry.imgFile.name : 'texture'),
 			fileType: entry.imgFile.type,
 			lastModified: Date.now()
@@ -117,7 +123,7 @@ class IDBStorage {
 		});
 	}
 
-	/** @param {{id: string, imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
+	/** @param {{id: string, projectId: string, imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
 	async addGeneratedImg(entry) {
 		await this.set(this.stores.generatedImgs, {
 			...entry,
@@ -228,6 +234,61 @@ class IDBStorage {
 
 			request.onsuccess = () => {
 				resolve(request.result);
+			};
+		});
+	}
+	/**
+	 * Fetches all textures for a specific project using the projectId index
+	 * @param {string} projectId - The ID of the project to fetch textures for
+	 * @returns {Promise<Array<any>>} A promise that resolves to an array of textures
+	 */
+	async getTexturesByProjectId(projectId) {
+		await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(this.stores.textures, 'readonly');
+			const store = transaction.objectStore(this.stores.textures);
+			const index = store.index('projectId');
+			const request = index.getAll(projectId);
+
+			request.onerror = () => {
+				reject(new Error(`Error fetching textures for project ${projectId}`));
+			};
+
+			request.onsuccess = () => {
+				resolve(request.result || []);
+			};
+		});
+	}
+
+	/**
+	 * Fetches all generated images for a specific project using the projectId index
+	 * @param {string} projectId - The ID of the project to fetch generated images for
+	 * @returns {Promise<Array<any>>} A promise that resolves to an array of generated images
+	 */
+	async getGeneratedImgsByProjectId(projectId) {
+		await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(this.stores.generatedImgs, 'readonly');
+			const store = transaction.objectStore(this.stores.generatedImgs);
+			const index = store.index('projectId');
+			const request = index.getAll(projectId);
+
+			request.onerror = () => {
+				reject(new Error(`Error fetching generated images for project ${projectId}`));
+			};
+
+			request.onsuccess = () => {
+				resolve(request.result || []);
 			};
 		});
 	}
