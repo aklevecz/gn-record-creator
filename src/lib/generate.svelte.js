@@ -1,4 +1,5 @@
 import generateApi from '$lib/api/generate';
+import uploadApi from '$lib/api/upload';
 import idb from '$lib/idb';
 // import storage from "$lib/storage";
 import { fetchImageAsBlob } from '$lib/utils';
@@ -137,6 +138,10 @@ const createGenerateStore = () => {
 							projectId: 'active',
 							fileName: id
 						});
+						if (projects.activeProject?.id) {
+							uploadApi.uploadTexture({ id: projects.activeProject?.id, image: blob });
+						}
+
 						cb(imgUrl);
 						// threeScene.updateMaterialTexture(URL.createObjectURL(blob))
 						await refreshAllGeneratedImgs();

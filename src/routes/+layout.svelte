@@ -41,7 +41,8 @@
 
 <style>
 	.icon-link {
-		filter: saturate(100%) contrast(150%) brightness(250%) blur(0.75px) hue-rotate(45deg);
-		font-size: 1rem;
+		filter: saturate(100%) contrast(150%) brightness(250%) blur(0px) hue-rotate(45deg);
+		font-size: .75rem;
+		text-decoration: underline;
 	}
 </style>
