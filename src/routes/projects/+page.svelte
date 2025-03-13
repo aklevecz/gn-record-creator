@@ -52,9 +52,24 @@
 	let uploadedImgUrls = $state([]);
 	// /** @type {string[]} */
 	// let generatedImgUrls = $state([]);
-	let url = $state(null);
+	/** @type {string[]} */
+	let urls = $state([]);
 	$effect(() => {
 		if (project.state.id) {
+			idb.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
+				urls = cachedTextures.map((texture) => {
+					console.log(`Loading file ${texture.imgFile.name}`);
+					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
+					const url = URL.createObjectURL(blobFromBuffer);
+					return url;
+				});
+			});
+
+			// projects.cachedTextures = cachedTextures.sort(
+			// 	(/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
+			// 		a.lastModified - b.lastModified
+			// );
+
 			// idb.getGeneratedImgsByProjectId(project.state.id).then((imgs) => {
 			// 	for (const img of imgs) {
 			// 		generatedImgUrls = [...generatedImgUrls, URL.createObjectURL(img.imgBlob)];
@@ -93,16 +108,15 @@
 	<ChangeProjectDropdown />
 	<h1>Uploads</h1>
 	<div class="imgs">
-		{#each projects.state.cachedTextures as url}
-        {url}
+		{#each urls as url}
 			<img src={url} alt="" class="history-img" />
 		{/each}
 	</div>
 
 	<h1>Gens</h1>
-    {#if generate.state.cachedImgs.length === 0}
-    <div>No gens yet</div>
-    {/if}
+	{#if generate.state.cachedImgs.length === 0}
+		<div>No gens yet</div>
+	{/if}
 	<div class="imgs">
 		{#each generate.state.cachedImgs as gen}
 			{@const url = URL.createObjectURL(gen.imgBlob)}
@@ -124,9 +138,9 @@
 		width: 150px;
 		@apply text-xs;
 	}
-h1 {
-    @apply text-xl font-bold mb-1;
-}
+	h1 {
+		@apply mb-1 text-xl font-bold;
+	}
 	.imgs {
 		@apply mb-4 flex flex-wrap gap-2;
 	}
