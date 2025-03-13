@@ -104,6 +104,7 @@ const createProjects = () => {
 			// );
 
 			projects.cachedTextures = cachedTextures.map(texture => {
+				console.log(`Loading file ${texture.imgFile.name}`);
 				const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 				const url = URL.createObjectURL(blobFromBuffer);
 				return url

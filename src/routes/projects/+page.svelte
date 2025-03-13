@@ -94,6 +94,7 @@
 	<h1>Uploads</h1>
 	<div class="imgs">
 		{#each projects.state.cachedTextures as url}
+        {url}
 			<img src={url} alt="" class="history-img" />
 		{/each}
 	</div>
