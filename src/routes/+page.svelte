@@ -1,19 +1,15 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { CURRENT_TEXTURE } from '$lib';
 	import surveyApi from '$lib/api/survey';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import Detail from '$lib/components/form/detail.svelte';
 	import Question from '$lib/components/form/question.svelte';
 	import Upload from '$lib/components/form/upload.svelte';
 	import details from '$lib/details.svelte';
-	import idb from '$lib/idb';
 	import project from '$lib/project.svelte';
-	import projects from '$lib/projects.svelte';
-	import survey, { questions } from '$lib/survey.svelte';
+	import { questions } from '$lib/survey.svelte';
 	import ThreeScene from '$lib/three';
 	import threeScenes from '$lib/three.svelte';
-	import { onMount } from 'svelte';
 
 	let threeScene = new ThreeScene();
 	threeScenes['form'] = threeScene;
