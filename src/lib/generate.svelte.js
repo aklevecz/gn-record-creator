@@ -109,7 +109,8 @@ const createGenerateStore = () => {
 					// history.add(data.output[0]);
 					const imgUrl = data.output[0];
 
-					const id = `${projects.activeProject?.id}-${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
+					const promptSeed = `${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
+					const id = `${projects.activeProject?.id}-${promptSeed}`;
 					fetchImageAsBlob(imgUrl).then(async function (blob) {
 						await idb.addGeneratedImg({
 							id,
@@ -124,7 +125,7 @@ const createGenerateStore = () => {
 							imgFile: blob,
 							seed: seed || '',
 							id,
-							fileName: id,
+							fileName: promptSeed,
 							projectId: projects.activeProject?.id || 'missing-project-id'
 						});
 
@@ -157,6 +158,10 @@ const createGenerateStore = () => {
 			return interval;
 		},
 		refreshAllGeneratedImgs,
+		/** @param {Status} status */
+		setStatus: (status) => {
+			generate.status = status;
+		},
 		reset: () => {
 			generate = { ...defaultState };
 		}

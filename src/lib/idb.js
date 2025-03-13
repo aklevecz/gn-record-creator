@@ -210,6 +210,11 @@ class IDBStorage {
 		await this.delete(this.stores.projects, projectId);
 	}
 
+	/** @param {string} textureId */
+	async deleteTexture(textureId) {
+		await this.delete(this.stores.textures, textureId);
+	}
+
 	/**
 	 * Generic method to get a value from a store
 	 * @private

@@ -66,6 +66,7 @@
 				imgFile: croppedFile, // Save the actual File object
 				seed: 'user-upload', // Or whatever metadata you want
 				// id: textureId,
+				fileName: selectedFile.name,
 				id: selectedFile.name,
 				projectId: projects.activeProject?.id || 'no-project-id-found'
 			});

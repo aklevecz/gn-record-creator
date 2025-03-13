@@ -1,6 +1,7 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
+	import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
 	import details from '$lib/details.svelte';
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
@@ -52,7 +53,7 @@
 	let uploadedImgUrls = $state([]);
 	// /** @type {string[]} */
 	// let generatedImgUrls = $state([]);
-	/** @type {string[]} */
+	/** @type {{url:string, id: string, seed:string, fileName: string}[]} */
 	let urls = $state([]);
 	$effect(() => {
 		if (project.state.id) {
@@ -61,7 +62,7 @@
 					console.log(`Loading file ${texture.imgFile.name}`);
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 					const url = URL.createObjectURL(blobFromBuffer);
-					return url;
+					return { url, id: texture.id, seed: texture.seed, fileName: texture.fileName };
 				});
 			});
 
@@ -100,33 +101,92 @@
 		}
 	});
 
-	onMount(() => {});
+	let deleteProjectModalOpen = $state(false);
+	function confirmDeleteProject() {
+		deleteProjectModalOpen = true;
+	}
+
+	function executeDeleteProject() {
+		projects.removeProject(project.state.id);
+		idb.deleteProject(project.state.id);
+		const firstProject = projects.state.projects[0];
+		projects.activateProject(firstProject.name);
+		idb.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
+			if (!textureFile) {
+				console.log('THERE IS NO CURRENT TEXTURE');
+				return;
+			}
+			const url = URL.createObjectURL(textureFile.imgFile);
+			if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
+		});
+	}
+
+	let deleteImageModalOpen = $state(false);
+	let imageToDeleteId = $state('');
+	/** @param {string} id*/
+	function confirmDeleteImg(id) {
+		imageToDeleteId = id;
+		deleteImageModalOpen = true;
+	}
+
+	function executeDeleteImg() {
+		if (!imageToDeleteId) return;
+
+		idb.deleteTexture(imageToDeleteId);
+		urls = urls.filter((url) => url.id !== imageToDeleteId);
+		imageToDeleteId = '';
+	}
 </script>
 
+<ConfirmationModal
+	isOpen={deleteProjectModalOpen}
+	title="Delete Project"
+	message="Are you sure you want to delete this project? This action cannot be undone."
+	confirmButtonText="Delete"
+	cancelButtonText="Cancel"
+	onConfirm={executeDeleteProject}
+	onCancel={() => (deleteProjectModalOpen = false)}
+/>
+<ConfirmationModal
+	isOpen={deleteImageModalOpen}
+	title="Delete Image"
+	message="Are you sure you want to delete this image? This action cannot be undone."
+	confirmButtonText="Delete"
+	cancelButtonText="Cancel"
+	onConfirm={executeDeleteImg}
+	onCancel={() => (deleteImageModalOpen = false)}
+/>
 <div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6">
 	<h1>Project Editor</h1>
 	<ChangeProjectDropdown />
-	<h1>Uploads</h1>
+	<h1>Gallery</h1>
 	<div class="imgs">
-		{#each urls as url}
-			<img src={url} alt="" class="history-img" />
+		{#each urls as { url, id, seed, fileName }}
+			<div style="{seed === 'user-upload' ? 'border: var(--purple)' : 'border: var(--green)'} solid 2px" class="history-img-container">
+				<img src={url} alt="" class="history-img" />
+                <div class="history-file-name">{fileName}</div>
+				<button class="delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
+			</div>
 		{/each}
 	</div>
 
-	<h1>Gens</h1>
+	<!-- <h1>Gens</h1>
 	{#if generate.state.cachedImgs.length === 0}
 		<div>No gens yet</div>
 	{/if}
 	<div class="imgs">
 		{#each generate.state.cachedImgs as gen}
 			{@const url = URL.createObjectURL(gen.imgBlob)}
-			<img src={url} alt="" class="history-img" />
+			<div>
+				<img src={url} alt="" class="history-img" />
+				<button class="delete-button">Delete</button>
+			</div>
 		{/each}
-	</div>
+	</div> -->
 	<div class="mb-4 flex w-full flex-col gap-1 text-xs">
 		<div>Current Project: {project.state.name}</div>
 		<button class="project-edit-buttons" onclick={createNewProject}>Create New Project</button>
-		<button class="project-edit-buttons" onclick={deleteProject}>Delete Project</button>
+		<button class="project-edit-buttons" onclick={confirmDeleteProject}>Delete Project</button>
 	</div>
 </div>
 
@@ -144,7 +204,16 @@
 	.imgs {
 		@apply mb-4 flex flex-wrap gap-2;
 	}
+	.history-img-container {
+		@apply flex-[0_0_47%] p-2 rounded-md;
+	}
+    .history-file-name {
+        word-break: break-word;
+        @apply text-xs;
+    }
 	.imgs img {
-		@apply w-[45%] flex-[0_0_30%];
+	}
+	.delete-button {
+		@apply mt-2 px-2 py-1 text-xs text-red-500;
 	}
 </style>

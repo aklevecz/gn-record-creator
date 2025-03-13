@@ -4,6 +4,7 @@
 	import generate from '$lib/generate.svelte';
 	import ThreeScene from '$lib/three';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -72,6 +73,14 @@
 		isMinimized;
 		threeScene.resize();
 	});
+
+	$effect(() => {
+		if (generate.state.status === 'succeeded') {
+			setTimeout(() => {
+				generate.setStatus('idle');
+			}, 1000);
+		}
+	});
 </script>
 
 <div class="h-[80vh]">
@@ -110,8 +119,7 @@
 			{/if}
 			{#if buttonView === 'ai'}
 				<div class="view">
-					{#if generate.state.status !== 'idle'}<div class="percent-bar-container">
-	
+					{#if generate.state.status !== 'idle'}<div transition:fade class="percent-bar-container">
 							<div class="percent-bar" style="width:{generate.state.percentage}%"></div>
 							<div class="generate-status">
 								{generatingMessages[generate.state.status] || generate.state.status}
@@ -151,7 +159,7 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-		@apply  bottom-10 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
+		@apply bottom-10 left-0 z-1 flex w-full flex-col items-center bg-[var(--primary-color)] py-3;
 	}
 
 	.buttons-container.minimized {
@@ -175,7 +183,7 @@
 	}
 
 	.generate-status {
-		@apply bg-[var(--primary-color)] text-center text-sm font-bold mt-1;
+		@apply mt-1 bg-[var(--primary-color)] text-center text-sm font-bold;
 	}
 
 	button.generating {
@@ -187,7 +195,7 @@
 	}
 
 	.percent-bar-container {
-		@apply fixed top-10 m-2 h-4 w-3/4 border-[var(--secondary-color)] bg-white;
+		@apply fixed top-15 m-2 h-4 w-3/4 border-[var(--secondary-color)] bg-white;
 	}
 
 	.percent-bar {
@@ -196,7 +204,7 @@
 	}
 
 	.history-container {
-		@apply grid grid-cols-3 p-2 gap-2;
+		@apply grid grid-cols-3 gap-2 p-2;
 	}
 
 	.history-img {
