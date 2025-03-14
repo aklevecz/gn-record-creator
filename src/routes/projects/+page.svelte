@@ -47,13 +47,13 @@
 		});
 	}
 
-	let lastTexture = $state(null);
+	let lastTexture = $state('/records/cosmic-black.png');
 
 	/** @type {{file: File, type: string}[]} */
 	let uploadedImgUrls = $state([]);
 	// /** @type {string[]} */
 	// let generatedImgUrls = $state([]);
-	/** @type {{url:string, id: string, seed:string, fileName: string}[]} */
+	/** @type {{url:string, id: string, seed:string, fileName: string, blob: Blob}[]} */
 	let urls = $state([]);
 	$effect(() => {
 		if (project.state.id) {
@@ -62,7 +62,21 @@
 					console.log(`Loading file ${texture.imgFile.name}`);
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 					const url = URL.createObjectURL(blobFromBuffer);
-					return { url, id: texture.id, seed: texture.seed, fileName: texture.fileName };
+					console.log(texture);
+					return {
+						url,
+						id: texture.id,
+						seed: texture.seed,
+						fileName: texture.fileName,
+						blob: texture.imgFile
+					};
+				});
+
+				idb.getTexture('last-texture').then((activeTexture) => {
+					if (activeTexture) {
+						const url = URL.createObjectURL(activeTexture.imgFile);
+                        lastTexture = url
+					}
 				});
 			});
 
@@ -136,6 +150,18 @@
 		urls = urls.filter((url) => url.id !== imageToDeleteId);
 		imageToDeleteId = '';
 	}
+
+	/** @param {Blob} blob */
+	function activateTexture(blob) {
+		idb.saveTexture({
+			imgFile: blob,
+			seed: 'user-upload',
+			id: 'last-texture',
+			projectId: 'active'
+		});
+        const url = URL.createObjectURL(blob);
+        lastTexture = url
+	}
 </script>
 
 <ConfirmationModal
@@ -167,15 +193,21 @@
 		>
 	</div>
 
-	<div class="flex flex-col gap-4 md:flex-row min-h-[80vh] md:pt-4">
-
-		<div class="project-container text- mb-4 flex w-full flex-col gap-1 md:pt-4 md:min-w-[200px] md:border-r-1 border-white">
-            <h1>Project Info</h1>
+	<div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
+		<div
+			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:border-r-1 md:pt-4"
+		>
+			<h1>Project Info</h1>
 			<div class="text-xl">{project.state.name}</div>
 			<div class="project-info-line">{project.state.details?.details.artist.value}</div>
-            <div class="project-info-line">{project.state.details?.details.label.value}</div>
-            <div class="project-info-line">{project.state.details?.details.record_color.value}</div>
-            <img src={`/records/${project.state.details?.details.record_color.value}.png`} alt="" class="w-40" />
+			<div class="project-info-line">{project.state.details?.details.label.value}</div>
+			<div class="project-info-line">{project.state.details?.details.record_color.value}</div>
+			<img
+				src={`/records/${project.state.details?.details.record_color.value || '/records/cosmic-black'}.png`}
+				alt=""
+				class="w-40 mx-auto my-2"
+			/>
+            <img class="pr-4 py-4" src={lastTexture} alt="current texture"/>
 			<div class="mt-4 flex gap-3 md:flex-col">
 				<button class="project-edit-buttons delete" onclick={confirmDeleteProject}
 					>Delete Project</button
@@ -186,13 +218,14 @@
 		<div class="gallery-container md:p-4">
 			<h1>Gallery</h1>
 			<div class="imgs">
-				{#each urls as { url, id, seed, fileName }}
+				{#each urls as { url, id, seed, fileName, blob }}
 					{@const isGenerated = seed !== 'user-upload'}
 					<div
 						style={isGenerated
 							? 'background-color: var(--purple);'
 							: 'background-color: var(--green);color:black;l'}
 						class="history-img-container flex flex-col"
+						onclick={() => activateTexture(blob)}
 					>
 						<img src={url} alt="" class="history-img" />
 						<div class="history-file-name">{fileName}</div>
@@ -237,11 +270,11 @@
 	}
 	.history-file-name {
 		word-break: break-word;
-		@apply text-xs my-1;
+		@apply my-1 text-xs;
 	}
 	.imgs img {
 	}
 	.delete-button {
-		@apply px-2 py-1 text-xs bg-red-500 text-[var(--secondary-color)] mt-auto mx-auto;
+		@apply mx-auto mt-auto bg-red-500 px-2 py-1 text-xs text-[var(--secondary-color)];
 	}
 </style>
