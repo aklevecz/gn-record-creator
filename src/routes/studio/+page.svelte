@@ -5,6 +5,7 @@
 	import generate from '$lib/generate.svelte';
 	import ThreeScene from '$lib/three';
 	import { onDestroy, onMount } from 'svelte';
+	import { Spring } from 'svelte/motion';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -30,20 +31,37 @@
 		if (browser) window.removeEventListener('resize', resizeThree);
 	});
 
+	const offScreenSpring = -30
+	const spring = new Spring(offScreenSpring, {
+		damping: 1.2,
+		stiffness: 0.1
+	});
 	$effect(() => {
 		if (generate.state.status === 'succeeded') {
+			spring.set(10);
+
 			setTimeout(() => {
+				spring.set(offScreenSpring);
 				generate.setStatus('idle');
-			}, 1000);
+			}, 3000);
 		}
 	});
 </script>
 
-<div class="h-[80vh] md:h-auto md:flex">
+<div class="h-[80vh] md:flex md:h-auto">
 	<div class="three-wrapper md:sticky md:top-0" class:minimized={isMinimized}>
 		<RecordDesigner {threeScene} loadCachedType="ai" />
 	</div>
 	<ButtonsContainer {threeScene} bind:isMinimized />
+	<div
+		style="bottom:{spring.current}%;"
+		class="absolute bottom-0 left-0 h-[258px] w-[200px]"
+	>
+		<div class="relative w-full h-ful">
+			<div class="absolute top-0 right-0 bg-white text-black p-4 rounded-lg">Sick!</div>
+			<img class="h-full w-full" src="/characters/spin-color.svg" alt="spin" />
+		</div>
+	</div>
 </div>
 
 <style lang="postcss">

@@ -75,7 +75,7 @@
 				idb.getTexture('last-texture').then((activeTexture) => {
 					if (activeTexture) {
 						const url = URL.createObjectURL(activeTexture.imgFile);
-                        lastTexture = url
+						lastTexture = url;
 					}
 				});
 			});
@@ -159,8 +159,8 @@
 			id: 'last-texture',
 			projectId: 'active'
 		});
-        const url = URL.createObjectURL(blob);
-        lastTexture = url
+		const url = URL.createObjectURL(blob);
+		lastTexture = url;
 	}
 </script>
 
@@ -195,19 +195,21 @@
 
 	<div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
 		<div
-			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:border-r-1 md:pt-4 md:flex-[0_1_auto]"
+			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4"
 		>
 			<h1>Project Info</h1>
 			<div class="text-xl">{project.state.name}</div>
 			<div class="project-info-line">{project.state.details?.details.artist.value}</div>
 			<div class="project-info-line">{project.state.details?.details.label.value}</div>
 			<div class="project-info-line">{project.state.details?.details.record_color.value}</div>
-			<img
-				src={`/records/${project.state.details?.details.record_color.value || 'cosmic-black'}.png`}
-				alt=""
-				class="w-40 my-2"
-			/>
-            <img class="w-40 pr-4 py-4" src={lastTexture} alt="current texture"/>
+			<div class="flex flex-row md:flex-col justify-between">
+				<img
+					src={`/records/${project.state.details?.details.record_color.value || 'cosmic-black'}.png`}
+					alt=""
+					class="my-2 w-40"
+				/>
+				<img class="w-40 py-4 pr-4" src={lastTexture} alt="current texture" />
+			</div>
 			<div class="mt-4 flex gap-3 md:flex-col">
 				<button class="project-edit-buttons delete" onclick={confirmDeleteProject}
 					>Delete Project</button
@@ -215,7 +217,7 @@
 			</div>
 		</div>
 
-		<div class="gallery-container md:p-4 md:flex-[1_0_70%]">
+		<div class="gallery-container md:flex-[1_0_70%] md:p-4">
 			<h1>Gallery</h1>
 			<div class="imgs">
 				{#each urls as { url, id, seed, fileName, blob }}
