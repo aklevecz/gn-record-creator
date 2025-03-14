@@ -6,6 +6,7 @@
     --primary-color: #1e1e1e;
     --secondary-color: rgb(236, 236, 234);
     --accent-color: var(--purple);
+    --third-color: var(--green);
 }
 
 body {
@@ -25,4 +26,3 @@ button {
     font-weight: bold;
     transition: background-color 500ms ease-in-out;
 }
-

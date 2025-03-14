@@ -1,4 +1,5 @@
 <script>
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import surveyApi from '$lib/api/survey';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
@@ -10,6 +11,7 @@
 	import { questions } from '$lib/survey.svelte';
 	import ThreeScene from '$lib/three';
 	import threeScenes from '$lib/three.svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	let threeScene = new ThreeScene();
 	threeScenes['form'] = threeScene;
@@ -29,10 +31,19 @@
 	// 	});
 	// });
 
+	function resizeThree() {
+		threeScene.resize();
+	}
+	onMount(() => {
+		if (browser) window.addEventListener('resize', resizeThree);
+	});
+
+	onDestroy(() => {
+		if (browser) window.removeEventListener('resize', resizeThree);
+	});
 </script>
 
-<div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6">
-	
+<div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6 md:mx-0">
 	<h1 class="text-2xl font-bold">Record Setup Form</h1>
 	<div class="text-xs">
 		Please fill out the following information so we can set up your project in our system, verify
@@ -52,18 +63,26 @@
 			{/if}
 		{/each}
 	</div>
-
-	<h2 class="mt-12 text-center text-2xl font-bold">DESIGN CREATOR</h2>
-	<RecordDesigner {threeScene} width="300px" height="300px" />
-
-	<Upload {threeScene} />
-	<!-- <div class="m-auto block p-0">
-		{#each Object.entries(survey.state.questions) as [key, question]}
-			<Question {key} label={question.label} options={question.options} />
-		{/each}
-	</div> -->
-	<div class="mt-20">
-		<div class="mb-2 text-center">All done?</div>
+	<div class=" md:fixed md:top-12 md:right-0">
+		<h2 class="mt-12 text-center text-2xl font-bold">Cover Creator</h2>
+		<div class="mx-auto block h-[90vw] w-[90vw] md:h-[75vh] md:w-[60vw]">
+			<RecordDesigner {threeScene} />
+		</div>
+		<Upload {threeScene} />
+	</div>
+	<div class="my-10">
+		<div class="text- mb-2 p-4">
+			Press submit if you have finished filling out all of the required info. You will be able to
+			edit things later.
+		</div>
 		<button onclick={submitInfo} class="mx-auto block text-2xl">Submit</button>
 	</div>
 </div>
+
+<style lang="postcss">
+	@reference "tailwindcss/theme";
+
+	.design-creator-container {
+		@apply fixed md:fixed md:top-0;
+	}
+</style>

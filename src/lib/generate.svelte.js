@@ -145,6 +145,7 @@ const createGenerateStore = () => {
 						cb(imgUrl);
 						// threeScene.updateMaterialTexture(URL.createObjectURL(blob))
 						await refreshAllGeneratedImgs();
+						generate.percentage = 0
 					});
 					clearInterval(interval);
 				} else if (data.status === 'failed') {

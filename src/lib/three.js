@@ -63,11 +63,13 @@ class ThreeScene {
 
 	/** @param {HTMLElement} container */
 	init(container) {
-		this.container = container
+		this.container = container;
 		this.width = container.clientWidth;
 		this.height = container.clientHeight;
 		this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 200000);
-		this.renderer = new THREE.WebGLRenderer({ antialias: true });
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		this.renderer.setClearColor(0x000000, 0);
+
 		this.renderer.pixelRatio = window.devicePixelRatio;
 
 		this.setupScene(container);
@@ -87,7 +89,7 @@ class ThreeScene {
 
 	/** @param {HTMLElement} container */
 	setupScene(container) {
-		this.scene.background = new THREE.Color(0x1e1e1e);
+		// this.scene.background = new THREE.Color(0x1e1e1e);
 
 		this.camera.position.set(45, 20, 0);
 		if (!this.renderer) {

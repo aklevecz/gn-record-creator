@@ -156,20 +156,52 @@
 	onConfirm={executeDeleteImg}
 	onCancel={() => (deleteImageModalOpen = false)}
 />
-<div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6">
+
+<div class="mx-auto mb-10 rounded-md p-3 px-6">
 	<h1>Project Editor</h1>
-	<ChangeProjectDropdown />
-	<h1>Gallery</h1>
-	<div class="imgs">
-		{#each urls as { url, id, seed, fileName }}
-			<div style="{seed === 'user-upload' ? 'border: var(--purple)' : 'border: var(--green)'} solid 2px" class="history-img-container">
-				<img src={url} alt="" class="history-img" />
-                <div class="history-file-name">{fileName}</div>
-				<button class="delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
-			</div>
-		{/each}
+	<div class="flex max-w-lg items-center gap-4 md:w-3/4">
+		<ChangeProjectDropdown />
+
+		<button class="text-xs md:w-[300px] md:text-base" onclick={createNewProject}
+			>Create Project</button
+		>
 	</div>
 
+	<div class="flex flex-col gap-4 md:flex-row min-h-[80vh] md:pt-4">
+
+		<div class="project-container text- mb-4 flex w-full flex-col gap-1 md:pt-4 md:min-w-[200px] md:border-r-1 border-white">
+            <h1>Project Info</h1>
+			<div class="text-xl">{project.state.name}</div>
+			<div class="project-info-line">{project.state.details?.details.artist.value}</div>
+            <div class="project-info-line">{project.state.details?.details.label.value}</div>
+            <div class="project-info-line">{project.state.details?.details.record_color.value}</div>
+            <img src={`/records/${project.state.details?.details.record_color.value}.png`} alt="" class="w-40" />
+			<div class="mt-4 flex gap-3 md:flex-col">
+				<button class="project-edit-buttons delete" onclick={confirmDeleteProject}
+					>Delete Project</button
+				>
+			</div>
+		</div>
+
+		<div class="gallery-container md:p-4">
+			<h1>Gallery</h1>
+			<div class="imgs">
+				{#each urls as { url, id, seed, fileName }}
+					{@const isGenerated = seed !== 'user-upload'}
+					<div
+						style={isGenerated
+							? 'background-color: var(--purple);'
+							: 'background-color: var(--green);color:black;l'}
+						class="history-img-container flex flex-col"
+					>
+						<img src={url} alt="" class="history-img" />
+						<div class="history-file-name">{fileName}</div>
+						<button class="delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
+					</div>
+				{/each}
+			</div>
+		</div>
+	</div>
 	<!-- <h1>Gens</h1>
 	{#if generate.state.cachedImgs.length === 0}
 		<div>No gens yet</div>
@@ -183,20 +215,16 @@
 			</div>
 		{/each}
 	</div> -->
-	<div class="mb-4 flex w-full flex-col gap-1 text-xs">
-		<div>Current Project: {project.state.name}</div>
-		<button class="project-edit-buttons" onclick={createNewProject}>Create New Project</button>
-		<button class="project-edit-buttons" onclick={confirmDeleteProject}>Delete Project</button>
-	</div>
 </div>
 
 <style lang="postcss">
 	@reference "tailwindcss/theme";
 
 	.project-edit-buttons {
-		padding: 2px 8px;
-		width: 150px;
-		@apply text-xs;
+		@apply mr-auto text-base;
+	}
+	button.delete {
+		@apply text-xs text-red-500;
 	}
 	h1 {
 		@apply mb-1 text-xl font-bold;
@@ -205,15 +233,15 @@
 		@apply mb-4 flex flex-wrap gap-2;
 	}
 	.history-img-container {
-		@apply flex-[0_0_47%] p-2 rounded-md;
+		@apply flex-[0_0_47%] rounded-md p-2 md:flex-[0_0_23%];
 	}
-    .history-file-name {
-        word-break: break-word;
-        @apply text-xs;
-    }
+	.history-file-name {
+		word-break: break-word;
+		@apply text-xs my-1;
+	}
 	.imgs img {
 	}
 	.delete-button {
-		@apply mt-2 px-2 py-1 text-xs text-red-500;
+		@apply px-2 py-1 text-xs bg-red-500 text-[var(--secondary-color)] mt-auto mx-auto;
 	}
 </style>

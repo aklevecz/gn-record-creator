@@ -33,17 +33,17 @@ export const questions = {
 	record_color: {
 		label: 'Whats your favorite color?',
 		options: [
-			{ img: 'records/cosmic-black.png', text: 'cosmic black' },
-			{ img: 'records/purple-haze.png', text: 'purple haze' },
-			{ img: 'records/ocean-floor.png', text: 'ocean floor' },
-			{ img: 'records/sky-blue.png', text: 'sky blue' },
-			{ img: 'records/salsa-verde.png', text: 'salsa verde' },
+			{ img: 'records/cosmic-black.png', text: 'cosmic-black' },
+			{ img: 'records/purple-haze.png', text: 'purple-haze' },
+			{ img: 'records/ocean-floor.png', text: 'ocean-floor' },
+			{ img: 'records/sky-blue.png', text: 'sky-blue' },
+			{ img: 'records/salsa-verde.png', text: 'salsa-verde' },
 			{ img: 'records/limoncello.png', text: 'limoncello' },
 			{ img: 'records/habanero.png', text: 'habanero' },
-			{ img: 'records/red-alert.png', text: 'red alert' },
+			{ img: 'records/red-alert.png', text: 'red-alert' },
 			{ img: 'records/hibiscus.png', text: 'hibiscus' },
 			{ img: 'records/lightning.png', text: 'lightning' },
-			{ img: 'records/glassy-ice.png', text: 'glassy ice' }
+			{ img: 'records/glassy-ice.png', text: 'glassy-ice' }
 		]
 	},
 	lacquers: {
