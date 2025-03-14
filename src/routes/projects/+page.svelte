@@ -195,7 +195,7 @@
 
 	<div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
 		<div
-			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:border-r-1 md:pt-4"
+			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:border-r-1 md:pt-4 md:flex-[0_1_auto]"
 		>
 			<h1>Project Info</h1>
 			<div class="text-xl">{project.state.name}</div>
@@ -215,7 +215,7 @@
 			</div>
 		</div>
 
-		<div class="gallery-container md:p-4 md:flex-[1_0_50%]">
+		<div class="gallery-container md:p-4 md:flex-[1_0_70%]">
 			<h1>Gallery</h1>
 			<div class="imgs">
 				{#each urls as { url, id, seed, fileName, blob }}
