@@ -175,7 +175,7 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-		@apply bottom-10 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3;
+		@apply fixed bottom-0 md:static md:bottom-10 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3;
 	}
 
 	.buttons-container.minimized {
