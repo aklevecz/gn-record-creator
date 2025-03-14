@@ -203,11 +203,11 @@
 			<div class="project-info-line">{project.state.details?.details.label.value}</div>
 			<div class="project-info-line">{project.state.details?.details.record_color.value}</div>
 			<img
-				src={`/records/${project.state.details?.details.record_color.value || '/records/cosmic-black'}.png`}
+				src={`/records/${project.state.details?.details.record_color.value || 'cosmic-black'}.png`}
 				alt=""
-				class="w-40 mx-auto my-2"
+				class="w-40 my-2"
 			/>
-            <img class="pr-4 py-4" src={lastTexture} alt="current texture"/>
+            <img class="w-40 pr-4 py-4" src={lastTexture} alt="current texture"/>
 			<div class="mt-4 flex gap-3 md:flex-col">
 				<button class="project-edit-buttons delete" onclick={confirmDeleteProject}
 					>Delete Project</button
@@ -215,7 +215,7 @@
 			</div>
 		</div>
 
-		<div class="gallery-container md:p-4">
+		<div class="gallery-container md:p-4 md:flex-[1_0_50%]">
 			<h1>Gallery</h1>
 			<div class="imgs">
 				{#each urls as { url, id, seed, fileName, blob }}
