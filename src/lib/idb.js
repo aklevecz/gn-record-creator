@@ -52,6 +52,10 @@ class IDBStorage {
 				if (!db.objectStoreNames.contains(this.stores.textures)) {
 					const textureStore = db.createObjectStore(this.stores.textures, { keyPath: 'id' });
 					textureStore.createIndex('projectId', 'projectId', { unique: false });
+					textureStore.createIndex('fileHash', 'fileHash', { unique: false });
+					textureStore.createIndex('fileHash_projectId', ['fileHash', 'projectId'], {
+						unique: false
+					});
 				}
 
 				if (!db.objectStoreNames.contains(this.stores.generatedImgs)) {
@@ -82,6 +86,7 @@ class IDBStorage {
 	 *   id: string,
 	 *   projectId: string
 	 *   fileName?: string
+	 *   fileHash?: string
 	 * }} entry
 	 */
 	async saveTexture(entry) {
@@ -90,7 +95,8 @@ class IDBStorage {
 			projectId: entry.projectId,
 			fileName: entry.fileName || (entry.imgFile instanceof File ? entry.imgFile.name : 'texture'),
 			fileType: entry.imgFile.type,
-			arrayBuffer: entry.imgFile instanceof Blob ? await entry.imgFile.arrayBuffer() : entry.imgFile,
+			arrayBuffer:
+				entry.imgFile instanceof Blob ? await entry.imgFile.arrayBuffer() : entry.imgFile,
 			lastModified: Date.now()
 		});
 	}
@@ -98,6 +104,61 @@ class IDBStorage {
 	/** @param {string} id */
 	async getTexture(id) {
 		return this.get(this.stores.textures, id);
+	}
+
+	/**
+	 * Fetches a texture by its hash
+	 * @param {string} fileHash - The hash of the file to search for
+	 * @param {string} [projectId] - Optional project ID to limit the search scope
+	 * @returns {Promise<any|null>} A promise that resolves to the texture or null if not found
+	 */
+	async getTextureByHash(fileHash, projectId = '') {
+		await this.init();
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction(this.stores.textures, 'readonly');
+			const store = transaction.objectStore(this.stores.textures);
+
+			let request;
+
+			if (projectId) {
+				// Use the composite index if projectId is provided
+				const index = store.index('fileHash_projectId');
+				request = index.get([fileHash, projectId]);
+			} else {
+				// Use just the hash index if no projectId
+				const index = store.index('fileHash');
+				request = index.get(fileHash);
+			}
+
+			request.onerror = () => {
+				reject(new Error(`Error fetching texture by hash: ${fileHash}`));
+			};
+
+			request.onsuccess = () => {
+				resolve(request.result || null);
+			};
+		});
+	}
+
+	/**
+	 * Check if a texture with the given hash already exists
+	 * @param {string} fileHash - The hash to check
+	 * @param {string} [projectId] - Optional project ID to limit the search scope
+	 * @returns {Promise<boolean>} - True if a texture with this hash exists
+	 */
+	async textureHashExists(fileHash, projectId = '') {
+		try {
+			const texture = await this.getTextureByHash(fileHash, projectId);
+			return !!texture;
+		} catch (error) {
+			console.error('Error checking texture hash:', error);
+			return false;
+		}
 	}
 
 	async getAllTextures() {
@@ -156,7 +217,7 @@ class IDBStorage {
 			const request = store.getAll();
 
 			request.onerror = () => {
-				reject(new Error('Error fetching models'));	
+				reject(new Error('Error fetching models'));
 			};
 
 			request.onsuccess = () => {

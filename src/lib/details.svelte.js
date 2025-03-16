@@ -1,4 +1,6 @@
+import { colors } from '$lib';
 import project from './project.svelte';
+import { toCamelCase } from './utils';
 
 /** @type {Record<string, Detail>} */
 const detailsDict = {
@@ -152,6 +154,14 @@ const createDetails = () => {
 		},
 		/** @param {string} key @param {string} value */
 		setValue(key, value) {
+			if (key === 'record_color') {
+				const colorHex = colors[toCamelCase(value)];
+				const changeRecordColorEvent = new CustomEvent('change-record-color', {
+					detail: { color: colorHex }
+				});
+
+				window.dispatchEvent(changeRecordColorEvent);
+			}
 			details.details[key].value = value;
 			project.updateDetails(details);
 		},

@@ -31,7 +31,7 @@
 		if (browser) window.removeEventListener('resize', resizeThree);
 	});
 
-	const offScreenSpring = -30
+	const offScreenSpring = -100
 	const spring = new Spring(offScreenSpring, {
 		damping: 1.2,
 		stiffness: 0.1

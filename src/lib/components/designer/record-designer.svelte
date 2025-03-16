@@ -1,6 +1,6 @@
 <script>
 	import { browser } from '$app/environment';
-	import { CURRENT_TEXTURE } from '$lib';
+	import { allCharacterAssets, CURRENT_TEXTURE } from '$lib';
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
@@ -37,6 +37,9 @@
 								.then((textureFile) => {
 									if (!textureFile) {
 										console.log('THERE IS NO CURRENT TEXTURE');
+										const randomCharacterAsset = allCharacterAssets[
+											Math.floor(Math.random() * allCharacterAssets.length)]
+										threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
 										return;
 									}
 									const url = URL.createObjectURL(textureFile.imgFile);

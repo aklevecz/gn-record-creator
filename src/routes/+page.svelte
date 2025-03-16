@@ -9,9 +9,11 @@
 	import details from '$lib/details.svelte';
 	import project from '$lib/project.svelte';
 	import { questions } from '$lib/survey.svelte';
-	import ThreeScene from '$lib/three';
+	import ThreeScene from '$lib/ThreeScene';
 	import threeScenes from '$lib/three.svelte';
 	import { onDestroy, onMount } from 'svelte';
+
+	import mondayClientApi from '$lib/api/monday';
 
 	let threeScene = new ThreeScene();
 	threeScenes['form'] = threeScene;
@@ -21,8 +23,9 @@
 		const detailResponses = details.remapDetails();
 		// console.log(project.state.id);
 		// console.log(project.state)
-		surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
-		goto(`/submission/${project.state.id}`);
+		// surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		// goto(`/submission/${project.state.id}`);
 	}
 
 	// onMount(() => {
@@ -41,9 +44,13 @@
 	onDestroy(() => {
 		if (browser) window.removeEventListener('resize', resizeThree);
 	});
+
+	$effect(() => {
+		// console.log(project.state)
+	})
 </script>
 
-<div class="mx-auto mb-10 max-w-[570px] rounded-md p-3 px-6 md:mx-0">
+<div class="mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0">
 	<h1 class="text-2xl font-bold">Record Setup Form</h1>
 	<div class="text-xs">
 		Please fill out the following information so we can set up your project in our system, verify
@@ -65,7 +72,7 @@
 	</div>
 	<div class=" md:fixed md:top-12 md:right-0">
 		<h2 class="mt-12 text-center text-2xl font-bold">Cover Creator</h2>
-		<div class="mx-auto block h-[90vw] w-[90vw] md:h-[75vh] md:w-[60vw]">
+		<div class="mx-auto block h-[90vw] w-[90vw] md:h-[65vh] md:w-[60vw]">
 			<RecordDesigner {threeScene} />
 		</div>
 		<Upload {threeScene} />

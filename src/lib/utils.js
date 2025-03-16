@@ -1,3 +1,5 @@
+import idb from "./idb";
+
 /** @param {string} imageUrl */
 export async function fetchImageAsBase64(imageUrl) {
 	try {
@@ -225,3 +227,45 @@ export const cropImageToSquare = (file) => {
 // 		img.src = URL.createObjectURL(file);
 // 	});
 // };
+
+/** @param {string} hyphenatedString */
+export function toCamelCase(hyphenatedString) {
+	return hyphenatedString.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+}
+
+/**
+ * Calculate a SHA-256 hash of a file
+ * @param {File | Blob} file - The file to hash
+ * @returns {Promise<string>} - A hex string representation of the hash
+ */
+export const calculateFileHash = async (file) => {
+	// Read the file as an ArrayBuffer
+	const arrayBuffer = await file.arrayBuffer();
+
+	// Calculate the hash using the Web Crypto API
+	const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+
+	// Convert the hash to a hex string
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+	return hashHex;
+};
+
+/**
+ * Check if a file with the given hash already exists in storage
+ * @param {string} hash - The file hash to check
+ * @param {string} projectId - The current project ID
+ * @returns {Promise<boolean>} - True if the file already exists
+ */
+export const fileHashExists = async (hash, projectId) => {
+	// You'll need to implement this based on your storage system
+	// For IndexedDB, you might add a hash field to your texture records
+	try {
+		const existingFile = await idb.getTextureByHash(hash, projectId);
+		return !!existingFile;
+	} catch (error) {
+		console.error('Error checking file hash:', error);
+		return false;
+	}
+};

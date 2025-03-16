@@ -1,15 +1,14 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
+	import Detail from '$lib/components/form/detail.svelte';
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
 	import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
 	import details from '$lib/details.svelte';
-	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
 	import project, { createProject } from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
 	import survey from '$lib/survey.svelte';
 	import threeScenes from '$lib/three.svelte';
-	import { onMount } from 'svelte';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -55,14 +54,16 @@
 	// let generatedImgUrls = $state([]);
 	/** @type {{url:string, id: string, seed:string, fileName: string, blob: Blob}[]} */
 	let urls = $state([]);
+
+    let currentProjectId = $state('');
 	$effect(() => {
-		if (project.state.id) {
+		if (project.state.id && project.state.id !== currentProjectId) {
+            currentProjectId = project.state.id;
+            console.log("rerender")
 			idb.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
 				urls = cachedTextures.map((texture) => {
-					console.log(`Loading file ${texture.imgFile.name}`);
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 					const url = URL.createObjectURL(blobFromBuffer);
-					console.log(texture);
 					return {
 						url,
 						id: texture.id,
@@ -198,11 +199,18 @@
 			class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4"
 		>
 			<h1>Project Info</h1>
-			<div class="text-xl">{project.state.name}</div>
+			<!-- <div class="text-xl">{project.state.name}</div> -->
+			<div class='pr-4 mb-2'>
+				<Detail
+					label="Project Name"
+					key="project_name"
+					description=""
+				/>
+			</div>
 			<div class="project-info-line">{project.state.details?.details.artist.value}</div>
 			<div class="project-info-line">{project.state.details?.details.label.value}</div>
 			<div class="project-info-line">{project.state.details?.details.record_color.value}</div>
-			<div class="flex flex-row md:flex-col justify-between">
+			<div class="flex flex-row justify-between md:flex-col">
 				<img
 					src={`/records/${project.state.details?.details.record_color.value || 'cosmic-black'}.png`}
 					alt=""

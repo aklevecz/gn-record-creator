@@ -31,7 +31,6 @@ const createProjects = () => {
 			const allProjects = await idb.getAllProjects();
 			let defaultProject = null;
 			if (allProjects.length) {
-				console.log('REGISTER EXSTING');
 				defaultProject = allProjects[0];
 				project.set(defaultProject);
 				// this.registerProject(defaultProject)
@@ -43,7 +42,6 @@ const createProjects = () => {
 					this.registerProject(cachedProject);
 				}
 			} else {
-				console.log('REGISTER NEW');
 				defaultProject = project.create({
 					name: 'default',
 					details: { ...details.state },

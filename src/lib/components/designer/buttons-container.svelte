@@ -117,7 +117,7 @@
 	</div>
 	{#if !isMinimized}
 		{#if buttonView === 'upload'}
-			<div class="p-12 pb-4">Press the button or drag an image onto it to upload</div>
+			<div class="px-12 py-4">Press the button or drag an image onto it to upload</div>
 			<Upload {threeScene} />
 		{/if}
 		{#if buttonView === 'ai'}
@@ -175,6 +175,7 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
+        max-width: 600px;
 		@apply fixed bottom-0 md:static md:bottom-10 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3;
 	}
 

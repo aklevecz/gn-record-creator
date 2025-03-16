@@ -65,6 +65,19 @@
  * @property {string} prompt
  */
 
+/** 
+ * @typedef Pricing
+ * @property {string} record_color
+ * @property {number} total_units
+ * @property {number} records_per_set
+ * @property {string} record_format
+ * @property {string} lacquers
+ * @property {string} metalwork
+ * @property {number} test_prints
+ * @property {string} packaging
+ * @property {number} estimatedCost
+ */
+
 /**
  * @typedef {Object} Project
  * @property {string} id
@@ -72,6 +85,7 @@
  * @property {Date} createdAt
  * @property {Details | null} details
  * @property {Survey | null} survey
+ * @property {Pricing} pricing
  */
 
 /**

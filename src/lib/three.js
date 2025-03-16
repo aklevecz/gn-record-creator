@@ -1,3 +1,4 @@
+import { colors } from '$lib';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
@@ -6,7 +7,7 @@ class ThreeScene {
 	constructor() {
 		console.log('THREE CONSTRUCTION');
 		/** @type {HTMLElement | null} */
-		this.container = null
+		this.container = null;
 		this.width = 0;
 		this.height = 0;
 		this.scene = new THREE.Scene();
@@ -54,11 +55,8 @@ class ThreeScene {
 		this.toggleShader = this.toggleShader.bind(this);
 		this.createShaderMaterial = this.createShaderMaterial.bind(this);
 
-		this.handleModelUpload = this.handleModelUpload.bind(this);
 		this.handleTextureUpload = this.handleTextureUpload.bind(this);
-		this.loadModel = this.loadModel.bind(this);
 		this.animate = this.animate.bind(this);
-		this.onWindowResize = this.onWindowResize.bind(this);
 	}
 
 	/** @param {HTMLElement} container */
@@ -74,17 +72,16 @@ class ThreeScene {
 
 		this.setupScene(container);
 
-		const record = this.createVinylRecord();
-		record.position.set(0, 20, 0);
-		record.rotation.x = -Math.PI / 2;
-		record.rotation.z = Math.PI / 2;
-		this.scene.add(record);
+		// this.createVinylRecord();
 
 		this.createRecordCover();
 
 		this.addLights();
 
 		window.addEventListener('resize', () => this.onWindowResize(), false);
+		window.addEventListener('change-record-color', (/** @type {*} */ e) => {
+			this.changeRecordColor(e.detail.color);
+		});
 	}
 
 	/** @param {HTMLElement} container */
@@ -135,59 +132,82 @@ class ThreeScene {
 		};
 	}
 
-	/** @param {string} modelUrl */
-	loadModel(modelUrl) {
-		console.log(`Loading model: ${modelUrl}`);
-		const loader = new FBXLoader();
-
-		if (this.model) {
-			console.log('remove model');
-			this.removeModel();
-		}
-
-		loader.load(
-			modelUrl,
-			(object) => {
-				this.model = object;
-				this.model.traverse((child) => {
-					// @ts-ignore
-					child.material = this.materials.standard.clone();
-				});
-
-				this.scene.add(object);
-				this.adjustCameraToModel(object);
-				this.loadedModels.push(object);
-			},
-			(xhr) => console.log((xhr.loaded / xhr.total) * 100 + '% loaded'),
-			(error) => console.error('Error loading FBX:', error)
-		);
-	}
-
-	removeModel() {
-		if (this.model) {
-			this.scene.remove(this.model);
-			this.loadedModels = this.loadedModels.filter(
-				(/** @type {THREE.Object3D} */ m) => m !== this.model
-			);
-			this.model = null;
+	/** @param {*} color */
+	changeRecordColor(color) {
+		if (this.record) {
+			this.record.material.color = new THREE.Color(color);
 		}
 	}
 
-	/** @param {Event} event */
-	handleModelUpload(event) {
-		// const file = event.target.files[0];
-		// modelStorage.saveModel(file);
-		// if (file) {
-		//   const reader = new FileReader();
-		//   reader.onload = (e) => {
-		//     if (e.target?.result) {
-		//       const blob = new Blob([e.target.result], { type: "application/octet-stream" });
-		//       const blobUrl = URL.createObjectURL(blob);
-		//       this.loadModel(blobUrl);
-		//     }
-		//   };
-		//   reader.readAsArrayBuffer(file);
-		// }
+	createVinylRecord() {
+		// Create a group to hold all parts of the record
+		this.vinylRecord = new THREE.Group();
+
+		// Record disc - main black part
+		const recordGeometry = new THREE.CylinderGeometry(5.9, 5.9, 0.08, 64);
+		const recordMaterial = new THREE.MeshStandardMaterial({
+			color: 0xfff,
+			roughness: 0.5,
+			metalness: 0.2
+		});
+		this.record = new THREE.Mesh(recordGeometry, recordMaterial);
+		this.vinylRecord.add(this.record);
+
+		// Label in the center
+		const labelGeometry = new THREE.CylinderGeometry(2, 2, 0.09, 64);
+		const labelMaterial = new THREE.MeshStandardMaterial({
+			color: 0xeeeeee,
+			roughness: 0.8,
+			metalness: 0.1
+		});
+		const label = new THREE.Mesh(labelGeometry, labelMaterial);
+		label.position.y = 0.005;
+		this.vinylRecord.add(label);
+
+		// Center hole
+		const holeGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 32);
+		const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+		const hole = new THREE.Mesh(holeGeometry, holeMaterial);
+		this.vinylRecord.add(hole);
+
+		// Create grooves as rings
+		this.addGrooves(this.vinylRecord);
+
+		this.vinylRecord.position.set(0, 20, 0);
+		this.vinylRecord.rotation.x = -Math.PI / 2;
+		this.vinylRecord.rotation.z = Math.PI / 2;
+		this.scene.add(this.vinylRecord);
+
+		this.vinylRecordAnimation = {
+			startTime: 0,
+			duration: 2000,
+			startPosition: { x: 0, y: 20, z: 0 },
+			endPosition: { x: 0, y: 29, z: 0 },
+			active: true
+		};
+	}
+
+	/** @param {THREE.Group} recordGroup */
+	addGrooves(recordGroup) {
+		const startRadius = 2.2;
+		const endRadius = 5.8;
+		const numGrooves = 80;
+		const spacing = (endRadius - startRadius) / numGrooves;
+
+		for (let i = 0; i < numGrooves; i++) {
+			const radius = startRadius + i * spacing;
+			const grooveGeometry = new THREE.RingGeometry(radius, radius + 0.02, 64);
+			const grooveMaterial = new THREE.MeshBasicMaterial({
+				color: 0x000000,
+				side: THREE.DoubleSide,
+				transparent: true,
+				opacity: 0.3
+			});
+			const groove = new THREE.Mesh(grooveGeometry, grooveMaterial);
+			groove.rotation.x = Math.PI / 2;
+			groove.position.y = 0.041;
+			recordGroup.add(groove);
+		}
 	}
 
 	/** @param {THREE.Object3D} object */
@@ -252,26 +272,20 @@ class ThreeScene {
 		}
 	}
 
-	onWindowResize() {
-		// this.camera.aspect = window.innerWidth / window.innerHeight;
-		// this.camera.updateProjectionMatrix();
-		// this.renderer.setSize(window.innerWidth, window.innerHeight);
-	}
-
 	resize() {
 		if (!this.container) {
-			console.log("Container missing for resize")
-			return
+			console.log('Container missing for resize');
+			return;
 		}
 		if (!this.renderer) {
-			console.log("Renderer is missing")
-			return
+			console.log('Renderer is missing');
+			return;
 		}
 		this.width = this.container.clientWidth;
 		this.height = this.container.clientHeight;
 		this.camera.aspect = this.width / this.height;
 		this.camera.updateProjectionMatrix();
-		this.renderer.setSize(this.width , this.height);
+		this.renderer.setSize(this.width, this.height);
 	}
 
 	/** @param {number} x */
@@ -281,9 +295,38 @@ class ThreeScene {
 	animate() {
 		requestAnimationFrame(() => this.animate());
 
+		this.runInitialRecordAnimation();
+
 		if (this.useShader && this.shaderMaterial) {
 			this.shaderTime += 0.01;
 			this.shaderMaterial.uniforms.time.value = this.shaderTime;
+		}
+
+		if (this.mixer) this.mixer.update(this.clock.getDelta());
+
+		this.controls && this.controls.update();
+		this.renderer && this.renderer.render(this.scene, this.camera);
+	}
+
+	runInitialRecordAnimation() {
+		if (this.vinylRecord && this.vinylRecordAnimation && this.vinylRecordAnimation.active) {
+			if (!this.vinylRecordAnimation.startTime) {
+				this.vinylRecordAnimation.startTime = Date.now();
+			}
+
+			const elapsed = Date.now() - this.vinylRecordAnimation.startTime;
+			const progress = Math.min(elapsed / this.vinylRecordAnimation.duration, 1);
+
+			const easedProgress = this.easeOutCubic(progress);
+
+			this.vinylRecord.position.y =
+				this.vinylRecordAnimation.startPosition.y +
+				(this.vinylRecordAnimation.endPosition.y - this.vinylRecordAnimation.startPosition.y) *
+					easedProgress;
+
+			if (progress === 1) {
+				this.vinylRecordAnimation.active = false;
+			}
 		}
 
 		if (this.recordCover && this.recordCoverAnimation && this.recordCoverAnimation.active) {
@@ -309,85 +352,9 @@ class ThreeScene {
 			// End animation when complete
 			if (progress === 1) {
 				this.recordCoverAnimation.active = false;
+				// this.vinylRecordAnimation.active = true;
+				this.createVinylRecord();
 			}
-		}
-
-		if (this.mixer) this.mixer.update(this.clock.getDelta());
-
-		this.controls && this.controls.update();
-		this.renderer && this.renderer.render(this.scene, this.camera);
-	}
-
-	/** @param {string} modelId */
-	async loadModelById(modelId) {
-		// const modelObject = await modelStorage.getModel(modelId);
-		// if (!modelObject) {
-		//   console.error(`Model not found: ${modelId}`);
-		//   return;
-		// }
-		// const blob = new Blob([modelObject.data]);
-		// const blobUrl = URL.createObjectURL(blob);
-		// console.log(`blobUrl: ${blobUrl}`);
-		// this.loadModel(blobUrl);
-	}
-
-	createVinylRecord() {
-		// Create a group to hold all parts of the record
-		const recordGroup = new THREE.Group();
-
-		// Record disc - main black part
-		const recordGeometry = new THREE.CylinderGeometry(5.9, 5.9, 0.08, 64);
-		const recordMaterial = new THREE.MeshStandardMaterial({
-			color: 0xfff,
-			roughness: 0.5,
-			metalness: 0.2
-		});
-		const record = new THREE.Mesh(recordGeometry, recordMaterial);
-		recordGroup.add(record);
-
-		// Label in the center
-		const labelGeometry = new THREE.CylinderGeometry(2, 2, 0.09, 64);
-		const labelMaterial = new THREE.MeshStandardMaterial({
-			color: 0xeeeeee,
-			roughness: 0.8,
-			metalness: 0.1
-		});
-		const label = new THREE.Mesh(labelGeometry, labelMaterial);
-		label.position.y = 0.005;
-		recordGroup.add(label);
-
-		// Center hole
-		const holeGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 32);
-		const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-		const hole = new THREE.Mesh(holeGeometry, holeMaterial);
-		recordGroup.add(hole);
-
-		// Create grooves as rings
-		this.addGrooves(recordGroup);
-
-		return recordGroup;
-	}
-
-	/** @param {THREE.Group} recordGroup */
-	addGrooves(recordGroup) {
-		const startRadius = 2.2;
-		const endRadius = 5.8;
-		const numGrooves = 80;
-		const spacing = (endRadius - startRadius) / numGrooves;
-
-		for (let i = 0; i < numGrooves; i++) {
-			const radius = startRadius + i * spacing;
-			const grooveGeometry = new THREE.RingGeometry(radius, radius + 0.02, 64);
-			const grooveMaterial = new THREE.MeshBasicMaterial({
-				color: 0x000000,
-				side: THREE.DoubleSide,
-				transparent: true,
-				opacity: 0.3
-			});
-			const groove = new THREE.Mesh(grooveGeometry, grooveMaterial);
-			groove.rotation.x = Math.PI / 2;
-			groove.position.y = 0.041;
-			recordGroup.add(groove);
 		}
 	}
 

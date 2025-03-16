@@ -6,7 +6,7 @@
 	import uploadApi from '$lib/api/upload';
 	import ThreeScene from '$lib/three';
 
-	import { cropImageToSquare } from '$lib/utils';
+	import { calculateFileHash, cropImageToSquare, fileHashExists } from '$lib/utils';
 
 	let {
 		multiple = false,
@@ -55,10 +55,21 @@
 		}
 
 		try {
+			const projectId = projects.activeProject?.id || 'no-project-id-found';
+
 			const croppedFile = await cropImageToSquare(selectedFile);
 
 			const url = URL.createObjectURL(croppedFile);
 			threeScene.updateMaterialTexture(url);
+
+			const fileHash = await calculateFileHash(croppedFile);
+
+			const isDuplicate = await fileHashExists(fileHash, projectId);
+			if (isDuplicate) {
+				console.log(`File "${selectedFile.name}" has already been uploaded`)
+				return false;
+			}
+
 			// const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`;
 			const textureId = `${projects.activeProject?.id}-${CURRENT_TEXTURE}`;
 			// Save the file itself to IDB
@@ -67,8 +78,9 @@
 				seed: 'user-upload', // Or whatever metadata you want
 				// id: textureId,
 				fileName: selectedFile.name,
-				id: selectedFile.name,
-				projectId: projects.activeProject?.id || 'no-project-id-found'
+				id: selectedFile.name + '_' + Date.now(),
+				projectId: projects.activeProject?.id || 'no-project-id-found',
+				fileHash
 			});
 
 			idb.saveTexture({
@@ -130,15 +142,6 @@
 	};
 </script>
 
-<svelte:head>
-	<style>
-		.drag-active {
-			border-color: #4299e1 !important;
-			background-color: rgba(66, 153, 225, 0.1) !important;
-		}
-	</style>
-</svelte:head>
-<!-- Preview section -->
 {#if previewEnabled && files.length > 0}
 	<div class="preview-container">
 		<div class="preview-grid">
@@ -170,7 +173,7 @@
 		</div>
 	</div>
 {/if}
-<div class="image-uploader">
+<div class="image-uploader md:flex-col">
 	<!-- @ts-ignore -->
 	<div
 		class="dropzone {isDragging ? 'drag-active' : ''}"
@@ -207,10 +210,12 @@
 			<p>
 				{isDragging ? 'Drop images here' : 'Upload image'}
 			</p>
+
 			<!-- <span class="hint">
 				Max size: {maxSizeMB}MB | {multiple ? 'Multiple files allowed' : 'Single file only'}
 			</span> -->
 		</div>
+		<div class="desk-cta">Click or drag and drop to upload</div>
 	</div>
 	<!-- Error message display -->
 	{#if errorMessage}
@@ -220,12 +225,20 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
+	@reference "tailwindcss/theme";
+
+	.drag-active {
+		border-color: #4299e1 !important;
+		background-color: rgb(255, 255, 69) !important;
+	}
+
 	.image-uploader {
 		font-family:
 			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
 			'Helvetica Neue', sans-serif;
-		margin-bottom: 1rem;
+		color: black;
+		font-weight: 500;
 	}
 
 	.dropzone {
@@ -238,6 +251,7 @@
 		cursor: pointer;
 		transition: all 0.2s ease;
 		background-color: #f7fafc;
+		@apply flex flex-col items-center justify-center md:h-[89px] md:w-[290px];
 	}
 
 	.dropzone:hover {
@@ -346,7 +360,15 @@
 		transition: background-color 0.2s;
 	}
 
+	.desk-cta {
+		@apply hidden md:block;
+	}
+
+	/* .desk-cta:hover {
+		@apply hidden;
+	}
+
 	.remove-button:hover {
 		background-color: rgba(0, 0, 0, 0.7);
-	}
+	} */
 </style>
