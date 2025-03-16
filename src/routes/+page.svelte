@@ -1,7 +1,5 @@
 <script>
 	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
-	import surveyApi from '$lib/api/survey';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import Detail from '$lib/components/form/detail.svelte';
 	import Question from '$lib/components/form/question.svelte';
@@ -9,11 +7,12 @@
 	import details from '$lib/details.svelte';
 	import project from '$lib/project.svelte';
 	import { questions } from '$lib/survey.svelte';
-	import ThreeScene from '$lib/ThreeScene';
 	import threeScenes from '$lib/three.svelte';
+	import ThreeScene from '$lib/ThreeScene';
 	import { onDestroy, onMount } from 'svelte';
 
 	import mondayClientApi from '$lib/api/monday';
+	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
 
 	let threeScene = new ThreeScene();
 	threeScenes['form'] = threeScene;
@@ -47,7 +46,7 @@
 
 	$effect(() => {
 		// console.log(project.state)
-	})
+	});
 </script>
 
 <div class="mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0">
@@ -70,13 +69,7 @@
 			{/if}
 		{/each}
 	</div>
-	<div class=" md:fixed md:top-12 md:right-0">
-		<h2 class="mt-12 text-center text-2xl font-bold">Cover Creator</h2>
-		<div class="mx-auto block h-[90vw] w-[90vw] md:h-[65vh] md:w-[60vw]">
-			<RecordDesigner {threeScene} />
-		</div>
-		<Upload {threeScene} />
-	</div>
+	<ThreeHomepage />
 	<div class="my-10">
 		<div class="text- mb-2 p-4">
 			Press submit if you have finished filling out all of the required info. You will be able to
