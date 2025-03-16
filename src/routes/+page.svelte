@@ -18,10 +18,10 @@
 		mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
 		// goto(`/submission/${project.state.id}`);
 	}
-
+	const ONE_MINUTE_MS = 60 * 1000
 	const debouncedCreate = debounce((/** @type {*} */ data) => {
 		mondayClientApi.create(data);
-	}, 500)
+	}, ONE_MINUTE_MS)
 
 	let detailsHash = $state('');
 	$effect(() => {
@@ -37,7 +37,6 @@
 		}
 		if (hash !== detailsHash) {
 			detailsHash = hash;
-			console.log("UPDATING")
 			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
 			debouncedCreate({ id: project.state.id, responses: { ...detailResponses } });
 		}
