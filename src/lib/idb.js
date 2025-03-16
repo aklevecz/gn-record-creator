@@ -90,6 +90,7 @@ class IDBStorage {
 	 * }} entry
 	 */
 	async saveTexture(entry) {
+		// alert(`SAVING TEXTURE: ${entry.id}`);
 		await this.set(this.stores.textures, {
 			...entry,
 			projectId: entry.projectId,
@@ -103,6 +104,7 @@ class IDBStorage {
 
 	/** @param {string} id */
 	async getTexture(id) {
+		// alert(`GETTING TEXTURE: ${id}`);
 		return this.get(this.stores.textures, id);
 	}
 

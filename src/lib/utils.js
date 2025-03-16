@@ -111,7 +111,7 @@ export function debounce(func, wait) {
 	let timeout = undefined;
 
 	/**
-	 * @this {T}
+	 * @this {*}
 	 * @param {...any} args
 	 * @return {void}
 	 */

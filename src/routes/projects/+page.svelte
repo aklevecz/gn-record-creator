@@ -52,14 +52,14 @@
 	let uploadedImgUrls = $state([]);
 	// /** @type {string[]} */
 	// let generatedImgUrls = $state([]);
-	/** @type {{url:string, id: string, seed:string, fileName: string, blob: Blob}[]} */
+	/** @type {{url:string, id: string, seed:string, fileName: string, blob: Blob, arrayBuffer: ArrayBuffer, fileType: string}[]} */
 	let urls = $state([]);
 
-    let currentProjectId = $state('');
+	// weak onMount after project is initited
+	let currentProjectId = $state('');
 	$effect(() => {
 		if (project.state.id && project.state.id !== currentProjectId) {
-            currentProjectId = project.state.id;
-            console.log("rerender")
+			currentProjectId = project.state.id;
 			idb.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
 				urls = cachedTextures.map((texture) => {
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
@@ -69,13 +69,19 @@
 						id: texture.id,
 						seed: texture.seed,
 						fileName: texture.fileName,
-						blob: texture.imgFile
+						blob: texture.imgFile,
+						arrayBuffer: texture.arrayBuffer,
+						fileType: texture.fileType
 					};
 				});
 
 				idb.getTexture('last-texture').then((activeTexture) => {
 					if (activeTexture) {
-						const url = URL.createObjectURL(activeTexture.imgFile);
+						const blobFromBuffer = new Blob([activeTexture.arrayBuffer], {
+							type: activeTexture.imgFile.type
+						});
+						const url = URL.createObjectURL(blobFromBuffer);
+						// const url = URL.createObjectURL(activeTexture.imgFile);
 						lastTexture = url;
 					}
 				});
@@ -152,15 +158,22 @@
 		imageToDeleteId = '';
 	}
 
-	/** @param {Blob} blob */
-	function activateTexture(blob) {
-		idb.saveTexture({
-			imgFile: blob,
-			seed: 'user-upload',
-			id: 'last-texture',
-			projectId: 'active'
+	/** @param {ArrayBuffer} arrayBuffer @param {*} fileType  */
+	async function activateTexture(arrayBuffer, fileType) {
+		const blobFromBuffer = new Blob([arrayBuffer], {
+			type: fileType
 		});
-		const url = URL.createObjectURL(blob);
+		try {
+			await idb.saveTexture({
+				imgFile: blobFromBuffer,
+				seed: 'user-upload',
+				id: 'last-texture',
+				projectId: 'active'
+			});
+		} catch (error) {
+			alert(`SAVE ERROR ${error}`);
+		}
+		const url = URL.createObjectURL(blobFromBuffer);
 		lastTexture = url;
 	}
 </script>
@@ -200,12 +213,8 @@
 		>
 			<h1>Project Info</h1>
 			<!-- <div class="text-xl">{project.state.name}</div> -->
-			<div class='pr-4 mb-2'>
-				<Detail
-					label="Project Name"
-					key="project_name"
-					description=""
-				/>
+			<div class="mb-2 pr-4">
+				<Detail label="Project Name" key="project_name" description="" />
 			</div>
 			<div class="project-info-line">{project.state.details?.details.artist.value}</div>
 			<div class="project-info-line">{project.state.details?.details.label.value}</div>
@@ -228,14 +237,14 @@
 		<div class="gallery-container md:flex-[1_0_70%] md:p-4">
 			<h1>Gallery</h1>
 			<div class="imgs">
-				{#each urls as { url, id, seed, fileName, blob }}
+				{#each urls as { url, id, seed, fileName, blob, arrayBuffer, fileType }}
 					{@const isGenerated = seed !== 'user-upload'}
 					<div
 						style={isGenerated
 							? 'background-color: var(--purple);'
 							: 'background-color: var(--green);color:black;l'}
 						class="history-img-container flex flex-col"
-						onclick={() => activateTexture(blob)}
+						onclick={() => activateTexture(arrayBuffer, fileType)}
 					>
 						<img src={url} alt="" class="history-img" />
 						<div class="history-file-name">{fileName}</div>

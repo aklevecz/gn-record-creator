@@ -31,6 +31,7 @@
 					}
 
 					if (!lastTexture) {
+						alert("EMR?")
 						if (loadCachedType === 'texture') {
 							idb
 								.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`)
