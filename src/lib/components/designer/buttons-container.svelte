@@ -15,7 +15,7 @@
 	 */
 
 	/** @type {ButtonView} buttonView*/
-	let buttonView = $state('ai');
+	let buttonView = $state('history');
 
 	/** @type {Record<Status, string>}*/
 	const generatingMessages = {
@@ -155,11 +155,17 @@
 			</div>
 		{/if}
 		{#if buttonView === 'history'}
+			<div class="px-10">This is where you store your dreams</div>
+			{#if generate.state.cachedImgs.length === 0}
+				<div>No dreams yet. What are you waiting for?</div>
+				<img src="/characters/hifive-color.svg" class="h-20 invert md:h-auto" alt="Infatuation" />
+				<button class="mt-4" onclick={() => toggleView('ai')}>Create a dream</button>
+			{/if}
 			<div class="history-container overflow-scroll">
 				{#each generate.state.cachedImgs as cachedImg}
 					{@const url = URL.createObjectURL(cachedImg.imgBlob)}
 					<button
-                        class="history-img-button"
+						class="history-img-button"
 						onclick={() => showImgOnCover({ url, blob: cachedImg.imgBlob })}
 					>
 						<img src={url} alt="" class="history-img" /></button
@@ -175,8 +181,8 @@
 
 	.buttons-container {
 		transition: height 0.3s ease-in-out;
-        max-width: 600px;
-		@apply fixed bottom-0 md:static md:bottom-10 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3;
+		max-width: 600px;
+		@apply fixed bottom-0 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3 md:static md:bottom-10;
 	}
 
 	.buttons-container.minimized {
@@ -228,11 +234,11 @@
 		@apply grid grid-cols-3 gap-2 p-2;
 	}
 
-    .history-img-button {
-        background-color: none;
-        background: none;
-        @apply p-1;
-    }
+	.history-img-button {
+		background-color: none;
+		background: none;
+		@apply p-1;
+	}
 
 	.history-img {
 		@apply w-full;

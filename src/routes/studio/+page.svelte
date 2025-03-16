@@ -55,7 +55,7 @@
 	<ButtonsContainer {threeScene} bind:isMinimized />
 	<div
 		style="bottom:{spring.current}%;"
-		class="absolute bottom-0 left-0 h-[258px] w-[200px]"
+		class="cute-feedback absolute bottom-0 left-0 h-[258px] w-[200px]"
 	>
 		<div class="relative w-full h-ful">
 			<div class="absolute top-0 right-0 bg-white text-black p-4 rounded-lg">Sick!</div>

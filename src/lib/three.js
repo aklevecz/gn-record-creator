@@ -5,7 +5,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 class ThreeScene {
 	constructor() {
-		console.log('THREE CONSTRUCTION');
+		console.log('THREE CONSTRUCTION OLd');
 		/** @type {HTMLElement | null} */
 		this.container = null;
 		this.width = 0;

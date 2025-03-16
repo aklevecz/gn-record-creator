@@ -102,10 +102,9 @@ export function serializeDeep(obj, seen = new WeakMap()) {
 /**
  * Creates a debounced function that delays invoking the provided function until after
  * the specified wait time has elapsed since the last time it was invoked.
- * @template {Object} T - The type of the 'this' context
- * @param {function(this:T, ...any):void} func - The function to debounce
+ * @param {Function} func - The function to debounce
  * @param {number} wait - The number of milliseconds to delay
- * @return {function(this:T, ...any):void} The debounced function
+ * @return {Function} The debounced function
  */
 export function debounce(func, wait) {
 	/** @type {ReturnType<typeof setTimeout>|undefined} */
@@ -251,6 +250,28 @@ export const calculateFileHash = async (file) => {
 
 	return hashHex;
 };
+
+/**
+ * Simple hash function to detect changes in an object
+ * @param {Object} obj - The object to hash
+ * @return {string} A hash string representing the content
+ */
+export function hashFunction(obj) {
+	// Convert the object to a stable JSON string 
+	// (ensures consistent property ordering)
+	const str = JSON.stringify(obj, Object.keys(obj).sort());
+	
+	// Simple string hash function
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+	  const char = str.charCodeAt(i);
+	  hash = ((hash << 5) - hash) + char;
+	  hash = hash & hash; // Convert to 32bit integer
+	}
+	
+	// Convert to hex string to make it more readable
+	return hash.toString(16);
+  }
 
 /**
  * Check if a file with the given hash already exists in storage

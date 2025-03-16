@@ -1,21 +1,13 @@
 <script>
-	import { browser } from '$app/environment';
-	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import Detail from '$lib/components/form/detail.svelte';
 	import Question from '$lib/components/form/question.svelte';
-	import Upload from '$lib/components/form/upload.svelte';
 	import details from '$lib/details.svelte';
 	import project from '$lib/project.svelte';
 	import { questions } from '$lib/survey.svelte';
-	import threeScenes from '$lib/three.svelte';
-	import ThreeScene from '$lib/ThreeScene';
-	import { onDestroy, onMount } from 'svelte';
 
 	import mondayClientApi from '$lib/api/monday';
 	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
-
-	let threeScene = new ThreeScene();
-	threeScenes['form'] = threeScene;
+	import { debounce, hashFunction } from '$lib/utils';
 
 	function submitInfo() {
 		// const surveyResponses = survey.remapResponses();
@@ -27,25 +19,28 @@
 		// goto(`/submission/${project.state.id}`);
 	}
 
-	// onMount(() => {
-	// 	idb.init().then(() => {
-	// 		projects.init();
-	// 	});
-	// });
+	const debouncedCreate = debounce((/** @type {*} */ data) => {
+		mondayClientApi.create(data);
+	}, 500)
 
-	function resizeThree() {
-		threeScene.resize();
-	}
-	onMount(() => {
-		if (browser) window.addEventListener('resize', resizeThree);
-	});
-
-	onDestroy(() => {
-		if (browser) window.removeEventListener('resize', resizeThree);
-	});
-
+	let detailsHash = $state('');
 	$effect(() => {
-		// console.log(project.state)
+		if (!project.state.id) return;
+
+		const detailResponses = details.remapDetails();
+		const hash = hashFunction(detailResponses);
+
+		// IGNORE FIRST UPDATE
+		if (detailsHash === '') {
+			detailsHash = hash
+			return
+		}
+		if (hash !== detailsHash) {
+			detailsHash = hash;
+			console.log("UPDATING")
+			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
+			debouncedCreate({ id: project.state.id, responses: { ...detailResponses } });
+		}
 	});
 </script>
 

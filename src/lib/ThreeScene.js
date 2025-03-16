@@ -8,7 +8,7 @@ import { setupAnimations, animateObjects } from './animations';
 
 class ThreeScene {
 	constructor() {
-		console.log('THREE CONSTRUCTION');
+		console.log('THREE CONSTRUCTION NEW');
 		this.container = null;
 		this.width = 0;
 		this.height = 0;
