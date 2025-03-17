@@ -5,6 +5,7 @@
 	import project from '$lib/project.svelte';
 	import { questions } from '$lib/survey.svelte';
 
+	import { goto } from '$app/navigation';
 	import mondayClientApi from '$lib/api/monday';
 	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
 	import { debounce, hashFunction } from '$lib/utils';
@@ -16,12 +17,13 @@
 		// console.log(project.state)
 		// surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
 		mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
-		// goto(`/submission/${project.state.id}`);
+		goto(`/submission/${project.state.id}`);
 	}
 	const ONE_MINUTE_MS = 60 * 1000
+	const THIRTY_SECONDS_MS = 30 * 1000
 	const debouncedCreate = debounce((/** @type {*} */ data) => {
 		mondayClientApi.create(data);
-	}, ONE_MINUTE_MS)
+	}, THIRTY_SECONDS_MS)
 
 	let detailsHash = $state('');
 	$effect(() => {

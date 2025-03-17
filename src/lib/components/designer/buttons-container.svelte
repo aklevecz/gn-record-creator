@@ -1,10 +1,8 @@
 <script>
-	import { onDestroy, onMount } from 'svelte';
-	import Upload from '../form/upload.svelte';
 	import generate from '$lib/generate.svelte';
-	import { fade } from 'svelte/transition';
-	import { browser } from '$app/environment';
 	import idb from '$lib/idb';
+	import { fade } from 'svelte/transition';
+	import Upload from '../form/upload.svelte';
 
 	let { isMinimized = $bindable(), threeScene } = $props();
 
@@ -44,33 +42,36 @@
 		buttonView = view;
 	}
 
+	// NOT NECESSARY
 	function resizeButtonContainer() {
-		if (window.innerWidth < 1024) {
-			isMobile = true;
-			const rect = document.querySelector('.buttons-container')?.getBoundingClientRect();
-			if (rect) {
-				buttonContainerHeight = `${rect.height}px`;
-			}
-		} else {
-			isMobile = false;
-			buttonContainerHeight = 'auto';
-		}
+		// if (window.innerWidth < 1024) {
+		// 	isMobile = true;
+		// 	const rect = document.querySelector('.buttons-container')?.getBoundingClientRect();
+		// 	if (rect) {
+		// 		buttonContainerHeight = `${rect.height}px`;
+		// 		buttonContainerHeight = `${360}px`
+		// 		buttonContainerHeight = 'auto'
+		// 	}
+		// } else {
+		// 	isMobile = false;
+		// 	buttonContainerHeight = 'auto';
+		// }
 	}
 
 	let isMobile = $state(true);
 	let buttonContainerHeight = $state('auto');
-	onMount(() => {
-		if (browser) {
-			resizeButtonContainer();
-			window.addEventListener('resize', resizeButtonContainer);
-		}
-	});
+	// onMount(() => {
+	// 	if (browser) {
+	// 		resizeButtonContainer();
+	// 		window.addEventListener('resize', resizeButtonContainer);
+	// 	}
+	// });
 
-	onDestroy(() => {
-		if (browser) {
-			window.removeEventListener('resize', resizeButtonContainer);
-		}
-	});
+	// onDestroy(() => {
+	// 	if (browser) {
+	// 		window.removeEventListener('resize', resizeButtonContainer);
+	// 	}
+	// });
 
 	async function onGenerate() {
 		threeScene.toggleShader();
@@ -92,7 +93,7 @@
 </script>
 
 <div
-	style={isMinimized ? 'height: 80px;' : `height: ${buttonContainerHeight} `}
+	style={isMinimized ? 'height: 40px;' : `height: ${buttonContainerHeight} `}
 	class:minimized={isMinimized}
 	class="buttons-container"
 >

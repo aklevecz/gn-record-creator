@@ -59,6 +59,17 @@
 
 			const croppedFile = await cropImageToSquare(selectedFile);
 
+			// WE NEED TO SAVE THESE EVEN IF IT IS A DUPLICATE-- BUT THERE SHOULD BE A BETTER WAY
+			idb.saveTexture({
+				imgFile: croppedFile,
+				seed: 'user-upload',
+				id: 'last-texture',
+				projectId: 'active'
+			});
+
+			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });
+			// END OF SAVING REGLARDLESS OF DUPLICATE
+
 			const url = URL.createObjectURL(croppedFile);
 			threeScene.updateMaterialTexture(url);
 
@@ -83,14 +94,8 @@
 				fileHash
 			});
 
-			idb.saveTexture({
-				imgFile: croppedFile,
-				seed: 'user-upload',
-				id: 'last-texture',
-				projectId: 'active'
-			});
 
-			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });
+
 		} catch (/** @type {*} */ error) {
 			errorMessage = `Error processing image: ${error.message}`;
 			console.error('Error cropping image:', error);

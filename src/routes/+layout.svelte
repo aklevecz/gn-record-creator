@@ -45,8 +45,8 @@
 	.icon-link {
 		transition: color 0.2s ease-in-out;
 		/* filter: saturate(100%) contrast(150%) brightness(250%) blur(0px) hue-rotate(45deg); */
-		text-decoration: underline;
-		@apply text-xs md:text-lg;
+		/* text-decoration: underline; */
+		@apply text-xs md:text-lg font-semibold;
 	}
 	.icon-link:hover {
 		color: var(--accent-color);

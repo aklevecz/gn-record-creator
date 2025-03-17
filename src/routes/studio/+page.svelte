@@ -3,7 +3,7 @@
 	import ButtonsContainer from '$lib/components/designer/buttons-container.svelte';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import generate from '$lib/generate.svelte';
-	import ThreeScene from '$lib/three';
+	import ThreeScene from '$lib/ThreeScene';
 	import { onDestroy, onMount } from 'svelte';
 	import { Spring } from 'svelte/motion';
 
@@ -54,8 +54,8 @@
 	</div>
 	<ButtonsContainer {threeScene} bind:isMinimized />
 	<div
-		style="bottom:{spring.current}%;"
-		class="cute-feedback absolute bottom-0 left-0 h-[258px] w-[200px]"
+		style="left:{spring.current}%;"
+		class="cute-feedback absolute bottom-50 h-[258px] w-[200px]"
 	>
 		<div class="relative w-full h-ful">
 			<div class="absolute top-0 right-0 bg-white text-black p-4 rounded-lg">Sick!</div>

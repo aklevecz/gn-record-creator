@@ -122,6 +122,7 @@ const mondayServerApi = () => {
 			const data = await res.json();
 			return data.data.boards[0].items_page.items[0];
 		},
+		/** @param {string} id @param {Record<string, string>} values */
 		updateItem: async (id, values) => {
 			const idValues = Object.entries(values).reduce(
 				(acc, [key, value]) => ({

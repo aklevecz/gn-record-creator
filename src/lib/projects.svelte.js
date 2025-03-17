@@ -79,9 +79,11 @@ const createProjects = () => {
 				this.activateProject(project.name);
 			}
 		},
-		debouncedSaveToIDB: debounce(function (project) {
+
+		debouncedSaveToIDB: debounce(function (/** @type {Project} */ project) {
 			idb.addProject(project);
 		}, 500),
+		
 		/** @param {string} projectName */
 		async activateProject(projectName) {
 			// SHOULD USE ID
