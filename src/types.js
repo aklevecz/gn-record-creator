@@ -84,7 +84,6 @@
  * @property {string} name
  * @property {Date} createdAt
  * @property {Details | null} details
- * @property {Survey | null} survey
  * @property {Pricing} pricing
  */
 

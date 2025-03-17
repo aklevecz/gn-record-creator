@@ -7,8 +7,10 @@
 	import idb from '$lib/idb';
 	import project, { createProject } from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
+	import { cachedKeys } from '$lib/storage';
 	import survey from '$lib/survey.svelte';
 	import threeScenes from '$lib/three.svelte';
+	import { text } from '@sveltejs/kit';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -24,26 +26,11 @@
 		const newProjectStore = createProject();
 		const newProject = newProjectStore.create({
 			details: { ...details.state },
-			survey: { ...survey.state }
+			// survey: { ...survey.state }
 		});
 		projects.registerProject(newProject);
 		idb.addProject(newProject);
-		projects.activateProject(newProject.name);
-	}
-
-	function deleteProject() {
-		projects.removeProject(project.state.id);
-		idb.deleteProject(project.state.id);
-		const firstProject = projects.state.projects[0];
-		projects.activateProject(firstProject.name);
-		idb.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
-			if (!textureFile) {
-				console.log('THERE IS NO CURRENT TEXTURE');
-				return;
-			}
-			const url = URL.createObjectURL(textureFile.imgFile);
-			if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
-		});
+		projects.activateProject(newProject.id);
 	}
 
 	let lastTexture = $state('/records/cosmic-black.png');
@@ -75,7 +62,11 @@
 					};
 				});
 
-				idb.getTexture('last-texture').then((activeTexture) => {
+				const currentProjectTexture = cachedKeys.getProjectTexture(project.state.id);
+
+				let activeTextureId = currentProjectTexture || 'last-texture';
+
+				idb.getTexture(activeTextureId).then((activeTexture) => {
 					if (activeTexture) {
 						const blobFromBuffer = new Blob([activeTexture.arrayBuffer], {
 							type: activeTexture.imgFile.type
@@ -131,7 +122,7 @@
 		projects.removeProject(project.state.id);
 		idb.deleteProject(project.state.id);
 		const firstProject = projects.state.projects[0];
-		projects.activateProject(firstProject.name);
+		projects.activateProject(firstProject.id);
 		idb.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
 			if (!textureFile) {
 				console.log('THERE IS NO CURRENT TEXTURE');
@@ -158,18 +149,19 @@
 		imageToDeleteId = '';
 	}
 
-	/** @param {ArrayBuffer} arrayBuffer @param {*} fileType  */
-	async function activateTexture(arrayBuffer, fileType) {
+	/** @param {ArrayBuffer} arrayBuffer @param {*} fileType @param {string} id  */
+	async function activateTexture(arrayBuffer, fileType, id) {
 		const blobFromBuffer = new Blob([arrayBuffer], {
 			type: fileType
 		});
 		try {
-			await idb.saveTexture({
+			 idb.saveTexture({
 				imgFile: blobFromBuffer,
 				seed: 'user-upload',
 				id: 'last-texture',
 				projectId: 'active'
 			});
+			cachedKeys.setProjectTexture(project.state.id, id);
 		} catch (error) {
 			alert(`SAVE ERROR ${error}`);
 		}
@@ -244,7 +236,7 @@
 							? 'background-color: var(--purple);'
 							: 'background-color: var(--green);color:black;l'}
 						class="history-img-container flex flex-col"
-						onclick={() => activateTexture(arrayBuffer, fileType)}
+						onclick={() => activateTexture(arrayBuffer, fileType, id)}
 					>
 						<img src={url} alt="" class="history-img" />
 						<div class="history-file-name">{fileName}</div>

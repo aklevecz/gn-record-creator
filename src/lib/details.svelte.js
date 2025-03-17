@@ -154,6 +154,7 @@ const createDetails = () => {
 		},
 		/** @param {string} key @param {string} value */
 		setValue(key, value) {
+			// THIS SHOULD BE SOMEWHERE ELSE -- MAYBE THE COMPONENT SHOULD DETECT IMPLICITLY IF IT IS THIS KEY
 			if (key === 'record_color') {
 				const colorHex = colors[toCamelCase(value)];
 				const changeRecordColorEvent = new CustomEvent('change-record-color', {

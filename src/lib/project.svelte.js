@@ -7,7 +7,6 @@ const defaultProjectState = {
 	name: 'default',
 	createdAt: new Date(),
 	details: null,
-	survey: null,
 	pricing: {
 		record_color: '',
 		total_units: 0,
@@ -37,15 +36,15 @@ const createProject = () => {
 			project = newState;
 		},
 		/**
-		 * @param {{name?: string, details: Details, survey: Survey}} props
+		 * @param {{name?: string, details: Details}} props
 		 * @returns {Project}
 		 */
-		create({ name, details, survey }) {
+		create({ name, details}) {
 			const id = crypto.randomUUID();
 			project.id = id;
 			project.name = name || id;
 			project.details = details;
-			project.survey = survey;
+			// project.survey = survey;
 			project.createdAt = new Date();
 			project.pricing = {
 				record_color: '',
@@ -63,7 +62,7 @@ const createProject = () => {
 				id: project.id,
 				name: project.name,
 				details: project.details,
-				survey: project.survey,
+				// survey: project.survey,
 				createdAt: project.createdAt,
 				pricing: project.pricing
 			};
@@ -72,12 +71,12 @@ const createProject = () => {
 		update({ name, details, survey }) {
 			project.name = name;
 			project.details = details;
-			project.survey = survey;
+			// project.survey = survey;
 
 			return {
 				name: project.name,
 				details: project.details,
-				survey: project.survey,
+				// survey: project.survey,
 				createdAt: project.createdAt
 			};
 		},
@@ -107,7 +106,7 @@ const createProject = () => {
 		},
 		/** @param {Survey} survey */
 		updateSurvey(survey) {
-			project.survey = survey;
+			// project.survey = survey;
 			projects.updateProject(serializeDeep(project));
 		}
 	};

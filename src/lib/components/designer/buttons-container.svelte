@@ -3,6 +3,8 @@
 	import idb from '$lib/idb';
 	import { fade } from 'svelte/transition';
 	import Upload from '../form/upload.svelte';
+	import { cachedKeys } from '$lib/storage';
+	import projects from '$lib/projects.svelte';
 
 	let { isMinimized = $bindable(), threeScene } = $props();
 
@@ -13,7 +15,7 @@
 	 */
 
 	/** @type {ButtonView} buttonView*/
-	let buttonView = $state('history');
+	let buttonView = $state('ai');
 
 	/** @type {Record<Status, string>}*/
 	const generatingMessages = {
@@ -25,8 +27,8 @@
 		failed: 'Failed'
 	};
 
-	/** @param {{url: string, blob: Blob}} props */
-	function showImgOnCover({ url, blob }) {
+	/** @param {{url: string, blob: Blob, id: string}} props */
+	function showImgOnCover({ url, blob, id }) {
 		threeScene.updateMaterialTexture(url);
 		idb.saveTexture({
 			imgFile: blob,
@@ -34,6 +36,9 @@
 			id: 'last-texture',
 			projectId: 'active'
 		});
+		if (projects.activeProject) {
+			cachedKeys.setProjectTexture(projects.activeProject.id, id);
+		}
 	}
 
 	/** @param {ButtonView} view */
@@ -167,7 +172,7 @@
 					{@const url = URL.createObjectURL(cachedImg.imgBlob)}
 					<button
 						class="history-img-button"
-						onclick={() => showImgOnCover({ url, blob: cachedImg.imgBlob })}
+						onclick={() => showImgOnCover({ url, blob: cachedImg.imgBlob, id: cachedImg.id })}
 					>
 						<img src={url} alt="" class="history-img" /></button
 					>

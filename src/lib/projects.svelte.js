@@ -1,11 +1,13 @@
-import survey from './survey.svelte';
+// import survey from './survey.svelte';
 import details from './details.svelte';
 import project from './project.svelte';
 import idb from './idb';
 import { debounce } from './utils';
+import { cachedKeys } from './storage';
 
-/** @type {{activeProject: string, projects: Project[], cachedTextures: any}} */
+/** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
+	initialized: false,
 	activeProject: 'default',
 	projects: [],
 	cachedTextures: []
@@ -19,6 +21,7 @@ const createProjects = () => {
 			return projects;
 		},
 		get activeProject() {
+			return projects.projects.find((project) => project.id === projects.activeProject);
 			return projects.projects.find((project) => project.name === projects.activeProject);
 		},
 		async init() {
@@ -31,7 +34,15 @@ const createProjects = () => {
 			const allProjects = await idb.getAllProjects();
 			let defaultProject = null;
 			if (allProjects.length) {
-				defaultProject = allProjects[0];
+				// CACHE THE LAST PROJECT INSTEAD OF GRABBING THE FIRST ONE?
+				const cachedActiveProject = cachedKeys.getActiveProject();
+				if (cachedActiveProject) {
+					defaultProject = allProjects.find(
+						(/** @type {Project} */ p) => p.id === cachedActiveProject
+					);
+				} else {
+					defaultProject = allProjects[0];
+				}
 				project.set(defaultProject);
 				// this.registerProject(defaultProject)
 				for (const cachedProject of allProjects) {
@@ -42,10 +53,11 @@ const createProjects = () => {
 					this.registerProject(cachedProject);
 				}
 			} else {
+				// CREATE NEW DEFAULT PROJECT
 				defaultProject = project.create({
 					name: 'default',
-					details: { ...details.state },
-					survey: { ...survey.state }
+					details: { ...details.state }
+					// survey: { ...survey.state }
 				});
 				idb.addProject(defaultProject);
 				this.registerProject(defaultProject);
@@ -53,7 +65,9 @@ const createProjects = () => {
 
 			// defaultProject.survey && survey.set(defaultProject.survey);
 			defaultProject.details && details.set(defaultProject.details);
-			this.activateProject(defaultProject.name);
+			// this.activateProject(defaultProject.name);
+			this.activateProject(defaultProject.id);
+			projects.initialized = true;
 		},
 		/** @param {Project} project */
 		registerProject(project) {
@@ -76,25 +90,27 @@ const createProjects = () => {
 				});
 
 				this.debouncedSaveToIDB(project);
-				this.activateProject(project.name);
+				// this.activateProject(project.name);
+				this.activateProject(project.id);
 			}
 		},
 
 		debouncedSaveToIDB: debounce(function (/** @type {Project} */ project) {
 			idb.addProject(project);
 		}, 500),
-		
-		/** @param {string} projectName */
-		async activateProject(projectName) {
+
+		/** @param {string} projectId */
+		async activateProject(projectId) {
 			// SHOULD USE ID
-			const existingProject = projects.projects.find((project) => project.name === projectName);
+			const existingProject = projects.projects.find((project) => project.id === projectId);
 			if (!existingProject) {
-				throw new Error(`Project ${projectName} does not exist`);
+				throw new Error(`Project ${projectId} does not exist`);
 			}
-			projects.activeProject = projectName;
+			projects.activeProject = projectId;
 			project.set(existingProject);
-			existingProject.survey && survey.set(existingProject.survey);
+			// existingProject.survey && survey.set(existingProject.survey);
 			existingProject.details && details.set(existingProject.details);
+			cachedKeys.setActiveProject(projectId);
 		},
 		reset() {
 			projects.projects = [];

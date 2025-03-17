@@ -29,7 +29,7 @@
 		<ul class="flex justify-center gap-4">
 			<li><a class="icon-link hidden md:block" href="/">home</a></li>
 			<li><a class="icon-link" href="/projects">projects</a></li>
-			<li><a class="icon-link" href="/studio">gen</a></li>
+			<li><a class="icon-link" href="/studio">dream</a></li>
 			<!-- <div class="flex-1"></div> -->
 			<!-- <li class="opacity-0"><a href="/test">Test</a></li> -->
 		</ul>

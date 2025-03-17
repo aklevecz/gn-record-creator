@@ -10,6 +10,7 @@
 	import mondayClientApi from '$lib/api/monday';
 	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
 	import { debounce, hashFunction } from '$lib/utils';
+	import projects from '$lib/projects.svelte';
 
 	function submitInfo() {
 		// const surveyResponses = survey.remapResponses();
@@ -27,9 +28,9 @@
 	}, THIRTY_SECONDS_MS)
 
 	let detailsHash = $state('');
+	// THIS GETS TRIGGERED A LOT AT INITIATION
 	$effect(() => {
-		if (!project.state.id) return;
-
+		if (!projects.state.initialized) return
 		const detailResponses = details.remapDetails();
 		const hash = hashFunction(detailResponses);
 
@@ -38,6 +39,7 @@
 			detailsHash = hash
 			return
 		}
+		console.log("RENGAR")
 		if (hash !== detailsHash) {
 			detailsHash = hash;
 			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
@@ -66,7 +68,7 @@
 			{/if}
 		{/each}
 	</div>
-	<ThreeHomepage />
+	{#if projects.state.initialized}<ThreeHomepage />{/if}
 	<div class="my-10">
 		<div class="text- mb-2 p-4">
 			Press submit if you have finished filling out all of the required info. You will be able to

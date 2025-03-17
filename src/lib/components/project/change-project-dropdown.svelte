@@ -1,31 +1,19 @@
 <script>
-	import { CURRENT_TEXTURE } from '$lib';
-	import details from '$lib/details.svelte';
 	import idb from '$lib/idb';
-	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
-	import survey from '$lib/survey.svelte';
+	import { cachedKeys } from '$lib/storage';
 	import threeScenes from '$lib/three.svelte';
-
-	// let { threeScene } = $props();
-
-	let projectName = $state('');
-
-	function createProject() {
-		const newProject = project.create({
-			name: projectName,
-			details: { ...details.state },
-			survey: { ...survey.state }
-		});
-		projects.registerProject(newProject);
-		idb.addProject(newProject);
-	}
 
 	/** @param {*} e */
 	function onChangeProject(e) {
-		const projectName = e.target.value;
-		projects.activateProject(projectName);
-		idb.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
+		const projectId = e.target.value;
+		projects.activateProject(projectId);
+		const textureId = cachedKeys.getProjectTexture(projectId);
+		if (!textureId) {
+			console.log('THERE IS NO CURRENT TEXTURE - EVEN IN LOCAL STORAGE');
+			return;
+		}
+		idb.getTexture(textureId).then((textureFile) => {
 			if (!textureFile) {
 				console.log('THERE IS NO CURRENT TEXTURE');
 				return;
@@ -44,7 +32,9 @@
 	>
 		<option value="" disabled>Select a project</option>
 		{#each projects.state.projects as project}
-			<option value={project.name}>{project.name}</option>
+			<option value={project.id}>{project.name}</option>
+
+			<!-- <option value={project.name}>{project.name}</option> -->
 		{/each}
 	</select>
 	<div

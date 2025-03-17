@@ -1,6 +1,7 @@
 <script>
 	import { CURRENT_TEXTURE } from '$lib';
 	import idb from '$lib/idb';
+	import { cachedKeys } from '$lib/storage';
 	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
 	import uploadApi from '$lib/api/upload';
@@ -66,6 +67,8 @@
 				id: 'last-texture',
 				projectId: 'active'
 			});
+			const id = selectedFile.name + '_' + Date.now();
+			cachedKeys.setProjectTexture(projects.activeProject?.id || 'no-project-id-found', id);
 
 			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });
 			// END OF SAVING REGLARDLESS OF DUPLICATE
@@ -77,25 +80,23 @@
 
 			const isDuplicate = await fileHashExists(fileHash, projectId);
 			if (isDuplicate) {
-				console.log(`File "${selectedFile.name}" has already been uploaded`)
+				console.log(`File "${selectedFile.name}" has already been uploaded`);
 				return false;
 			}
 
 			// const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`;
-			const textureId = `${projects.activeProject?.id}-${CURRENT_TEXTURE}`;
+			// const textureId = `${projects.activeProject?.id}-${CURRENT_TEXTURE}`;
+
 			// Save the file itself to IDB
 			idb.saveTexture({
 				imgFile: croppedFile, // Save the actual File object
 				seed: 'user-upload', // Or whatever metadata you want
 				// id: textureId,
 				fileName: selectedFile.name,
-				id: selectedFile.name + '_' + Date.now(),
+				id,
 				projectId: projects.activeProject?.id || 'no-project-id-found',
 				fileHash
 			});
-
-
-
 		} catch (/** @type {*} */ error) {
 			errorMessage = `Error processing image: ${error.message}`;
 			console.error('Error cropping image:', error);

@@ -4,6 +4,7 @@ import idb from '$lib/idb';
 // import storage from "$lib/storage";
 import { fetchImageAsBlob } from '$lib/utils';
 import projects from './projects.svelte';
+import { cachedKeys } from './storage';
 // import history from "./history.svelte";
 
 export const GenerationErrors = {
@@ -138,6 +139,8 @@ const createGenerateStore = () => {
 							projectId: 'active',
 							fileName: id
 						});
+
+						cachedKeys.setProjectTexture(projects.activeProject?.id || 'missing-project-id', id);
 						if (projects.activeProject?.id) {
 							uploadApi.uploadTexture({ id: projects.activeProject?.id, image: blob });
 						}
@@ -145,7 +148,7 @@ const createGenerateStore = () => {
 						cb(imgUrl);
 						// threeScene.updateMaterialTexture(URL.createObjectURL(blob))
 						await refreshAllGeneratedImgs();
-						generate.percentage = 0
+						generate.percentage = 0;
 					});
 					clearInterval(interval);
 				} else if (data.status === 'failed') {

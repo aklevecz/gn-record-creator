@@ -5,6 +5,7 @@ import { RecordModel } from './models/RecordModel';
 import { MaterialUtils } from './utils/MaterialUtils';
 import { ShaderUtils } from './utils/ShaderUtils';
 import { setupAnimations, animateObjects } from './animations';
+import { DisplacementShaderEffects } from './utils/DisplacementShaderEffects';
 
 class ThreeScene {
 	constructor() {
@@ -72,6 +73,10 @@ class ThreeScene {
 			endRotation: { x: 0, y: 0, z: 0 },
 			active: false
 		};
+
+		this.displacementEffects = new DisplacementShaderEffects();
+		this.currentDisplacementEffect = this.displacementEffects.effects.wave;
+		this.currentTexture = null;
 	}
 
 	/** @param {HTMLElement} container */
@@ -171,6 +176,72 @@ class ThreeScene {
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(this.width, this.height);
 	}
+	toggleDisplacementShader(effectType = 'ripple', intensity = 0.1) {
+		if (
+			!this.recordCover ||
+			!this.recordCover.material
+			// || !this.recordCover.material.map
+		) {
+			console.log(`recordCOver is ${this.recordCover}`);
+			console.log(`recordCOver material is ${this.recordCover.material}`);
+			console.log(`recordCOver material map is ${this.recordCover.material.map}`);
+			return false;
+		}
+		this.displacementEffects.oscillatorTime = 0
+		if (this.recordCover.material.map) {
+			this.currentTexture = this.recordCover.material.map;
+		} else {
+
+		}
+
+		// Toggle the effect on/off
+		this.useDisplacementShader = !this.useDisplacementShader;
+
+		const currentIndex = Object.keys(this.displacementEffects.effects).indexOf(
+			this.currentDisplacementEffect
+		);
+		const nextShader = Object.keys(this.displacementEffects.effects)[
+			(currentIndex + 1) % Object.keys(this.displacementEffects.effects).length
+		];
+		
+		if (this.useDisplacementShader) {
+			// Apply the selected displacement effect
+			const material = this.displacementEffects.createShader(
+				this.currentTexture,
+				this.currentDisplacementEffect,
+				intensity
+			);
+			this.recordCover.material = material;
+		} else {
+			// Restore original material
+			this.recordCover.material = new THREE.MeshBasicMaterial({
+				map: this.currentTexture,
+				color: 0xffffff
+			});
+		}
+		this.currentDisplacementEffect = nextShader;
+		return this.useDisplacementShader;
+	}
+
+	// Add method to change effects:
+	changeDisplacementEffect(effectType) {
+		if (this.useDisplacementShader && this.displacementEffects) {
+			const material = this.displacementEffects.changeEffect(effectType);
+			if (this.recordCover) {
+				this.recordCover.material = material;
+			}
+		}
+	}
+
+	/**
+	 * Updates the intensity of the current displacement effect
+	 * @param {number} intensity - New intensity value
+	 */
+	updateDisplacementIntensity(intensity) {
+		if (this.shaderUtils.isDisplacementShaderActive()) {
+			this.shaderUtils.updateDisplacementIntensity(intensity);
+		}
+	}
 
 	animate() {
 		requestAnimationFrame(this.animate);
@@ -185,6 +256,23 @@ class ThreeScene {
 			this.shaderUtils.updateShader();
 			//@ts-ignore
 			this.recordCover.material = this.shaderUtils.getMaterial();
+		}
+
+		// if (this.useDisplacementShader && this.displacementEffects) {
+		// 	const currentTime = Date.now()
+		// 	this.displacementEffects.update(currentTime * .0001 % 1);
+		// 	// No need to reassign material here as we're updating the uniforms directly
+		// }
+
+		if (this.useDisplacementShader && this.displacementEffects) {
+			this.displacementEffects.update();
+			this.displacementEffects.updateOscillatingIntensity();
+			// Oscillate intensity
+			// const baseIntensity = .01;
+			// const oscillationAmplitude = 0.02;
+			// const oscillatedIntensity = baseIntensity +
+			//   oscillationAmplitude * Math.sin(currentTime * 0.001);
+			// this.displacementEffects.updateIntensity(Math.abs(oscillatedIntensity))
 		}
 
 		// Update scene
