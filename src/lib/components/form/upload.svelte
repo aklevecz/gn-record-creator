@@ -4,7 +4,7 @@
 	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
 	import uploadApi from '$lib/api/upload';
-	import ThreeScene from '$lib/three';
+	import ThreeScene from '$lib/ThreeScene';
 
 	import { calculateFileHash, cropImageToSquare, fileHashExists } from '$lib/utils';
 

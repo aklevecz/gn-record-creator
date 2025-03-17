@@ -6,6 +6,7 @@
 	import { questions } from '$lib/survey.svelte';
 
 	import { goto } from '$app/navigation';
+	import surveyApi from '$lib/api/survey';
 	import mondayClientApi from '$lib/api/monday';
 	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
 	import { debounce, hashFunction } from '$lib/utils';
@@ -15,7 +16,7 @@
 		const detailResponses = details.remapDetails();
 		// console.log(project.state.id);
 		// console.log(project.state)
-		// surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
 		mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
 		goto(`/submission/${project.state.id}`);
 	}

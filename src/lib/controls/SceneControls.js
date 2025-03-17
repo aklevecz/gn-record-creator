@@ -10,6 +10,7 @@ export class SceneControls {
 	constructor(camera, domElement) {
 		this.controls = new OrbitControls(camera, domElement);
 		this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = .75;
 		this.controls.enableZoom = false;
 		this.controls.minPolarAngle = Math.PI / 2; // 90 degrees
 		this.controls.maxPolarAngle = Math.PI / 2; // 90 degrees

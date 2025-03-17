@@ -4,7 +4,7 @@
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
-	import ThreeScene from '$lib/three';
+	import ThreeScene from '$lib/ThreeScene';
 	import { onDestroy, onMount } from 'svelte';
 
 	let {
@@ -18,45 +18,42 @@
 	let container = $state(null);
 	onMount(async () => {
 		if (container && browser) {
+			threeScene.init(container);
+			threeScene.animate();
 			idb.init().then(async () => {
 				await generate.refreshAllGeneratedImgs();
-				if (container) {
-					threeScene.init(container);
-					threeScene.animate();
 
-					const lastTexture = await idb.getTexture('last-texture');
-					if (lastTexture) {
-						const url = URL.createObjectURL(lastTexture.imgFile);
-						threeScene.updateMaterialTexture(url);
-					}
+				const lastTexture = await idb.getTexture('last-texture');
+				if (lastTexture) {
+					const url = URL.createObjectURL(lastTexture.imgFile);
+					threeScene.updateMaterialTexture(url);
+				}
 
-					if (!lastTexture) {
-						if (loadCachedType === 'texture') {
-							idb
-								.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`)
-								.then((textureFile) => {
-									if (!textureFile) {
-										console.log('THERE IS NO CURRENT TEXTURE');
-										const randomCharacterAsset = allCharacterAssets[
-											Math.floor(Math.random() * allCharacterAssets.length)]
-										threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
-										return;
-									}
-									const url = URL.createObjectURL(textureFile.imgFile);
-									threeScene.updateMaterialTexture(url);
-								});
-						}
-
-						if (loadCachedType === 'ai') {
-							const cachedImg = generate.state.cachedImgs[generate.state.cachedImgs.length - 1];
-							if (cachedImg) {
-								const url = URL.createObjectURL(cachedImg.imgBlob);
+				if (!lastTexture) {
+					if (loadCachedType === 'texture') {
+						idb
+							.getTexture(`${projects.state.activeProject}-${CURRENT_TEXTURE}`)
+							.then((textureFile) => {
+								if (!textureFile) {
+									console.log('THERE IS NO CURRENT TEXTURE');
+									const randomCharacterAsset =
+										allCharacterAssets[Math.floor(Math.random() * allCharacterAssets.length)];
+									threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
+									return;
+								}
+								// COULD BE ARRAY BUFFER BUT THESE SEEM TO WORK WITH THREEJS NO MATTER WHAT FOR SOME REASON
+								const url = URL.createObjectURL(textureFile.imgFile);
 								threeScene.updateMaterialTexture(url);
-							}
+							});
+					}
+
+					if (loadCachedType === 'ai') {
+						const cachedImg = generate.state.cachedImgs[generate.state.cachedImgs.length - 1];
+						if (cachedImg) {
+							const url = URL.createObjectURL(cachedImg.imgBlob);
+							threeScene.updateMaterialTexture(url);
 						}
 					}
-				} else {
-					console.error('No container found');
 				}
 			});
 		}
