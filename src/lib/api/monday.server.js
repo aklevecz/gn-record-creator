@@ -70,7 +70,6 @@ const mondayServerApi = () => {
   }
 }`;
 
-			console.log(query);
 			const res = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
@@ -81,9 +80,8 @@ const mondayServerApi = () => {
 					query
 				})
 			});
-			console.log(await res.text());
-			// const data = await res.json();
-			// return data;
+			const data = await res.json();
+			return data;
 		},
 		/**
 		 * Get all items from a board

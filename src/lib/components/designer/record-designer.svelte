@@ -1,14 +1,12 @@
 <script>
 	import { browser } from '$app/environment';
-	import { allCharacterAssets, CURRENT_TEXTURE } from '$lib';
+	import { allCharacterAssets } from '$lib';
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
-	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
 	import { cachedKeys } from '$lib/storage';
 	import ThreeScene from '$lib/ThreeScene';
 	import { onDestroy, onMount } from 'svelte';
-	import { texture } from 'three/tsl';
 
 	let {
 		width = '100%',
@@ -49,19 +47,14 @@
 					threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
 				}
 				if (lastTexture) {
-					console.log('THERE IS NO LAST TEXTURE');
 					if (loadCachedType === 'texture' || loadCachedType === 'ai') {
-						console.log(projects.state.activeProject);
 						const textureId = cachedKeys.getProjectTexture(projects.state.activeProject);
 						if (!textureId) {
-							console.log('THERE IS NO CURRENT TEXTURE - EVEN IN LOCAL STORAGE');
 							updateTextureWithRandomCharacter()
 							return;
 						}
-						console.log(`texture id: ${textureId}`);
 						idb.getTexture(textureId).then((textureFile) => {
 							if (!textureFile) {
-								console.log('THERE IS NO CURRENT TEXTURE');
 								updateTextureWithRandomCharacter()
 								return;
 							}

@@ -6,8 +6,6 @@ const mondayClientApi = () => {
     return {
         /** @param {{id: string, responses: Record<string, string> }} data */
         create({ id, responses }) {
-            console.log(id, responses)
-            
             return fetch(endpoints.create, {
                 method: 'POST',
                 headers: {

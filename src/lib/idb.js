@@ -27,21 +27,20 @@ class IDBStorage {
 		if (this.db) return;
 
 		return new Promise((resolve, reject) => {
-			console.log('hello?');
 			const request = indexedDB.open(this.dbName, this.version);
 			request.onerror = () => {
-				console.log('ERROR');
+				alert(
+					'Database initiation failed. Restarting your browser might help. Sorry for the inconvenience.'
+				);
 				reject(new Error('Failed to open indexed db'));
 			};
 
 			request.onsuccess = () => {
 				this.db = request.result;
-				console.log(this.db);
 				resolve();
 			};
 
 			request.onupgradeneeded = (event) => {
-				console.log(event);
 				// @ts-ignore
 				const db = /** @type {IDBDatabase} */ (event.target?.result);
 
@@ -52,8 +51,6 @@ class IDBStorage {
 				// 	modelStore.createIndex('type', 'type', { unique: false });
 				// 	modelStore.createIndex('timestamp', 'timestamp', { unique: false });
 				// }
-				console.log('object store names');
-				console.log(db.objectStoreNames);
 				// Create generated images store
 				if (!db.objectStoreNames.contains(this.stores.textures)) {
 					const textureStore = db.createObjectStore(this.stores.textures, { keyPath: 'id' });

@@ -10,12 +10,10 @@
 		projects.activateProject(projectId);
 		const textureId = cachedKeys.getProjectTexture(projectId);
 		if (!textureId) {
-			console.log('THERE IS NO CURRENT TEXTURE - EVEN IN LOCAL STORAGE');
 			return;
 		}
 		idb.getTexture(textureId).then((textureFile) => {
 			if (!textureFile) {
-				console.log('THERE IS NO CURRENT TEXTURE');
 				return;
 			}
 			const url = URL.createObjectURL(textureFile.imgFile);

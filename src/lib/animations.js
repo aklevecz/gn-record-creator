@@ -77,7 +77,6 @@ export function animateObjects(animations) {
 
 			// End animation when complete
 			if (progress === 1) {
-				console.log(animation);
 				animation.active = false;
 				if (animation.onComplete) animation.onComplete();
 			}

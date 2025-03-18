@@ -40,7 +40,6 @@
 	// THIS GETS TRIGGERED A LOT AT INITIATION
 	$effect(() => {
 		if (!projects.state.initialized) return;
-		console.log(project.state);
 		const detailResponses = details.remapDetails();
 		const hash = hashFunction(detailResponses);
 
@@ -49,7 +48,7 @@
 			detailsHash = hash;
 			return;
 		}
-		console.log('RENGAR');
+
 		if (hash !== detailsHash) {
 			detailsHash = hash;
 			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
