@@ -29,7 +29,7 @@ const createProjects = () => {
 				console.log('Projects already loaded');
 				return;
 			}
-
+			console.log("project init")
 			// THIS A BIT JANKY
 			const allProjects = await idb.getAllProjects();
 			let defaultProject = null;

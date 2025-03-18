@@ -26,7 +26,8 @@ const keyToId = {
 	metalwork: 'text_mkp319zx',
 	test_prints: 'text_mkp375bp',
 	packaging: 'text_mkp3gb0e',
-	notes: 'text_mkp3vvp7'
+	notes: 'text_mkp3vvp7',
+	status: 'text_mkp5wwe5'
 };
 
 const idToKey = Object.fromEntries(Object.entries(keyToId).map(([key, value]) => [value, key]));

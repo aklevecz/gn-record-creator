@@ -21,7 +21,7 @@
 	let container = $state(null);
 	onMount(async () => {
 		if (projects.state.initialized === false) {
-			alert("PROJECT IS NOT INITIALIZED")
+			alert('PROJECT IS NOT INITIALIZED');
 		}
 		if (container && browser) {
 			threeScene.init(container);
@@ -35,29 +35,34 @@
 				// USING WHATEVER TEXTURE IS ACTIVE INSTEAD OF AI OR UPLOAD
 
 				// CAN PROBABLY GET RID OF THIS IN FAVOR FOR THE CACHED KEYS VERSION
-				const lastTexture = true
+				const lastTexture = true;
 				// const lastTexture = await idb.getTexture('last-texture');
 				// if (lastTexture) {
 				// 	const url = URL.createObjectURL(lastTexture.imgFile);
 				// 	threeScene.updateMaterialTexture(url);
 				// }
 				// 1_00060_.png_1742199625438
+
+				function updateTextureWithRandomCharacter() {
+					const randomCharacterAsset =
+						allCharacterAssets[Math.floor(Math.random() * allCharacterAssets.length)];
+					threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
+				}
 				if (lastTexture) {
 					console.log('THERE IS NO LAST TEXTURE');
 					if (loadCachedType === 'texture' || loadCachedType === 'ai') {
-						console.log(projects.state.activeProject)
+						console.log(projects.state.activeProject);
 						const textureId = cachedKeys.getProjectTexture(projects.state.activeProject);
 						if (!textureId) {
 							console.log('THERE IS NO CURRENT TEXTURE - EVEN IN LOCAL STORAGE');
+							updateTextureWithRandomCharacter()
 							return;
 						}
 						console.log(`texture id: ${textureId}`);
 						idb.getTexture(textureId).then((textureFile) => {
 							if (!textureFile) {
 								console.log('THERE IS NO CURRENT TEXTURE');
-								const randomCharacterAsset =
-									allCharacterAssets[Math.floor(Math.random() * allCharacterAssets.length)];
-								threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
+								updateTextureWithRandomCharacter()
 								return;
 							}
 							// COULD BE ARRAY BUFFER BUT THESE SEEM TO WORK WITH THREEJS NO MATTER WHAT FOR SOME REASON

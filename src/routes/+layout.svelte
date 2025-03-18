@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 	let { children } = $props();
-
 	onMount(() => {
 		// WE COULD WAIT TO RENDER A BUNCH OF THINGS LIKE THREEJS AFTER THE DB AND PROJECTS ARE INITED
 		idb.init().then(() => {

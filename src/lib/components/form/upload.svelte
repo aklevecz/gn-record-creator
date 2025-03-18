@@ -59,7 +59,8 @@
 			const projectId = projects.activeProject?.id || 'no-project-id-found';
 
 			const croppedFile = await cropImageToSquare(selectedFile);
-
+			const url = URL.createObjectURL(croppedFile);
+			threeScene.updateMaterialTexture(url);
 			// WE NEED TO SAVE THESE EVEN IF IT IS A DUPLICATE-- BUT THERE SHOULD BE A BETTER WAY
 			idb.saveTexture({
 				imgFile: croppedFile,
@@ -73,8 +74,7 @@
 			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });
 			// END OF SAVING REGLARDLESS OF DUPLICATE
 
-			const url = URL.createObjectURL(croppedFile);
-			threeScene.updateMaterialTexture(url);
+
 
 			const fileHash = await calculateFileHash(croppedFile);
 

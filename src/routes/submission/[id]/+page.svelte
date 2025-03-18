@@ -6,7 +6,7 @@
 	let { data } = $props();
 	/** @type {Submission} */
 	let submission = data.submission;
-
+	console.log(submission)
 </script>
 
 <div class="flex items-center gap-4 justify-center">

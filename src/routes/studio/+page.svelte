@@ -55,7 +55,7 @@
 <div class="h-[80vh] md:flex md:h-auto">
 	{#if !generate.state.generating}<button
 			class:trippingOut
-			class="absolute top-14 right-2 text-xs"
+			class="absolute top-14 right-2 text-xs z-20"
 			onclick={() => {
 				trippingOut = !trippingOut;
 				threeScene.toggleDisplacementShader();

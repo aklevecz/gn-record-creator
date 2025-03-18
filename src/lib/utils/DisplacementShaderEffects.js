@@ -21,7 +21,7 @@ export class DisplacementShaderEffects {
 		return {
 			wave: 'wave', // Simple sine wave displacement
 			ripple: 'ripple', // Circular ripple effect
-			zoom: 'zoom', // Pulsing zoom effect
+			// zoom: 'zoom', // Pulsing zoom effect
 			twist: 'twist', // Twisting/rotation effect
 			pixelate: 'pixelate' // Pixelation effect
 		};

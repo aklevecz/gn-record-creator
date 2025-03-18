@@ -12,34 +12,44 @@
 	import { debounce, hashFunction } from '$lib/utils';
 	import projects from '$lib/projects.svelte';
 
-	function submitInfo() {
+
+	let submitting = $state(false)
+	async function submitInfo() {
+		submitting = true;
 		// const surveyResponses = survey.remapResponses();
 		const detailResponses = details.remapDetails();
 		// console.log(project.state.id);
 		// console.log(project.state)
-		surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
-		mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		await surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		await mondayClientApi.create({
+			id: project.state.id,
+			responses: { ...detailResponses, status: 'Submitted' }
+		});
+		submitting = false;
 		goto(`/submission/${project.state.id}`);
 	}
-	const ONE_MINUTE_MS = 60 * 1000
-	const THIRTY_SECONDS_MS = 30 * 1000
+	const FIVE_SECONDS  = 5 * 1000;
+	const ONE_MINUTE_MS = 60 * 1000;
+	const THIRTY_SECONDS_MS = 30 * 1000;
 	const debouncedCreate = debounce((/** @type {*} */ data) => {
 		mondayClientApi.create(data);
-	}, THIRTY_SECONDS_MS)
+	}, FIVE_SECONDS);
 
 	let detailsHash = $state('');
 	// THIS GETS TRIGGERED A LOT AT INITIATION
 	$effect(() => {
-		if (!projects.state.initialized) return
+		if (!projects.state.initialized) return;
+		console.log(project.state);
 		const detailResponses = details.remapDetails();
 		const hash = hashFunction(detailResponses);
 
 		// IGNORE FIRST UPDATE
 		if (detailsHash === '') {
-			detailsHash = hash
-			return
+			detailsHash = hash;
+			return;
 		}
-		console.log("RENGAR")
+		console.log('RENGAR');
 		if (hash !== detailsHash) {
 			detailsHash = hash;
 			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
@@ -74,7 +84,14 @@
 			Press submit if you have finished filling out all of the required info. You will be able to
 			edit things later.
 		</div>
-		<button onclick={submitInfo} class="mx-auto block text-2xl">Submit</button>
+		<button onclick={submitInfo} class="mx-auto block text-2xl">
+			{#if submitting}
+		<img class="mx-auto" class:isSubmitting={submitting} src="/characters/juggle-color.svg" alt="juggle graphic">
+			Submitting
+			{:else}
+				Submit
+			{/if}
+		</button>
 	</div>
 </div>
 
@@ -83,5 +100,16 @@
 
 	.design-creator-container {
 		@apply fixed md:fixed md:top-0;
+	}
+	img.isSubmitting {
+		animation: hue-rotate 1s infinite;
+	}
+	@keyframes hue-rotate {
+		from {
+			filter: hue-rotate(0deg);
+		}
+		to {
+			filter: hue-rotate(360deg);
+		}
 	}
 </style>

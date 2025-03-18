@@ -119,7 +119,7 @@
 		>
 		<div class="flex-1"></div>
 		<button onclick={() => (isMinimized = !isMinimized)} class="view-button"
-			>{isMinimized ? 'Maximize' : 'Minimize'}</button
+			>{isMinimized ? '∧' : '▼'}</button
 		>
 	</div>
 	{#if !isMinimized}
