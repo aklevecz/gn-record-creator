@@ -88,9 +88,10 @@
 				throw new Error('id is missing');
 			}
 			console.log(`Polling generation: ${data.id}`);
-			generate.pollGeneration(data.id, (/** @type {string} */ url) =>
+			generate.pollGeneration(data.id, (/** @type {string} */ url) =>{
+				threeScene.toggleShader();
 				threeScene.updateMaterialTexture(url)
-			);
+		});
 		} catch (/** @type {*} */ e) {
 			alert(e.message);
 		}

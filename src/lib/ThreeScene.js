@@ -162,8 +162,14 @@ class ThreeScene {
 
 	/** @param {string} textureUrl */
 	async updateMaterialTexture(textureUrl) {
+		console.log(`Updating material texture to ${textureUrl}`);
 		const material = await this.materialUtils.updateMaterialTexture(textureUrl);
-		if (!this.recordCover) return;
+		console.log(`Updated material texture to ${textureUrl}`);
+		if (!this.recordCover) {
+			console.log(this.recordCover)
+			console.log('recordCover is null');
+			return;
+		};
 		this.recordCover.material = material;
 	}
 
@@ -253,6 +259,7 @@ class ThreeScene {
 
 		// Update shader if active
 		if (this.shaderUtils.isShaderActive() && this.recordCover) {
+			console.log("UPDATING SHADER")
 			this.shaderUtils.updateShader();
 			//@ts-ignore
 			this.recordCover.material = this.shaderUtils.getMaterial();

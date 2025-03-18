@@ -14,7 +14,7 @@
 
 	let threeScene = new ThreeScene();
 
-	let isMinimized = $state(true);
+	let isMinimized = $state(false);
 
 	function resizeThree() {
 		threeScene.resize();
@@ -53,10 +53,14 @@
 </script>
 
 <div class="h-[80vh] md:flex md:h-auto">
-	<button class:trippingOut={trippingOut} class="absolute right-2 top-14 text-xs" onclick={() => {
-		trippingOut = !trippingOut
-		threeScene.toggleDisplacementShader()
-	}}>TRIP OUT</button>
+	{#if !generate.state.generating}<button
+			class:trippingOut
+			class="absolute top-14 right-2 text-xs"
+			onclick={() => {
+				trippingOut = !trippingOut;
+				threeScene.toggleDisplacementShader();
+			}}>TRIP OUT</button
+		>{/if}
 	{#if projects.state.initialized}<div
 			class="three-wrapper md:sticky md:top-0"
 			class:minimized={isMinimized}
@@ -64,7 +68,7 @@
 			<RecordDesigner {threeScene} loadCachedType="ai" />
 		</div>{/if}
 	<ButtonsContainer {threeScene} bind:isMinimized />
-	<div style="left:{spring.current}%;" class="cute-feedback absolute bottom-50 h-[258px] w-[200px]">
+	<div style="left:{spring.current}%;" class="cute-feedback absolute bottom-50 h-[258px] w-[200px] z-30">
 		<div class="h-ful relative w-full">
 			<div class="absolute top-0 right-0 rounded-lg bg-white p-4 text-black">Sick!</div>
 			<img class="h-full w-full" src="/characters/spin-color.svg" alt="spin" />
