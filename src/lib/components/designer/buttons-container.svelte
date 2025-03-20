@@ -5,6 +5,7 @@
 	import Upload from '../form/upload.svelte';
 	import { cachedKeys } from '$lib/storage';
 	import projects from '$lib/projects.svelte';
+	import db from '$lib/db';
 
 	let { isMinimized = $bindable(), threeScene } = $props();
 
@@ -30,12 +31,13 @@
 	/** @param {{url: string, blob: Blob, id: string}} props */
 	function showImgOnCover({ url, blob, id }) {
 		threeScene.updateMaterialTexture(url);
-		idb.saveTexture({
-			imgFile: blob,
-			seed: 'user-upload',
-			id: 'last-texture',
-			projectId: 'active'
-		});
+		db.saveTexture('last-texture', blob);
+		// idb.saveTexture({
+		// 	imgFile: blob,
+		// 	seed: 'user-upload',
+		// 	id: 'last-texture',
+		// 	projectId: 'active'
+		// });
 		if (projects.activeProject) {
 			cachedKeys.setProjectTexture(projects.activeProject.id, id);
 		}

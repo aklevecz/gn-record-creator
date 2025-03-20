@@ -142,7 +142,7 @@ const createGenerateStore = () => {
 
 						cachedKeys.setProjectTexture(projects.activeProject?.id || 'missing-project-id', id);
 						if (projects.activeProject?.id) {
-							uploadApi.uploadTexture({ id: projects.activeProject?.id, image: blob });
+							uploadApi.uploadTexture({ id: id, projectId: projects.activeProject?.id, image: blob });
 						}
 
 						cb(imgUrl);

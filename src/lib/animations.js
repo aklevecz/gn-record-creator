@@ -1,16 +1,3 @@
-const initialRecordCoverAnimation = {
-	object: null,
-	startTime: 0,
-	duration: 2000,
-	startPosition: { x: 0, y: -20, z: 0 },
-	endPosition: { x: 0, y: 20, z: 0 },
-	active: false,
-	onComplete: () => {
-		// You can define callbacks here
-		// For example, create vinyl record after cover animation completes
-	}
-};
-
 /** @param {object} object */
 export function registerAnimation(object) {
   return {

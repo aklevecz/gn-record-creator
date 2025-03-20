@@ -13,12 +13,13 @@
       status = 'Deleting database...';
       
       try {
+        // await idb.recoverDatabase()
         await idb.deleteDatabase();
         status = 'Database successfully deleted.';
         
         // Optional: Reinitialize database after deletion
-        await idb.init();
-        status += ' Database has been reinitialized.';
+        // await idb.init();
+        // status += ' Database has been reinitialized.';
       } catch (/** @type {*} */ error) {
         console.error('Error deleting database:', error);
         status = `Error: ${error.message}`;

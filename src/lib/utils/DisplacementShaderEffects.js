@@ -15,7 +15,7 @@ export class DisplacementShaderEffects {
 
 	/**
 	 * Available displacement effects
-	 * @returns {Object} Object containing all available effect types
+	 * @returns {{[p: string]: string}} Object containing all available effect types
 	 */
 	get effects() {
 		return {

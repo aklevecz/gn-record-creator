@@ -3,6 +3,7 @@
 	import Detail from '$lib/components/form/detail.svelte';
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
 	import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
+	import db from '$lib/db';
 	import details from '$lib/details.svelte';
 	import idb from '$lib/idb';
 	import project, { createProject } from '$lib/project.svelte';
@@ -29,7 +30,8 @@
 			// survey: { ...survey.state }
 		});
 		projects.registerProject(newProject);
-		idb.addProject(newProject);
+		// idb.addProject(newProject);
+		db.saveProject(newProject)
 		projects.activateProject(newProject.id);
 	}
 

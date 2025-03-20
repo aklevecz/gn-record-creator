@@ -23,7 +23,7 @@ class IDBStorage {
 	 * @returns {Promise<void>}
 	 */
 	async init() {
-		console.log(`indexed db init`);
+		console.log(`Trying to init indexed db "${this.dbName}"`);
 		if (this.db) return;
 
 		return new Promise((resolve, reject) => {
@@ -37,6 +37,7 @@ class IDBStorage {
 
 			request.onsuccess = () => {
 				this.db = request.result;
+				console.log(`Successfully opened indexed db "${this.dbName}"`);
 				resolve();
 			};
 
@@ -85,6 +86,7 @@ class IDBStorage {
 	/**
 	 * @param {{
 	 *   imgFile: File | Blob,
+	 *   arrayBuffer?: ArrayBuffer,
 	 *   seed: string,
 	 *   id: string,
 	 *   projectId: string
@@ -99,8 +101,7 @@ class IDBStorage {
 			projectId: entry.projectId,
 			fileName: entry.fileName || (entry.imgFile instanceof File ? entry.imgFile.name : 'texture'),
 			fileType: entry.imgFile.type,
-			arrayBuffer:
-				entry.imgFile instanceof Blob ? await entry.imgFile.arrayBuffer() : entry.imgFile,
+			arrayBuffer: entry.arrayBuffer || (await entry.imgFile.arrayBuffer()),
 			lastModified: Date.now()
 		});
 	}
@@ -464,19 +465,67 @@ class IDBStorage {
 			this.db = null;
 		}
 	}
+
+	async forceReset() {
+		// Close our known connection
+		this.close();
+
+		// Try a different approach - open with a higher version number
+		// This can sometimes break locks
+		try {
+			const request = indexedDB.open(this.dbName, this.version + 1000);
+			console.log(request);
+			/** @param {*} event */
+			request.onupgradeneeded = (event) => {
+				const db = event.target.result;
+				console.log(db);
+				// Delete all object stores
+				Array.from(db.objectStoreNames).forEach((storeName) => {
+					db.deleteObjectStore(storeName);
+				});
+			};
+			/** @param {*} event */
+			request.onsuccess = (event) => {
+				const db = event.target.result;
+				db.close();
+				console.log('Force reset successful');
+			};
+		} catch (e) {
+			console.error('Force reset failed:', e);
+		}
+	}
 	/**
 	 * Delete the entire IndexedDB database
 	 * @returns {Promise<void>} A promise that resolves when the database is deleted
 	 */
 	async deleteDatabase() {
-		// First close any open connections
-		this.close();
+		// First ensure all pending transactions are complete
+		// by waiting for any open transactions to finish
+		if (this.db) {
+			const openTransactions = Array.from(this.db.objectStoreNames).map((storeName) => {
+				return new Promise((resolve) => {
+					if (this.db) {
+						const transaction = this.db.transaction(storeName, 'readonly');
+						transaction.oncomplete = resolve;
+						transaction.onerror = resolve; // Still resolve on error
+						transaction.onabort = resolve;
+					}
+				});
+			});
+
+			// Wait for all transactions to complete
+			await Promise.all(openTransactions);
+
+			// Now close the connection
+			this.db.close();
+			this.db = null;
+		}
 
 		return new Promise((resolve, reject) => {
-			// Request to delete the database
+			console.log(`Trying to delete database "${this.dbName}"`);
 			const deleteRequest = indexedDB.deleteDatabase(this.dbName);
 
-			deleteRequest.onsuccess = (event) => {
+			deleteRequest.onsuccess = () => {
 				console.log(`Successfully deleted database "${this.dbName}"`);
 				resolve();
 			};
@@ -486,16 +535,65 @@ class IDBStorage {
 				reject(event.target.error);
 			};
 
-			deleteRequest.onblocked = (event) => {
-				console.warn(
-					`Database deletion was blocked. Close all other tabs/connections to "${this.dbName}" and try again.`
-				);
-				alert(
-					'Database deletion blocked. Please close all other tabs of this application and try again.'
-				);
+			deleteRequest.onblocked = () => {
+				console.warn(`Database deletion was blocked. Are there other open connections?`);
 				reject(new Error('Database deletion blocked'));
 			};
 		});
+	}
+
+	// Add this to your code
+	async recoverDatabase() {
+		this.close();
+
+		// Create a temporary recovery database with a unique name
+		const recoveryDbName = this.dbName + '_recovery_' + Date.now();
+
+		try {
+			// Create temporary database
+			const request = indexedDB.open(recoveryDbName, 1);
+			request.onupgradeneeded = (event) => {
+				console.log('Creating recovery database');
+			};
+
+			// When successful, try to delete the problematic DB
+			request.onsuccess = async () => {
+				const recoveryDb = request.result;
+				recoveryDb.close();
+
+				console.log('Recovery database created, trying to delete original');
+
+				try {
+					// Multiple deletion attempts with delays
+					for (let i = 0; i < 3; i++) {
+						try {
+							const deleteRequest = indexedDB.deleteDatabase(this.dbName);
+							await new Promise((resolve, reject) => {
+								deleteRequest.onsuccess = resolve;
+								deleteRequest.onerror = reject;
+								deleteRequest.onblocked = reject;
+
+								// Failsafe
+								setTimeout(resolve, 5000);
+							});
+							console.log('Deletion attempt completed');
+							break;
+						} catch (e) {
+							console.log(`Attempt ${i + 1} failed, retrying...`);
+							await new Promise((r) => setTimeout(r, 1000));
+						}
+					}
+
+					// Clean up recovery database
+					indexedDB.deleteDatabase(recoveryDbName);
+					console.log('Recovery complete');
+				} catch (e) {
+					console.error('Recovery failed:', e);
+				}
+			};
+		} catch (e) {
+			console.error('Recovery initialization failed:', e);
+		}
 	}
 }
 

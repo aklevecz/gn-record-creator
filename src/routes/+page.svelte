@@ -16,12 +16,9 @@
 	let submitting = $state(false)
 	async function submitInfo() {
 		submitting = true;
-		// const surveyResponses = survey.remapResponses();
 		const detailResponses = details.remapDetails();
-		// console.log(project.state.id);
-		// console.log(project.state)
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		await surveyApi.create({ id: project.state.id, responses: { ...detailResponses } });
+		await surveyApi.create({ id: project.state.id, responses: { ...detailResponses, status: "submitted" } });
 		await mondayClientApi.create({
 			id: project.state.id,
 			responses: { ...detailResponses, status: 'Submitted' }
@@ -29,11 +26,14 @@
 		submitting = false;
 		goto(`/submission/${project.state.id}`);
 	}
+
 	const FIVE_SECONDS  = 5 * 1000;
 	const ONE_MINUTE_MS = 60 * 1000;
 	const THIRTY_SECONDS_MS = 30 * 1000;
-	const debouncedCreate = debounce((/** @type {*} */ data) => {
-		mondayClientApi.create(data);
+
+	const debouncedCreate = debounce((/** @type {*} */ collectedData) => {
+		mondayClientApi.create(collectedData);
+		surveyApi.create(collectedData);
 	}, FIVE_SECONDS);
 
 	let detailsHash = $state('');
@@ -56,7 +56,6 @@
 		}
 	});
 </script>
-
 <div class="mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0">
 	<h1 class="text-2xl font-bold">Record Setup Form</h1>
 	<div class="text-xs">

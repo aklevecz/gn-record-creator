@@ -1,24 +1,29 @@
 <script>
+	import db from '$lib/db';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
 	import { cachedKeys } from '$lib/storage';
 	import threeScenes from '$lib/three.svelte';
 
 	/** @param {*} e */
-	function onChangeProject(e) {
+	async function onChangeProject(e) {
 		const projectId = e.target.value;
 		projects.activateProject(projectId);
 		const textureId = cachedKeys.getProjectTexture(projectId);
 		if (!textureId) {
 			return;
 		}
-		idb.getTexture(textureId).then((textureFile) => {
-			if (!textureFile) {
-				return;
-			}
-			const url = URL.createObjectURL(textureFile.imgFile);
-			if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
-		});
+		let textureArrayBuffer = await db.getTexture(textureId);
+		const blob = new Blob([textureArrayBuffer], { type: 'img/png' });
+		const url = URL.createObjectURL(blob);
+		if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
+		// idb.getTexture(textureId).then((textureFile) => {
+		// 	if (!textureFile) {
+		// 		return;
+		// 	}
+		// 	const url = URL.createObjectURL(textureFile.imgFile);
+		// 	if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
+		// });
 	}
 </script>
 

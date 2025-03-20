@@ -184,13 +184,12 @@ class ThreeScene {
 			!this.recordCover.material
 			// || !this.recordCover.material.map
 		) {
-			console.log(`recordCOver is ${this.recordCover}`);
-			console.log(`recordCOver material is ${this.recordCover.material}`);
-			console.log(`recordCOver material map is ${this.recordCover.material.map}`);
 			return false;
 		}
 		this.displacementEffects.oscillatorTime = 0
+		// @ts-ignore
 		if (this.recordCover.material.map) {
+			// @ts-ignore
 			this.currentTexture = this.recordCover.material.map;
 		} else {
 
@@ -225,11 +224,12 @@ class ThreeScene {
 		return this.useDisplacementShader;
 	}
 
-	// Add method to change effects:
+	/** @param {string} effectType */
 	changeDisplacementEffect(effectType) {
 		if (this.useDisplacementShader && this.displacementEffects) {
 			const material = this.displacementEffects.changeEffect(effectType);
 			if (this.recordCover) {
+				// @ts-ignore
 				this.recordCover.material = material;
 			}
 		}

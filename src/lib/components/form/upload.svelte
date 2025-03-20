@@ -8,6 +8,7 @@
 	import ThreeScene from '$lib/ThreeScene';
 
 	import { calculateFileHash, cropImageToSquare, fileHashExists } from '$lib/utils';
+	import db from '$lib/db';
 
 	let {
 		multiple = false,
@@ -35,6 +36,8 @@
 		return (bytes / (1024 * 1024)).toFixed(2);
 	};
 
+	let u = $state('');
+
 	/** @param {*} event */
 	const handleFileSelect = async (event) => {
 		errorMessage = '';
@@ -54,7 +57,7 @@
 			errorMessage = `File "${selectedFile.name}" is not an image`;
 			return false;
 		}
-
+		console.log(selectedFile.size)
 		try {
 			const projectId = projects.activeProject?.id || 'no-project-id-found';
 
@@ -62,19 +65,18 @@
 			const url = URL.createObjectURL(croppedFile);
 			threeScene.updateMaterialTexture(url);
 			// WE NEED TO SAVE THESE EVEN IF IT IS A DUPLICATE-- BUT THERE SHOULD BE A BETTER WAY
-			idb.saveTexture({
-				imgFile: croppedFile,
-				seed: 'user-upload',
-				id: 'last-texture',
-				projectId: 'active'
-			});
+			db.saveTexture('last-texture', croppedFile);
+			// idb.saveTexture({
+			// 	imgFile: croppedFile,
+			// 	seed: 'user-upload',
+			// 	id: 'last-texture',
+			// 	projectId: 'active'
+			// });
 			const id = selectedFile.name + '_' + Date.now();
 			cachedKeys.setProjectTexture(projects.activeProject?.id || 'no-project-id-found', id);
 
-			uploadApi.uploadTexture({ id: project.state.id, image: croppedFile });
+			uploadApi.uploadTexture({ id, projectId: project.state.id, image: croppedFile });
 			// END OF SAVING REGLARDLESS OF DUPLICATE
-
-
 
 			const fileHash = await calculateFileHash(croppedFile);
 
@@ -88,15 +90,20 @@
 			// const textureId = `${projects.activeProject?.id}-${CURRENT_TEXTURE}`;
 
 			// Save the file itself to IDB
-			idb.saveTexture({
-				imgFile: croppedFile, // Save the actual File object
-				seed: 'user-upload', // Or whatever metadata you want
-				// id: textureId,
+			db.saveTexture(id, croppedFile, {
 				fileName: selectedFile.name,
-				id,
 				projectId: projects.activeProject?.id || 'no-project-id-found',
 				fileHash
 			});
+			// idb.saveTexture({
+			// 	imgFile: croppedFile, // Save the actual File object
+			// 	seed: 'user-upload', // Or whatever metadata you want
+			// 	// id: textureId,
+			// 	fileName: selectedFile.name,
+			// 	id,
+			// 	projectId: projects.activeProject?.id || 'no-project-id-found',
+			// 	fileHash
+			// });
 		} catch (/** @type {*} */ error) {
 			errorMessage = `Error processing image: ${error.message}`;
 			console.error('Error cropping image:', error);

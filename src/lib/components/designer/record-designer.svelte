@@ -1,6 +1,7 @@
 <script>
 	import { browser } from '$app/environment';
 	import { allCharacterAssets } from '$lib';
+	import db from '$lib/db';
 	import generate from '$lib/generate.svelte';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
@@ -21,11 +22,17 @@
 		if (projects.state.initialized === false) {
 			alert('PROJECT IS NOT INITIALIZED');
 		}
-		if (container && browser) {
-			threeScene.init(container);
-			threeScene.animate();
+		// we don't need to init the db here because it happens in the layout before the project is inited
+		init();
+		async function init() {
+			if (!idb.db) {
+				await idb.init();
+			}
+			if (container && browser) {
+				threeScene.init(container);
+				threeScene.animate();
 
-			idb.init().then(async () => {
+				// idb.init().then(async () => {
 				await generate.refreshAllGeneratedImgs();
 
 				// THESE INSTANCES ARE WAITING FOR THE PROJECT TO BE INITIALIZED
@@ -50,18 +57,26 @@
 					if (loadCachedType === 'texture' || loadCachedType === 'ai') {
 						const textureId = cachedKeys.getProjectTexture(projects.state.activeProject);
 						if (!textureId) {
-							updateTextureWithRandomCharacter()
+							updateTextureWithRandomCharacter();
 							return;
 						}
-						idb.getTexture(textureId).then((textureFile) => {
-							if (!textureFile) {
-								updateTextureWithRandomCharacter()
-								return;
-							}
-							// COULD BE ARRAY BUFFER BUT THESE SEEM TO WORK WITH THREEJS NO MATTER WHAT FOR SOME REASON
-							const url = URL.createObjectURL(textureFile.imgFile);
-							threeScene.updateMaterialTexture(url);
-						});
+						
+						const textureArrayBuffer = await db.getTexture(textureId);
+						if (!textureArrayBuffer) {
+							updateTextureWithRandomCharacter();
+						}
+						const blob = new Blob([textureArrayBuffer], { type: 'img/png' });
+						const url = URL.createObjectURL(blob);
+						threeScene.updateMaterialTexture(url);
+						// idb.getTexture(textureId).then((textureFile) => {
+						// 	if (!textureFile) {
+						// 		updateTextureWithRandomCharacter();
+						// 		return;
+						// 	}
+						// 	// COULD BE ARRAY BUFFER BUT THESE SEEM TO WORK WITH THREEJS NO MATTER WHAT FOR SOME REASON
+						// 	const url = URL.createObjectURL(textureFile.imgFile);
+						// 	threeScene.updateMaterialTexture(url);
+						// });
 					}
 
 					// if (loadCachedType === 'ai') {
@@ -72,7 +87,8 @@
 					// 	}
 					// }
 				}
-			});
+				// });
+			}
 		}
 	});
 

@@ -4,6 +4,7 @@ import project from './project.svelte';
 import idb from './idb';
 import { debounce } from './utils';
 import { cachedKeys } from './storage';
+import db from './db';
 
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -30,7 +31,7 @@ const createProjects = () => {
 				return;
 			}
 			// THIS A BIT JANKY
-			const allProjects = await idb.getAllProjects();
+			const allProjects = await db.getAllProjects()
 			let defaultProject = null;
 			if (allProjects.length) {
 				// CACHE THE LAST PROJECT INSTEAD OF GRABBING THE FIRST ONE?
@@ -58,7 +59,8 @@ const createProjects = () => {
 					details: { ...details.state }
 					// survey: { ...survey.state }
 				});
-				idb.addProject(defaultProject);
+				db.saveProject(defaultProject);
+				// idb.addProject(defaultProject);
 				this.registerProject(defaultProject);
 			}
 
@@ -95,8 +97,9 @@ const createProjects = () => {
 		},
 
 		debouncedSaveToIDB: debounce(function (/** @type {Project} */ project) {
-			idb.addProject(project);
-		}, 500),
+			// idb.addProject(project);
+			db.saveProject(project);
+		}, 5000),
 
 		/** @param {string} projectId */
 		async activateProject(projectId) {

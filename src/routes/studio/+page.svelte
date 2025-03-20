@@ -4,7 +4,6 @@
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import generate from '$lib/generate.svelte';
 	import projects from '$lib/projects.svelte';
-	import three from '$lib/three';
 	import ThreeScene from '$lib/ThreeScene';
 	import { onDestroy, onMount } from 'svelte';
 	import { Spring } from 'svelte/motion';
