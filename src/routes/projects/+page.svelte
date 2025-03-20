@@ -5,13 +5,10 @@
 	import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
 	import db from '$lib/db';
 	import details from '$lib/details.svelte';
-	import idb from '$lib/idb';
 	import project, { createProject } from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
 	import { cachedKeys } from '$lib/storage';
-	import survey from '$lib/survey.svelte';
 	import threeScenes from '$lib/three.svelte';
-	import { text } from '@sveltejs/kit';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -26,12 +23,12 @@
 		// });
 		const newProjectStore = createProject();
 		const newProject = newProjectStore.create({
-			details: { ...details.state },
+			details: { ...details.state }
 			// survey: { ...survey.state }
 		});
 		projects.registerProject(newProject);
 		// idb.addProject(newProject);
-		db.saveProject(newProject)
+		db.saveProject(newProject);
 		projects.activateProject(newProject.id);
 	}
 
@@ -49,7 +46,7 @@
 	$effect(() => {
 		if (project.state.id && project.state.id !== currentProjectId) {
 			currentProjectId = project.state.id;
-			idb.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
+			db.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
 				urls = cachedTextures.map((texture) => {
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 					const url = URL.createObjectURL(blobFromBuffer);
@@ -68,7 +65,7 @@
 
 				let activeTextureId = currentProjectTexture || 'last-texture';
 
-				idb.getTexture(activeTextureId).then((activeTexture) => {
+				db.getTexture(activeTextureId).then((activeTexture) => {
 					if (activeTexture) {
 						const blobFromBuffer = new Blob([activeTexture.arrayBuffer], {
 							type: activeTexture.imgFile.type
@@ -79,39 +76,6 @@
 					}
 				});
 			});
-
-			// projects.cachedTextures = cachedTextures.sort(
-			// 	(/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
-			// 		a.lastModified - b.lastModified
-			// );
-
-			// idb.getGeneratedImgsByProjectId(project.state.id).then((imgs) => {
-			// 	for (const img of imgs) {
-			// 		generatedImgUrls = [...generatedImgUrls, URL.createObjectURL(img.imgBlob)];
-			// 	}
-			// });
-			// idb.getTexture('last-texture').then((texture) => {
-			// 	lastTexture = texture;
-			// });
-			// generate.refreshAllGeneratedImgs().then(() => {
-			// 	idb.getTexturesByProjectId(project.state.id).then((imgs) => {
-			// 		uploadedImgUrls = [];
-			// 		for (const img of imgs) {
-			// 			console.log(`Processing texture:, ${img.id}, 'type:', ${typeof img.imgFile},
-			//      'instanceof Blob:', ${img.imgFile instanceof Blob},
-			//      'instanceof File:', ${img.imgFile instanceof File}`);
-			// 			uploadedImgUrls = [
-			// 				...uploadedImgUrls,
-			//                 img.imgFile
-			// 				// {
-			// 				// 	file: img.imgFile,
-			// 				// 	type: img.seed === 'user-upload' ? 'upload' : 'ai'
-			// 				// }
-			// 			];
-			// 		}
-			// 	});
-			// .catch(alert);
-			// });
 		}
 	});
 
@@ -122,10 +86,10 @@
 
 	function executeDeleteProject() {
 		projects.removeProject(project.state.id);
-		idb.deleteProject(project.state.id);
+		db.deleteProject(project.state.id);
 		const firstProject = projects.state.projects[0];
 		projects.activateProject(firstProject.id);
-		idb.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
+		db.getTexture(`${projects.activeProject?.id}-${CURRENT_TEXTURE}`).then((textureFile) => {
 			if (!textureFile) {
 				console.log('THERE IS NO CURRENT TEXTURE');
 				return;
@@ -146,7 +110,7 @@
 	function executeDeleteImg() {
 		if (!imageToDeleteId) return;
 
-		idb.deleteTexture(imageToDeleteId);
+		db.deleteTexture(imageToDeleteId);
 		urls = urls.filter((url) => url.id !== imageToDeleteId);
 		imageToDeleteId = '';
 	}
@@ -157,10 +121,8 @@
 			type: fileType
 		});
 		try {
-			 idb.saveTexture({
-				imgFile: blobFromBuffer,
+			db.saveTexture('last-texture', blobFromBuffer, {
 				seed: 'user-upload',
-				id: 'last-texture',
 				projectId: 'active'
 			});
 			cachedKeys.setProjectTexture(project.state.id, id);

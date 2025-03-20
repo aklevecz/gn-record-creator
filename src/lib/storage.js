@@ -56,6 +56,10 @@ export const projectStorage = (() => {
 		saveProject: (project) => {
 			storage.setItem(dataKey(project.id), JSON.stringify(project));
 		},
+		/** @param {string} id */
+		deleteProject: (id) => {
+			storage.removeItem(dataKey(id));
+		},
 		/**
 		 * @param {string} id
 		 *  @returns {Project | null} */

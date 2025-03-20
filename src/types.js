@@ -111,3 +111,16 @@
  * @property {string} packaging - Type of LP jacket to print
  * @property {string} notes - Additional project details, comments, and requests
  */
+
+/**
+ * @typedef {Object} ImgData
+ * @property {string} [id]
+ * @property {string} [seed]
+ * @property {string} projectId
+ * @property {string} [fileName]
+ * @property {string} [fileHash]
+ * @property {Blob} [imgBlob]
+ * @property {string} [imgUrl]
+ * @property {string} [prompt]
+ * @property {string | null} [fileType]
+ */

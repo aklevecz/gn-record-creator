@@ -2,6 +2,8 @@
 
 import { serializeDeep } from './utils';
 
+const somethingWrongMessage = `Something went wrong saving or loading your data. Closing this tab or restarting your browser might help. Sorry for the inconvenience.`;
+
 class IDBStorage {
 	constructor() {
 		/** @type {string} */
@@ -29,9 +31,7 @@ class IDBStorage {
 		return new Promise((resolve, reject) => {
 			const request = indexedDB.open(this.dbName, this.version);
 			request.onerror = () => {
-				alert(
-					'Database initiation failed. Restarting your browser might help. Sorry for the inconvenience.'
-				);
+				alert(somethingWrongMessage);
 				reject(new Error('Failed to open indexed db'));
 			};
 
@@ -191,12 +191,12 @@ class IDBStorage {
 		});
 	}
 
-	/** @param {{id: string, projectId: string, imgUrl: string, seed: string, prompt: string, imgBlob: Blob}} entry */
+	/** @param {ImgData} entry */
 	async addGeneratedImg(entry) {
 		await this.set(this.stores.generatedImgs, {
 			...entry,
 			fileName: entry.id,
-			fileType: entry.imgBlob.type,
+			fileType: entry.imgBlob?.type,
 			lastModified: Date.now()
 		});
 		// await this.set(this.stores.generatedImgs, {
@@ -404,9 +404,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				alert(
-					'Something is wrong with the database. If this keeps happening, closing and restarting your browser may help. Sorry for the inconvenience.'
-				);
+				alert(somethingWrongMessage);
 				reject(new Error('Database not initialized'));
 				return;
 			}
@@ -494,52 +492,67 @@ class IDBStorage {
 			console.error('Force reset failed:', e);
 		}
 	}
+
 	/**
-	 * Delete the entire IndexedDB database
+	 * Delete the entire IndexedDB database safely
 	 * @returns {Promise<void>} A promise that resolves when the database is deleted
 	 */
 	async deleteDatabase() {
-		// First ensure all pending transactions are complete
-		// by waiting for any open transactions to finish
-		if (this.db) {
-			const openTransactions = Array.from(this.db.objectStoreNames).map((storeName) => {
-				return new Promise((resolve) => {
-					if (this.db) {
-						const transaction = this.db.transaction(storeName, 'readonly');
-						transaction.oncomplete = resolve;
-						transaction.onerror = resolve; // Still resolve on error
-						transaction.onabort = resolve;
-					}
-				});
+		// Store a reference to the current database connection
+		const currentDb = this.db;
+
+		try {
+			// First mark the database as pending deletion to prevent new transactions
+			this.isDeleting = true;
+
+			// Close the database connection properly
+			if (currentDb) {
+				// Give any in-progress transactions a chance to complete naturally
+				// This is a better approach than forcing them to close
+				await new Promise((resolve) => setTimeout(resolve, 100));
+
+				// Now close the connection
+				currentDb.close();
+				this.db = null;
+			}
+
+			// Now attempt to delete the database
+			return new Promise((resolve, reject) => {
+				console.log(`Attempting to delete database "${this.dbName}"`);
+				const deleteRequest = indexedDB.deleteDatabase(this.dbName);
+
+				deleteRequest.onsuccess = () => {
+					console.log(`Successfully deleted database "${this.dbName}"`);
+					this.isDeleting = false;
+					resolve();
+				};
+
+				/** @param {*} event */
+				deleteRequest.onerror = (event) => {
+					console.error(`Error deleting database "${this.dbName}"`, event.target.error);
+					this.isDeleting = false;
+					reject(event.target.error);
+				};
+
+				deleteRequest.onblocked = (event) => {
+					console.warn(
+						`Database deletion blocked for "${this.dbName}". Waiting for connections to close...`
+					);
+					// Instead of immediately rejecting, we could wait a bit longer
+					setTimeout(() => {
+						if (this.isDeleting) {
+							console.error(`Database deletion still blocked after waiting`);
+							this.isDeleting = false;
+							reject(new Error('Database deletion blocked after timeout'));
+						}
+					}, 5000); // 5 second timeout
+				};
 			});
-
-			// Wait for all transactions to complete
-			await Promise.all(openTransactions);
-
-			// Now close the connection
-			this.db.close();
-			this.db = null;
+		} catch (error) {
+			this.isDeleting = false;
+			console.error(`Unexpected error during database deletion:`, error);
+			throw error;
 		}
-
-		return new Promise((resolve, reject) => {
-			console.log(`Trying to delete database "${this.dbName}"`);
-			const deleteRequest = indexedDB.deleteDatabase(this.dbName);
-
-			deleteRequest.onsuccess = () => {
-				console.log(`Successfully deleted database "${this.dbName}"`);
-				resolve();
-			};
-			/** @param {*} event */
-			deleteRequest.onerror = (event) => {
-				console.error(`Error deleting database "${this.dbName}"`, event.target.error);
-				reject(event.target.error);
-			};
-
-			deleteRequest.onblocked = () => {
-				console.warn(`Database deletion was blocked. Are there other open connections?`);
-				reject(new Error('Database deletion blocked'));
-			};
-		});
 	}
 
 	// Add this to your code

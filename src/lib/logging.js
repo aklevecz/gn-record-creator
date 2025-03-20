@@ -5,8 +5,18 @@ export const baseLogger = new Logtail(BETTER_STACK_TOKEN, {
 	endpoint: BETTER_STACK_ENDPOINT
 });
 
-/** @param {import('@cloudflare/workers-types').ExecutionContext} ctx */
+const noopLogger = {
+    debug: () => {},
+    info: () => {},
+    error: () => {}
+}
+
+/** @param {import('@cloudflare/workers-types').ExecutionContext | undefined} ctx */
 const logger = (ctx) => {
+    if (!ctx) {
+        return noopLogger
+    }
+    
 	const loggingClient = baseLogger.withExecutionContext(ctx);
 
 	return {

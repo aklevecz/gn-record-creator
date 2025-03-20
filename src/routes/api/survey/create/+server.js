@@ -1,4 +1,5 @@
 import dbSurvey from '$lib/db/survey';
+import logger from '$lib/logging';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ cookies, platform, request }) {
@@ -9,7 +10,11 @@ export async function POST({ cookies, platform, request }) {
 	const { id, responses } = await request.json();
 	const session = cookies.get('session');
 	try {
-		await dbSurvey(db).upsert(id, {...responses, session});
+		/** @type {*} ctx */
+		const ctx = platform?.context;
+		const logging = logger(ctx);
+		ctx.waitUntil(dbSurvey(db).upsert(id, {...responses, session}))
+		logging.info(`Created survey ${id} with responses ${JSON.stringify(responses)}`);
 	} catch (e) {
 		console.log(e);
 	}

@@ -12,6 +12,17 @@
 	let { children } = $props();
 
 	onMount(() => {
+		// projectsApi.getProjects().then((fetchedProjects) => {
+		// 	for (const project of fetchedProjects) {
+		// 		const details = unmapDetails(project);
+		// 		console.log(details);
+		// 		projects.registerProject({
+		// 			id: project.id,
+		// 			name: project.project_name,
+		// 			details: { details }
+		// 		});
+		// 	}
+		// });
 		// WE COULD WAIT TO RENDER A BUNCH OF THINGS LIKE THREEJS AFTER THE DB AND PROJECTS ARE INITED
 		idb.init().then(() => {
 			projects.init();
@@ -33,13 +44,14 @@
 		if (!projects.state.initialized) return;
 		if (projects.activeProject?.id && projects.activeProject?.id !== lastProjectId) {
 			lastProjectId = projects.activeProject?.id;
-			surveyApi.get(projects.activeProject.id).then(remoteSurveyData => {
-				console.log('remote survey data', remoteSurveyData);
+			surveyApi.get(projects.activeProject.id).then((remoteSurveyData) => {
+				if (!remoteSurveyData) return null;
+				console.log('Remote survey data', remoteSurveyData);
 				// weak update if remote has newer data some how i dunno
 				for (const entry of Object.entries(details.state.details)) {
 					const [key, value] = entry;
 					const remoteValue = remoteSurveyData[key];
-					const localValue = value.value
+					const localValue = value.value;
 					if (!localValue && remoteValue) {
 						details.setValue(key, remoteValue);
 					}

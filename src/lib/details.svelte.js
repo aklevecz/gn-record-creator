@@ -185,3 +185,26 @@ const createDetails = () => {
 const details = createDetails();
 
 export default details;
+
+/**
+ * Takes remapped details (just key-value pairs) and updates the detailed dictionary
+ * @param {Record<string, string>} remappedDetails - Simple object with key-value pairs
+ * @param {Record<string, Detail>} currentDetailsDict - Current detailed dictionary
+ * @returns {Record<string, Detail>} - Updated detailed dictionary
+ */
+const unmapDetails = (remappedDetails, currentDetailsDict = {...detailsDict}) => {
+	// Create a deep copy of the current details dictionary to avoid mutation
+	const updatedDetailsDict = JSON.parse(JSON.stringify(currentDetailsDict));
+	
+	// Update each value in the details dictionary
+	Object.entries(remappedDetails).forEach(([key, value]) => {
+	  // Only update keys that exist in the current dictionary
+	  if (key in updatedDetailsDict) {
+		updatedDetailsDict[key].value = value;
+	  }
+	});
+	
+	return updatedDetailsDict;
+  };
+  
+  export { unmapDetails };  

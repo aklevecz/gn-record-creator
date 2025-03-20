@@ -1,3 +1,5 @@
+// IS THIS EVEN USED?
+
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ params, request, platform }) {
 	const { id } = params;

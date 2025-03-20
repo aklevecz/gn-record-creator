@@ -15,6 +15,11 @@
       try {
         // await idb.recoverDatabase()
         await idb.deleteDatabase();
+        await fetch('/api/auth', {
+          method: 'DELETE'})
+        // delete session cookie
+        document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
         status = 'Database successfully deleted.';
         
         // Optional: Reinitialize database after deletion

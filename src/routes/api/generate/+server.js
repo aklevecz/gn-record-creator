@@ -84,18 +84,14 @@ const makeReplicateRequestPublic = async (prompt, configuration) => {
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ platform, request }) {
-	if (!platform) {
-		console.log(`No platform found`);
-		throw new Error('No platform found');
-	}
-	/** @type {*} context */
-	const context = platform.context;
-	const logging = logger(context);
+	/** @type {*} */
+	const ctx = platform?.context;
+	const logging = logger(ctx);
 	try {
 		const { prompt, model } = await request.json();
 		const configuration = configurations[model];
 		const data = await makeReplicateRequestPublic(prompt, configuration);
-    logging.info(`Successful image gen call ${JSON.stringify(data)}`);
+		logging.info(`Successful image gen call ${JSON.stringify(data)}`);
 		return json(data);
 	} catch (e) {
 		logging.error(JSON.stringify(e));

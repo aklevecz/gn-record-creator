@@ -8,6 +8,11 @@ const db = () => {
 			idb.addProject(project);
 			projectStorage.saveProject(project);
 		},
+        /** @param {string} projectId */
+        deleteProject(projectId) {
+            idb.deleteProject(projectId);
+            projectStorage.deleteProject(projectId);
+        },
 		async getAllProjects() {
 			try {
 				const allProjects = await idb.getAllProjects();
@@ -16,7 +21,7 @@ const db = () => {
 				return projectStorage.getAllProjectsData();
 			}
 		},
-		/** @param {string} id @param {File | Blob} imgFile @param {{seed?: string, projectId?: string, fileName?: string, fileHash:string}} [options] */
+		/** @param {string} id @param {File | Blob} imgFile @param {ImgData} [options] */
 		async saveTexture(id, imgFile, options) {
 			const arrayBuffer = await imgFile.arrayBuffer();
 			// textureStorage.saveTexture(id, arrayBuffer);
@@ -25,15 +30,21 @@ const db = () => {
 				arrayBuffer,
 				seed: options?.seed || 'user-upload',
 				id,
-				projectId: options?.projectId || 'active'
+				projectId: options?.projectId || 'active',
+                fileHash: options?.fileHash
 			});
 		},
+        /** @param {string} id */
+        async deleteTexture(id) {
+            idb.deleteTexture(id);
+        },
 		/** @param {string} id */
 		async getTexture(id) {
 			// const arrayBuffer = textureStorage.getTexture(id);
 			// if (arrayBuffer) {
 			//     return arrayBuffer;
 			// }
+            console.log(id)
 			const idbTextureEntry = await idb.getTexture(id);
 			return idbTextureEntry.arrayBuffer;
 		},
@@ -41,7 +52,14 @@ const db = () => {
 		/** @param {string} projectId */
 		getTexturesByProjectId(projectId) {
 			return idb.getTexturesByProjectId(projectId);
-		}
+		},
+        async getAllGeneratedImgs() {
+            return idb.getAllGeneratedImgs();
+        },
+        /** @param {ImgData} entry*/
+        async addGeneratedImg(entry) {
+            return idb.addGeneratedImg(entry);
+        }
 	};
 };
 

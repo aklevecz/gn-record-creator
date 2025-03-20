@@ -1,3 +1,5 @@
+// is this more the project api?
+
 /** @param {import('@cloudflare/workers-types').D1Database} db */
 const dbSurvey = (db) => {
 	const tableName = 'gn_request_form';
@@ -31,6 +33,10 @@ const dbSurvey = (db) => {
 		 */
 		async get(id) {
 			return db.prepare(`SELECT * FROM ${tableName} WHERE id = ?`).bind(id).first();
+		},
+		/** @param {string} sessionId */
+		async getAllBySessionId(sessionId) {
+			return db.prepare(`SELECT * FROM ${tableName} WHERE session = ?`).bind(sessionId).all();
 		}
 	};
 };

@@ -1,8 +1,8 @@
 import generateApi from '$lib/api/generate';
 import uploadApi from '$lib/api/upload';
-import idb from '$lib/idb';
 // import storage from "$lib/storage";
 import { fetchImageAsBlob } from '$lib/utils';
+import db from './db';
 import projects from './projects.svelte';
 import { cachedKeys } from './storage';
 // import history from "./history.svelte";
@@ -28,7 +28,7 @@ const createGenerateStore = () => {
 	let generate = $state({ ...defaultState });
 
 	async function refreshAllGeneratedImgs() {
-		const generatedImgs = await idb.getAllGeneratedImgs();
+		const generatedImgs = await db.getAllGeneratedImgs();
 		generate.cachedImgs = generatedImgs.sort(
 			(/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
 				a.lastModified - b.lastModified
@@ -114,7 +114,15 @@ const createGenerateStore = () => {
 					const promptSeed = `${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
 					const id = `${projects.activeProject?.id}-${promptSeed}`;
 					fetchImageAsBlob(imgUrl).then(async function (blob) {
-						await idb.addGeneratedImg({
+						// await idb.addGeneratedImg({
+						// 	id,
+						// 	projectId: projects.activeProject?.id || 'missing-project-id',
+						// 	imgUrl,
+						// 	imgBlob: blob,
+						// 	seed: seed || '',
+						// 	prompt: prompt || ''
+						// });
+						await db.addGeneratedImg({
 							id,
 							projectId: projects.activeProject?.id || 'missing-project-id',
 							imgUrl,
@@ -123,17 +131,30 @@ const createGenerateStore = () => {
 							prompt: prompt || ''
 						});
 
-						await idb.saveTexture({
-							imgFile: blob,
+						// await idb.saveTexture({
+						// 	imgFile: blob,
+						// 	seed: seed || '',
+						// 	id,
+						// 	fileName: promptSeed,
+						// 	projectId: projects.activeProject?.id || 'missing-project-id'
+						// });
+						await db.saveTexture(id, blob, {
+							// imgFile: blob,
 							seed: seed || '',
 							id,
 							fileName: promptSeed,
 							projectId: projects.activeProject?.id || 'missing-project-id'
 						});
 
-						// UNIVERSAL TEXTURE
-						await idb.saveTexture({
-							imgFile: blob,
+						// UNIVERSAL TEXTURE -- MAYBE NOT NECESSARY
+						// await idb.saveTexture({
+						// 	imgFile: blob,
+						// 	seed: seed || '',
+						// 	id: 'last-texture',
+						// 	projectId: 'active',
+						// 	fileName: id
+						// });
+						await db.saveTexture('last-texture', blob, {
 							seed: seed || '',
 							id: 'last-texture',
 							projectId: 'active',
@@ -142,7 +163,11 @@ const createGenerateStore = () => {
 
 						cachedKeys.setProjectTexture(projects.activeProject?.id || 'missing-project-id', id);
 						if (projects.activeProject?.id) {
-							uploadApi.uploadTexture({ id: id, projectId: projects.activeProject?.id, image: blob });
+							uploadApi.uploadTexture({
+								id: id,
+								projectId: projects.activeProject?.id,
+								image: blob
+							});
 						}
 
 						cb(imgUrl);

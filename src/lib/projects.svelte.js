@@ -1,10 +1,9 @@
 // import survey from './survey.svelte';
+import db from './db';
 import details from './details.svelte';
 import project from './project.svelte';
-import idb from './idb';
-import { debounce } from './utils';
 import { cachedKeys } from './storage';
-import db from './db';
+import { debounce } from './utils';
 
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -23,7 +22,6 @@ const createProjects = () => {
 		},
 		get activeProject() {
 			return projects.projects.find((project) => project.id === projects.activeProject);
-			return projects.projects.find((project) => project.name === projects.activeProject);
 		},
 		async init() {
 			if (projects.projects.length) {
@@ -32,6 +30,7 @@ const createProjects = () => {
 			}
 			// THIS A BIT JANKY
 			const allProjects = await db.getAllProjects()
+			// console.log(`allProjects in projects.svelte ${JSON.stringify(allProjects)}`)
 			let defaultProject = null;
 			if (allProjects.length) {
 				// CACHE THE LAST PROJECT INSTEAD OF GRABBING THE FIRST ONE?
@@ -41,6 +40,8 @@ const createProjects = () => {
 						(/** @type {Project} */ p) => p.id === cachedActiveProject
 					);
 				} else {
+				}
+				if (!defaultProject) {
 					defaultProject = allProjects[0];
 				}
 				project.set(defaultProject);
@@ -50,6 +51,7 @@ const createProjects = () => {
 					// 	defaultProject = cachedProject;
 					// 	project.set(defaultProject);
 					// }
+					// console.log(`Registering cachedproject ${JSON.stringify(cachedProject)}`)
 					this.registerProject(cachedProject);
 				}
 			} else {
@@ -90,13 +92,13 @@ const createProjects = () => {
 					return p;
 				});
 
-				this.debouncedSaveToIDB(project);
+				this.debounceSaveToDB(project);
 				// this.activateProject(project.name);
 				this.activateProject(project.id);
 			}
 		},
 
-		debouncedSaveToIDB: debounce(function (/** @type {Project} */ project) {
+		debounceSaveToDB: debounce(function (/** @type {Project} */ project) {
 			// idb.addProject(project);
 			db.saveProject(project);
 		}, 5000),

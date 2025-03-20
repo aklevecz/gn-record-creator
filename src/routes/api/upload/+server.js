@@ -17,6 +17,7 @@ export async function POST({ platform, request }) {
 
 	const contentType = image.type.toLowerCase();
 
+	// for default image
 	const filepath = `cover-uploads/${projectId}`;
 	context.waitUntil(
 		env.R2.put(filepath, image, {
@@ -28,6 +29,7 @@ export async function POST({ platform, request }) {
 		})
 	);
 
+	// for individual images
 	const filepath2 = `cover-uploads/${projectId}/${id}`;
 	context.waitUntil(
 		env.R2.put(filepath2, image, {

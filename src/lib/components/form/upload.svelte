@@ -1,14 +1,12 @@
 <script>
-	import { CURRENT_TEXTURE } from '$lib';
-	import idb from '$lib/idb';
-	import { cachedKeys } from '$lib/storage';
+	import uploadApi from '$lib/api/upload';
 	import project from '$lib/project.svelte';
 	import projects from '$lib/projects.svelte';
-	import uploadApi from '$lib/api/upload';
+	import { cachedKeys } from '$lib/storage';
 	import ThreeScene from '$lib/ThreeScene';
 
-	import { calculateFileHash, cropImageToSquare, fileHashExists } from '$lib/utils';
 	import db from '$lib/db';
+	import { calculateFileHash, cropImageToSquare, fileHashExists } from '$lib/utils';
 
 	let {
 		multiple = false,
@@ -72,13 +70,18 @@
 			// 	id: 'last-texture',
 			// 	projectId: 'active'
 			// });
-			const id = selectedFile.name + '_' + Date.now();
+
+
+			// const id = selectedFile.name + '_' + Date.now();
+			const fileHash = await calculateFileHash(croppedFile);
+			const id = fileHash
+
 			cachedKeys.setProjectTexture(projects.activeProject?.id || 'no-project-id-found', id);
 
-			uploadApi.uploadTexture({ id, projectId: project.state.id, image: croppedFile });
 			// END OF SAVING REGLARDLESS OF DUPLICATE
 
-			const fileHash = await calculateFileHash(croppedFile);
+			uploadApi.uploadTexture({ id: fileHash, projectId: project.state.id, image: croppedFile });
+
 
 			const isDuplicate = await fileHashExists(fileHash, projectId);
 			if (isDuplicate) {
