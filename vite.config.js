@@ -11,7 +11,7 @@ export default defineConfig({
 		sentrySvelteKit({
 			sourceMapsUploadOptions: {
 				org: 'yaytso',
-				project: 'node-cloudflare-pages'
+				project: 'gn-record-creator'
 			}
 		}),
 		sveltekit(),
