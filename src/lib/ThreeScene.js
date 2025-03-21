@@ -1,15 +1,12 @@
-import { colors } from '$lib';
 import * as THREE from 'three';
 import { SceneControls } from './controls/SceneControls';
 import { RecordModel } from './models/RecordModel';
+import { DisplacementShaderEffects } from './utils/DisplacementShaderEffects';
 import { MaterialUtils } from './utils/MaterialUtils';
 import { ShaderUtils } from './utils/ShaderUtils';
-import { setupAnimations, animateObjects } from './animations';
-import { DisplacementShaderEffects } from './utils/DisplacementShaderEffects';
 
 class ThreeScene {
 	constructor() {
-		console.log('THREE CONSTRUCTION NEW');
 		this.container = null;
 		this.width = 0;
 		this.height = 0;

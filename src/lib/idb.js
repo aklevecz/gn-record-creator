@@ -12,6 +12,7 @@ class IDBStorage {
 		this.version = 2;
 		/** @type {IDBDatabase | null} */
 		this.db = null;
+		this.failAlertShown = false;
 
 		this.stores = {
 			textures: 'textures',
@@ -31,7 +32,8 @@ class IDBStorage {
 		return new Promise((resolve, reject) => {
 			const request = indexedDB.open(this.dbName, this.version);
 			request.onerror = () => {
-				alert(somethingWrongMessage);
+				if (!this.failAlertShown) alert(somethingWrongMessage);
+				this.failAlertShown = true;
 				reject(new Error('Failed to open indexed db'));
 			};
 
@@ -122,7 +124,7 @@ class IDBStorage {
 		await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error(`Get texture by hash ${fileHash}: Database not initialized`));
 				return;
 			}
 
@@ -171,7 +173,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error(`Get all textures: Database not initialized`));
 				return;
 			}
 
@@ -214,7 +216,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error('Get all generated images: Database not initialized'));
 				return;
 			}
 
@@ -243,7 +245,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error('Get all projects: Database not initialized'));
 				return;
 			}
 
@@ -293,7 +295,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error(`get ${key}: Database not initialized`));
 				return;
 			}
 
@@ -319,7 +321,7 @@ class IDBStorage {
 		await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error(`Get all textures from projects ${projectId}: Database not initialized`));
 				return;
 			}
 
@@ -347,7 +349,9 @@ class IDBStorage {
 		await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(
+					new Error(`Get all generated images from projects ${projectId}: Database not initialized`)
+				);
 				return;
 			}
 
@@ -376,7 +380,7 @@ class IDBStorage {
 		await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error('getAll Database not initialized'));
 				return;
 			}
 			const transaction = this.db.transaction(storeName, 'readonly');
@@ -404,8 +408,13 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				alert(somethingWrongMessage);
-				reject(new Error('Database not initialized'));
+				if (!this.failAlertShown) alert(somethingWrongMessage);
+				this.failAlertShown = true;
+				reject(
+					new Error(
+						`IDB async set(storeName) ${JSON.stringify(value).slice(0, 50)}: Database not initialized`
+					)
+				);
 				return;
 			}
 			console.log(`Storing ${JSON.stringify(value).slice(0, 50)} in ${storeName}`);
@@ -435,7 +444,7 @@ class IDBStorage {
 		// await this.init();
 		return new Promise((resolve, reject) => {
 			if (!this.db) {
-				reject(new Error('Database not initialized'));
+				reject(new Error(`delete ${key}: Database not initialized`));
 				return;
 			}
 

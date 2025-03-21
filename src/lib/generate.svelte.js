@@ -50,12 +50,12 @@ const createGenerateStore = () => {
 		 */
 		createGeneration: async (prompt, model) => {
 			generate.generating = true;
-			try {
-				let data = await generateApi.generate(prompt, model);
-				return data;
-			} catch (error) {
-				console.error(error);
-			}
+			// try {
+			let data = await generateApi.generate(prompt, model);
+			return data;
+			// } catch (error) {
+			// 	throw new Error(error);
+			// }
 		},
 
 		/**

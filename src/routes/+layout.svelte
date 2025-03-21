@@ -1,9 +1,10 @@
 <script>
 	import { browser } from '$app/environment';
 	import surveyApi from '$lib/api/survey';
+	import projectsApi from '$lib/api/projects';
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
 	import db from '$lib/db';
-	import details from '$lib/details.svelte';
+	import details, { unmapDetails } from '$lib/details.svelte';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
 	import { onDestroy, onMount } from 'svelte';
@@ -12,29 +13,57 @@
 	let { children } = $props();
 
 	onMount(() => {
-		// projectsApi.getProjects().then((fetchedProjects) => {
-		// 	for (const project of fetchedProjects) {
-		// 		const details = unmapDetails(project);
-		// 		console.log(details);
-		// 		projects.registerProject({
-		// 			id: project.id,
-		// 			name: project.project_name,
-		// 			details: { details }
-		// 		});
-		// 	}
-		// });
+
 		// WE COULD WAIT TO RENDER A BUNCH OF THINGS LIKE THREEJS AFTER THE DB AND PROJECTS ARE INITED
 		idb.init().then(() => {
 			projects.init();
 		});
 		if (browser) {
 			window.addEventListener('beforeunload', () => {
-				if (projects.activeProject) db.saveProject(projects.activeProject);
+				// if (projects.activeProject) await db.saveProject(projects.activeProject);
 				idb.close();
 			});
 		}
 	});
 
+	// PROBABLY DONT NEED BOTH OF THESE
+
+	async function fetchRemoteProjects() {
+		projectsApi.getProjects().then((fetchedProjects) => {
+			for (const project of fetchedProjects) {
+				const details = unmapDetails(project);
+				projects.registerProject({
+					id: project.id,
+					name: project.project_name,
+					createdAt: new Date(),
+					pricing: {
+						...project.pricing
+					},
+					details: { details }
+				});
+			}
+		});
+	}
+
+	/** @param {string} projectId */
+	async function fetchRemoteSurvey(projectId) {
+		try {
+			const remoteSurveyData = await surveyApi.get(projectId);
+			if (!remoteSurveyData) return null;
+			// console.log('Remote survey data', remoteSurveyData);
+			// weak update if remote has newer data some how i dunno
+			for (const entry of Object.entries(details.state.details)) {
+				const [key, value] = entry;
+				const remoteValue = remoteSurveyData[key];
+				const localValue = value.value;
+				if (!localValue && remoteValue) {
+					details.setValue(key, remoteValue);
+				}
+			}
+		} catch (/** @type {any} */ e) {
+			throw new Error(e);
+		}
+	}
 	// Local detail updates go
 	// details -> project -> projects
 	// this is ugly, because details updates projects and it tries to update again
@@ -44,19 +73,7 @@
 		if (!projects.state.initialized) return;
 		if (projects.activeProject?.id && projects.activeProject?.id !== lastProjectId) {
 			lastProjectId = projects.activeProject?.id;
-			surveyApi.get(projects.activeProject.id).then((remoteSurveyData) => {
-				if (!remoteSurveyData) return null;
-				console.log('Remote survey data', remoteSurveyData);
-				// weak update if remote has newer data some how i dunno
-				for (const entry of Object.entries(details.state.details)) {
-					const [key, value] = entry;
-					const remoteValue = remoteSurveyData[key];
-					const localValue = value.value;
-					if (!localValue && remoteValue) {
-						details.setValue(key, remoteValue);
-					}
-				}
-			});
+			fetchRemoteSurvey(lastProjectId);
 		} else {
 			if (!projects.activeProject?.id) {
 				console.log('No active project');

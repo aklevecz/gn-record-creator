@@ -44,7 +44,6 @@ const db = () => {
 			// if (arrayBuffer) {
 			//     return arrayBuffer;
 			// }
-            console.log(id)
 			const idbTextureEntry = await idb.getTexture(id);
 			return idbTextureEntry.arrayBuffer;
 		},

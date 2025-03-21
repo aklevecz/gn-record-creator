@@ -95,7 +95,8 @@
 				threeScene.updateMaterialTexture(url)
 		});
 		} catch (/** @type {*} */ e) {
-			alert(e.message);
+			console.log(e)
+			throw new Error(e);
 		}
 	}
 </script>

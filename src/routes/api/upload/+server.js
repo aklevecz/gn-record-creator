@@ -1,3 +1,6 @@
+import errors from '$lib/errors';
+import { error } from '@sveltejs/kit';
+
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ platform, request }) {
 	const formData = await request.formData();
@@ -6,9 +9,9 @@ export async function POST({ platform, request }) {
 	const image = formData.get('image');
 
 	if (!platform) {
-		console.log(`No platform found`);
-		return new Response('No platform found', { status: 500 });
+		throw error(500, errors.PLATFORM_NOT_FOUND);
 	}
+
 	const { context, env } = platform;
 
 	if (!image || !(image instanceof File)) {
@@ -22,7 +25,7 @@ export async function POST({ platform, request }) {
 	context.waitUntil(
 		env.R2.put(filepath, image, {
 			httpMetadata: {
-				'Cache-Control': 'max-age=31536000',
+				// 'Cache-Control': 'max-age=31536000',
 				contentType
 			},
 			customMetadata: {}
@@ -34,7 +37,7 @@ export async function POST({ platform, request }) {
 	context.waitUntil(
 		env.R2.put(filepath2, image, {
 			httpMetadata: {
-				'Cache-Control': 'max-age=31536000',
+				// 'Cache-Control': 'max-age=31536000',
 				contentType
 			},
 			customMetadata: {}

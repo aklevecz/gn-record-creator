@@ -48,7 +48,11 @@ const mondayServerApi = () => {
 					query
 				})
 			});
-
+			if (!res.ok) {
+				const error = await res.text();
+				console.log(`Monday: Error getting boards: ${JSON.stringify(error)}`);
+				throw new Error('Monday: Error getting boards');
+			}
 			const data = await res.json();
 			return data;
 		},
@@ -61,7 +65,7 @@ const mondayServerApi = () => {
 					...acc,
 					[keyToId[key]]: value
 				}),
-				{}
+				{} 
 			);
 			const valuesStrings = JSON.stringify(JSON.stringify(idValues));
 			const query = `mutation {
@@ -80,6 +84,11 @@ const mondayServerApi = () => {
 					query
 				})
 			});
+			if (!res.ok) {
+				const error = await res.text();
+				console.log(`Monday: Error creating item: ${JSON.stringify(error)}`);
+				throw new Error('Monday: Error getting boards');
+			}
 			const data = await res.json();
 			return data;
 		},

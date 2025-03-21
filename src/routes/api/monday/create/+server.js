@@ -1,5 +1,7 @@
 import mondayServer from '$lib/api/monday.server';
+import errors from '$lib/errors';
 import logger from '$lib/logging';
+import { error } from '@sveltejs/kit';
 
 // NEED TO ADD ERROR HANDLING
 
@@ -11,6 +13,7 @@ export async function POST({ platform, request }) {
 	try {
 		const data = await request.json();
 		const existingEntry = await mondayServer.getItemById(data.id);
+
 		if (existingEntry) {
 			const res = await mondayServer.updateItem(existingEntry.id, data.responses);
 			return new Response('UPDATED');
@@ -18,10 +21,8 @@ export async function POST({ platform, request }) {
 		logging.info(`Creating new entry ${data.id}`);
 		const res = await mondayServer.createItem(data.id, data.responses);
 		return new Response('NEW ENTRY');
-
 	} catch (e) {
 		logging.error(`Error updating entry ${JSON.stringify(e)}`);
-		return new Response('ERROR', { status: 500 });
+		return error(500, errors.UPDATE_MONDAY_FAILED);
 	}
-
 }

@@ -16,7 +16,7 @@ export async function GET({ params, request, platform }) {
 	}
 	return new Response(object.body, {
 		headers: {
-			'content-type': object.httpMetadata.contentType || 'image/jpeg',
+			'content-type': object.httpMetadata?.contentType || 'image/jpeg',
 			'cache-control': 'public, max-age=31536000',
 			etag: object.httpEtag
 		}

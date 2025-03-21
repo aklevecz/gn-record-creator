@@ -113,6 +113,7 @@
 		db.deleteTexture(imageToDeleteId);
 		urls = urls.filter((url) => url.id !== imageToDeleteId);
 		imageToDeleteId = '';
+		deleteImageModalOpen = false;
 	}
 
 	/** @param {ArrayBuffer} arrayBuffer @param {*} fileType @param {string} id  */

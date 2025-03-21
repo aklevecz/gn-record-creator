@@ -1,8 +1,9 @@
 import { REPLICATE_API_TOKEN } from '$env/static/private';
 import configurations from '$lib/configurations';
+import errors from '$lib/errors';
 import logger from '$lib/logging';
 // import configuration from "$lib/configuration";
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
 const headers = {
 	Authorization: `Bearer ${REPLICATE_API_TOKEN}`,
@@ -64,22 +65,22 @@ const makeReplicateRequestPublic = async (prompt, configuration) => {
 		}
 	});
 
-	try {
-		const response = await fetch(url, {
-			method: 'POST',
-			headers: headers,
-			body: body
-		});
+	// try {
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: headers,
+		body: body
+	});
 
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error('There was a problem with the fetch operation:', error);
+	if (!response.ok) {
+		throw new Error(`Error trying to generate image on Replicate: ${prompt} ${JSON.stringify(configuration.modelParams)}`);
 	}
+
+	const data = await response.json();
+	return data;
+	// } catch (error) {
+	// 	console.error('There was a problem with the fetch operation:', error);
+	// }
 };
 
 /** @type {import('./$types').RequestHandler} */
@@ -87,15 +88,15 @@ export async function POST({ platform, request }) {
 	/** @type {*} */
 	const ctx = platform?.context;
 	const logging = logger(ctx);
+	const { prompt, model } = await request.json();
 	try {
-		const { prompt, model } = await request.json();
 		const configuration = configurations[model];
 		const data = await makeReplicateRequestPublic(prompt, configuration);
 		logging.info(`Successful image gen call ${JSON.stringify(data)}`);
 		return json(data);
 	} catch (e) {
-		logging.error(JSON.stringify(e));
-		throw new Error(JSON.stringify(e));
+		logging.error(`Failed to generate image on Replicate: ${prompt} ${JSON.stringify(model)}`);
+		throw error(500, errors.IMAGE_GENERATION_FAILED);
 	}
 }
 

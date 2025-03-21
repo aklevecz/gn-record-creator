@@ -34,10 +34,11 @@
 		return (bytes / (1024 * 1024)).toFixed(2);
 	};
 
-	let u = $state('');
+	let error = $state('');
 
 	/** @param {*} event */
 	const handleFileSelect = async (event) => {
+		error = '';
 		errorMessage = '';
 
 		const selectedFile = event.target.files?.[0];
@@ -55,7 +56,7 @@
 			errorMessage = `File "${selectedFile.name}" is not an image`;
 			return false;
 		}
-		console.log(selectedFile.size)
+		console.log(selectedFile.size);
 		try {
 			const projectId = projects.activeProject?.id || 'no-project-id-found';
 
@@ -71,23 +72,31 @@
 			// 	projectId: 'active'
 			// });
 
-
 			// const id = selectedFile.name + '_' + Date.now();
 			const fileHash = await calculateFileHash(croppedFile);
-			const id = fileHash
+			const id = fileHash;
 
 			cachedKeys.setProjectTexture(projects.activeProject?.id || 'no-project-id-found', id);
 
 			// END OF SAVING REGLARDLESS OF DUPLICATE
 
-			uploadApi.uploadTexture({ id: fileHash, projectId: project.state.id, image: croppedFile });
+			uploadApi
+				.uploadTexture({ id: fileHash, projectId: project.state.id, image: croppedFile })
+				.catch((error) => {
+					errorMessage = error.message;
+					throw new Error(error.message);
+				})
+			// uploadApi.uploadTexture({
+			// 	id: fileHash,
+			// 	projectId: project.state.id,
+			// 	image: croppedFile
+			// });
 
-
-			const isDuplicate = await fileHashExists(fileHash, projectId);
-			if (isDuplicate) {
-				console.log(`File "${selectedFile.name}" has already been uploaded`);
-				return false;
-			}
+			// const isDuplicate = await fileHashExists(fileHash, projectId);
+			// if (isDuplicate) {
+			// 	console.log(`File "${selectedFile.name}" has already been uploaded`);
+			// 	return false;
+			// }
 
 			// const textureId = `${projects.state.activeProject}-${CURRENT_TEXTURE}`;
 			// const textureId = `${projects.activeProject?.id}-${CURRENT_TEXTURE}`;
@@ -109,7 +118,8 @@
 			// });
 		} catch (/** @type {*} */ error) {
 			errorMessage = `Error processing image: ${error.message}`;
-			console.error('Error cropping image:', error);
+			console.log('Error cropping image:', error);
+			throw new Error(error.message);
 		}
 	};
 
@@ -158,6 +168,7 @@
 	};
 </script>
 
+<div class="text-center text-red-500">{error}</div>
 {#if previewEnabled && files.length > 0}
 	<div class="preview-container">
 		<div class="preview-grid">
