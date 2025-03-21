@@ -26,7 +26,7 @@ class IDBStorage {
 	 * @returns {Promise<void>}
 	 */
 	async init() {
-		console.log(`Trying to init indexed db "${this.dbName}"`);
+		console.log(`Trying to init indexed db "${this.dbName}" : ${this.db}`);
 		if (this.db) return;
 
 		return new Promise((resolve, reject) => {

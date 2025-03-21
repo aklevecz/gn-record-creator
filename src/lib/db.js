@@ -40,6 +40,9 @@ const db = () => {
         },
 		/** @param {string} id */
 		async getTexture(id) {
+			// SHOULD THIS RETURN AN OBJECT???
+
+			
 			// const arrayBuffer = textureStorage.getTexture(id);
 			// if (arrayBuffer) {
 			//     return arrayBuffer;

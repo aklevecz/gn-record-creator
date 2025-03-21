@@ -18,7 +18,7 @@ export const handle = sequence(
 	sentryHandle()
 );
 
-export const handleError = handleErrorWithSentry();
+// export const handleError = handleErrorWithSentry();
 // import { sequence } from '@sveltejs/kit/hooks';
 
 // // 'https://examplePublicKey@o0.ingest.sentry.io/0'

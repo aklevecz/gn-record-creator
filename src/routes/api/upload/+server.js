@@ -1,5 +1,5 @@
 import errors from '$lib/errors';
-import { error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ platform, request }) {
@@ -43,6 +43,5 @@ export async function POST({ platform, request }) {
 			customMetadata: {}
 		})
 	);
-
-	return new Response('success', { status: 200 });
+	return json({ success: true });
 }

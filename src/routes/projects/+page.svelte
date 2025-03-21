@@ -46,6 +46,7 @@
 	$effect(() => {
 		if (project.state.id && project.state.id !== currentProjectId) {
 			currentProjectId = project.state.id;
+			// GALLERY TEXTURES
 			db.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
 				urls = cachedTextures.map((texture) => {
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
@@ -64,14 +65,12 @@
 				const currentProjectTexture = cachedKeys.getProjectTexture(project.state.id);
 
 				let activeTextureId = currentProjectTexture || 'last-texture';
-
-				db.getTexture(activeTextureId).then((activeTexture) => {
-					if (activeTexture) {
-						const blobFromBuffer = new Blob([activeTexture.arrayBuffer], {
-							type: activeTexture.imgFile.type
+				db.getTexture(activeTextureId).then((activeTextureArrayBuffer) => {
+					if (activeTextureArrayBuffer) {
+						const blobFromBuffer = new Blob([activeTextureArrayBuffer], {
+							type: 'image/png'
 						});
 						const url = URL.createObjectURL(blobFromBuffer);
-						// const url = URL.createObjectURL(activeTexture.imgFile);
 						lastTexture = url;
 					}
 				});

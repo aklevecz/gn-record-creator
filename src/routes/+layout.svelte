@@ -1,9 +1,8 @@
 <script>
 	import { browser } from '$app/environment';
-	import surveyApi from '$lib/api/survey';
 	import projectsApi from '$lib/api/projects';
+	import surveyApi from '$lib/api/survey';
 	import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
-	import db from '$lib/db';
 	import details, { unmapDetails } from '$lib/details.svelte';
 	import idb from '$lib/idb';
 	import projects from '$lib/projects.svelte';
@@ -13,12 +12,11 @@
 	let { children } = $props();
 
 	onMount(() => {
-
 		// WE COULD WAIT TO RENDER A BUNCH OF THINGS LIKE THREEJS AFTER THE DB AND PROJECTS ARE INITED
-		idb.init().then(() => {
-			projects.init();
-		});
 		if (browser) {
+			idb.init().then(() => {
+				projects.init();
+			});
 			window.addEventListener('beforeunload', () => {
 				// if (projects.activeProject) await db.saveProject(projects.activeProject);
 				idb.close();
