@@ -1,7 +1,7 @@
 const surveyApi = () => {
 	const endpoints = {
-		getById: 'api/survey',
-		create: 'api/survey/create'
+		getById: '/api/survey',
+		create: '/api/survey/create'
 	};
 
 	return {

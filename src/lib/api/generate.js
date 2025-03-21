@@ -2,7 +2,7 @@ import configurations from '$lib/configurations';
 import { GenerationErrors } from '$lib/generate.svelte';
 
 let endpoints = {
-	generate: 'api/generate'
+	generate: '/api/generate'
 };
 
 let generateApi = () => {
