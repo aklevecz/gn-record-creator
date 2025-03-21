@@ -93,11 +93,11 @@ const createSurvey = () => {
 		set(newState) {
 			survey = newState;
 		},
-		/** @param {string} questionKey @param {string} answer */
-		answer(questionKey, answer) {
-			survey.answers[questionKey] = answer;
-			project.updateSurvey(survey);
-		},
+		// /** @param {string} questionKey @param {string} answer */
+		// answer(questionKey, answer) {
+		// 	survey.answers[questionKey] = answer;
+		// 	project.updateSurvey(survey);
+		// },
 		remapResponses() {
 			const responses = Object.entries(survey.answers).reduce(
 				(/** @type {Record<string, string>} */ acc, [key, value]) => {

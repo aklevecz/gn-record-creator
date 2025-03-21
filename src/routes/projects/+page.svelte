@@ -41,6 +41,7 @@
 	/** @type {{url:string, id: string, seed:string, fileName: string, blob: Blob, arrayBuffer: ArrayBuffer, fileType: string}[]} */
 	let urls = $state([]);
 
+	let activeTextureId = $state('');
 	// weak onMount after project is initited
 	let currentProjectId = $state('');
 	$effect(() => {
@@ -48,6 +49,10 @@
 			currentProjectId = project.state.id;
 			// GALLERY TEXTURES
 			db.getTexturesByProjectId(project.state.id).then((cachedTextures) => {
+				// urls = cachedTextures.map((texture) => ({
+				// 	url: texture
+				// }))
+				// return
 				urls = cachedTextures.map((texture) => {
 					const blobFromBuffer = new Blob([texture.arrayBuffer], { type: texture.imgFile.type });
 					const url = URL.createObjectURL(blobFromBuffer);
@@ -64,7 +69,7 @@
 
 				const currentProjectTexture = cachedKeys.getProjectTexture(project.state.id);
 
-				let activeTextureId = currentProjectTexture || 'last-texture';
+				activeTextureId = currentProjectTexture || 'last-texture';
 				db.getTexture(activeTextureId).then((activeTextureArrayBuffer) => {
 					if (activeTextureArrayBuffer) {
 						const blobFromBuffer = new Blob([activeTextureArrayBuffer], {
@@ -126,6 +131,7 @@
 				projectId: 'active'
 			});
 			cachedKeys.setProjectTexture(project.state.id, id);
+			activeTextureId = id
 		} catch (error) {
 			alert(`SAVE ERROR ${error}`);
 		}
@@ -195,16 +201,26 @@
 			<div class="imgs">
 				{#each urls as { url, id, seed, fileName, blob, arrayBuffer, fileType }}
 					{@const isGenerated = seed !== 'user-upload'}
+					{@const isActive = activeTextureId === id}
 					<div
 						style={isGenerated
 							? 'background-color: var(--purple);'
 							: 'background-color: var(--green);color:black;l'}
 						class="history-img-container flex flex-col"
-						onclick={() => activateTexture(arrayBuffer, fileType, id)}
 					>
 						<img src={url} alt="" class="history-img" />
 						<div class="history-file-name">{fileName}</div>
-						<button class="delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
+						<div>
+							<button
+								class:is_active={isActive}
+								disabled={isActive}
+								onclick={() => activateTexture(arrayBuffer, fileType, id)}
+								class="little-button">{isActive ? 'Active' : 'Activate'}</button
+							>
+							<button class="little-button delete-button" onclick={() => confirmDeleteImg(id)}
+								>Delete</button
+							>
+						</div>
 					</div>
 				{/each}
 			</div>
@@ -249,7 +265,13 @@
 	}
 	.imgs img {
 	}
+	.little-button {
+		@apply mx-auto mt-auto px-2 py-1 text-xs;
+	}
 	.delete-button {
-		@apply mx-auto mt-auto bg-red-500 px-2 py-1 text-xs text-[var(--secondary-color)];
+		@apply bg-red-500 text-[var(--secondary-color)];
+	}
+	.is_active {
+		@apply opacity-30;
 	}
 </style>

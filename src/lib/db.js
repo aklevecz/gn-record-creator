@@ -1,6 +1,8 @@
 import idb from './idb';
 import { projectStorage } from './storage';
 
+import r2Api from '$lib/api/r2';
+
 const db = () => {
 	return {
 		/** @param {Project} project */
@@ -53,6 +55,7 @@ const db = () => {
 
 		/** @param {string} projectId */
 		getTexturesByProjectId(projectId) {
+			// return r2Api.getAllUploadsByProjectId(projectId)
 			return idb.getTexturesByProjectId(projectId);
 		},
         async getAllGeneratedImgs() {

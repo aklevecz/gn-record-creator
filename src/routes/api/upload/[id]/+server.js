@@ -1,5 +1,7 @@
 // IS THIS EVEN USED?
 
+import { cover } from 'three/src/extras/TextureUtils.js';
+
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ params, request, platform }) {
 	const { id } = params;
@@ -9,7 +11,10 @@ export async function GET({ params, request, platform }) {
 		return new Response('No platform found', { status: 500 });
 	}
 	const { env } = platform;
-	const file = `cover-uploads/${id}`;
+
+	const coverUploadsPrefix = 'cover-uploads'
+
+	const file = `${coverUploadsPrefix}/${id}`;
 	const object = await env.R2.get(file);
 	if (!object) {
 		return new Response('Image not found', { status: 404 });

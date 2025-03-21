@@ -417,7 +417,7 @@ class IDBStorage {
 				);
 				return;
 			}
-			console.log(`Storing ${JSON.stringify(value).slice(0, 50)} in ${storeName}`);
+			console.log(`Storing ${JSON.stringify(value)} in ${storeName}`);
 			const transaction = this.db.transaction(storeName, 'readwrite');
 			const store = transaction.objectStore(storeName);
 			// console.log(`Store is ${store}`);

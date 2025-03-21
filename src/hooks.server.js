@@ -2,6 +2,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 // import * as Sentry from '@sentry/sveltekit';
 import { handleErrorWithSentry, sentryHandle, initCloudflareSentryHandle } from '@sentry/sveltekit';
 import { PUBLIC_SENTRY_ENDPOINT } from '$env/static/public';
+import { dev } from '$app/environment';
 
 // Sentry.init({
 // 	dsn: PUBLIC_SENTRY_ENDPOINT,
@@ -13,6 +14,7 @@ import { PUBLIC_SENTRY_ENDPOINT } from '$env/static/public';
 export const handle = sequence(
 	initCloudflareSentryHandle({
 		dsn: PUBLIC_SENTRY_ENDPOINT,
+		environment: dev ? 'development' : 'production',
 		tracesSampleRate: 1.0
 	}),
 	sentryHandle()
