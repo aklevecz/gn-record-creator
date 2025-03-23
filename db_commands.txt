@@ -21,7 +21,9 @@ npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_requ
   metalwork TEXT,
   test_prints TEXT,
   packaging TEXT,
-  notes TEXT
+  notes TEXT,
+  status TEXT,
+  session TEXT
 );"
 
 
@@ -29,4 +31,5 @@ npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD CO
 npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD COLUMN session TEXT"
 
 npx wrangler d1 execute DB --local --command "SELECT * FROM gn_request_form"
+npx wrangler d1 execute DB --local --command "SELECT session FROM gn_request_form"
 npx wrangler d1 execute DB --local --command "DELETE FROM gn_request_form;"

@@ -1,11 +1,10 @@
 <script>
 	import generate from '$lib/generate.svelte';
-	import idb from '$lib/idb';
+	import projects from '$lib/projects.svelte';
+	import { cachedKeys } from '$lib/storage';
 	import { fade } from 'svelte/transition';
 	import Upload from '../form/upload.svelte';
-	import { cachedKeys } from '$lib/storage';
-	import projects from '$lib/projects.svelte';
-	import db from '$lib/db';
+    import project from '$lib/project.svelte';
 
 	let { isMinimized = $bindable(), threeScene } = $props();
 
@@ -16,7 +15,7 @@
 	 */
 
 	/** @type {ButtonView} buttonView*/
-	let buttonView = $state('ai');
+	let buttonView = $state('history');
 
 	/** @type {Record<Status, string>}*/
 	const generatingMessages = {
@@ -28,18 +27,13 @@
 		failed: 'Failed'
 	};
 
-	/** @param {{url: string, blob: Blob, id: string}} props */
-	function showImgOnCover({ url, blob, id }) {
+	/** @param {{url: string, id: string}} props */
+	function showImgOnCover({ url, id }) {
+		// should be synced with active texture instead of this url-- but whatever
 		threeScene.updateMaterialTexture(url);
-		db.saveTexture('last-texture', blob);
-		// idb.saveTexture({
-		// 	imgFile: blob,
-		// 	seed: 'user-upload',
-		// 	id: 'last-texture',
-		// 	projectId: 'active'
-		// });
 		if (projects.activeProject) {
 			cachedKeys.setProjectTexture(projects.activeProject.id, id);
+			project.generateActiveTexture()
 		}
 	}
 
@@ -48,37 +42,6 @@
 		isMinimized = false;
 		buttonView = view;
 	}
-
-	// NOT NECESSARY
-	function resizeButtonContainer() {
-		// if (window.innerWidth < 1024) {
-		// 	isMobile = true;
-		// 	const rect = document.querySelector('.buttons-container')?.getBoundingClientRect();
-		// 	if (rect) {
-		// 		buttonContainerHeight = `${rect.height}px`;
-		// 		buttonContainerHeight = `${360}px`
-		// 		buttonContainerHeight = 'auto'
-		// 	}
-		// } else {
-		// 	isMobile = false;
-		// 	buttonContainerHeight = 'auto';
-		// }
-	}
-
-	let isMobile = $state(true);
-	let buttonContainerHeight = $state('auto');
-	// onMount(() => {
-	// 	if (browser) {
-	// 		resizeButtonContainer();
-	// 		window.addEventListener('resize', resizeButtonContainer);
-	// 	}
-	// });
-
-	// onDestroy(() => {
-	// 	if (browser) {
-	// 		window.removeEventListener('resize', resizeButtonContainer);
-	// 	}
-	// });
 
 	async function onGenerate() {
 		threeScene.toggleShader();
@@ -90,22 +53,20 @@
 				throw new Error('id is missing');
 			}
 			console.log(`Polling generation: ${data.id}`);
-			generate.pollGeneration(data.id, (/** @type {string} */ url) =>{
+			generate.pollGeneration(data.id, (/** @type {string} */ url) => {
 				threeScene.toggleShader();
-				threeScene.updateMaterialTexture(url)
-		});
+				threeScene.updateMaterialTexture(url);
+			});
 		} catch (/** @type {*} */ e) {
-			console.log(e)
+			console.log(e);
 			throw new Error(e);
 		}
 	}
+
+	// style={isMinimized ? 'height: 40px;' : `height: ${buttonContainerHeight} `}
 </script>
 
-<div
-	style={isMinimized ? 'height: 40px;' : `height: ${buttonContainerHeight} `}
-	class:minimized={isMinimized}
-	class="buttons-container"
->
+<div class:minimized={isMinimized} class="buttons-container">
 	<div class="view-button-container">
 		<button class="view-button" class:active={buttonView === 'ai'} onclick={() => toggleView('ai')}
 			>Dream</button
@@ -121,8 +82,15 @@
 			onclick={() => toggleView('history')}>History</button
 		>
 		<div class="flex-1"></div>
-		<button onclick={() => (isMinimized = !isMinimized)} class="view-button"
-			>{isMinimized ? '∧' : '▼'}</button
+		<button
+			style="background:none;"
+			onclick={() => (isMinimized = !isMinimized)}
+			class="view-button"
+			><img
+				style="width: 24px; height: 24px;"
+				src={isMinimized ? '/icons/maximize.svg' : '/icons/minimize.svg'}
+				alt={isMinimized ? 'Maximize' : 'Minimize'}
+			/></button
 		>
 	</div>
 	{#if !isMinimized}
@@ -165,7 +133,7 @@
 			</div>
 		{/if}
 		{#if buttonView === 'history'}
-			<div class="px-10">This is where you store your dreams</div>
+			<div class="px-10">This is where your dreams are stored</div>
 			{#if generate.state.cachedImgs.length === 0}
 				<div>No dreams yet. What are you waiting for?</div>
 				<img src="/characters/hifive-color.svg" class="h-20 invert md:h-auto" alt="Infatuation" />
@@ -173,18 +141,52 @@
 			{/if}
 			<div class="history-container overflow-scroll">
 				{#each generate.state.cachedImgs as cachedImg}
-					{@const url = URL.createObjectURL(cachedImg.imgBlob)}
-					<button
-						class="history-img-button"
-						onclick={() => showImgOnCover({ url, blob: cachedImg.imgBlob, id: cachedImg.id })}
-					>
-						<img src={url} alt="" class="history-img" /></button
-					>
+					{@const url = URL.createObjectURL(new Blob([cachedImg.arrayBuffer], { type: 'image/webp' }))}
+					<div class="history-img">
+						<img src={url} alt="" />
+						<button
+							class="history-img-button"
+							onclick={() => showImgOnCover({ url, id: cachedImg.id })}
+							>Make Cover Art
+						</button>
+					</div>
 				{/each}
 			</div>
 		{/if}
 	{/if}
 </div>
+
+<!-- 
+// NOT NECESSARY
+function resizeButtonContainer() {
+	// if (window.innerWidth < 1024) {
+	// 	isMobile = true;
+	// 	const rect = document.querySelector('.buttons-container')?.getBoundingClientRect();
+	// 	if (rect) {
+	// 		buttonContainerHeight = `${rect.height}px`;
+	// 		buttonContainerHeight = `${360}px`
+	// 		buttonContainerHeight = 'auto'
+	// 	}
+	// } else {
+	// 	isMobile = false;
+	// 	buttonContainerHeight = 'auto';
+	// }
+}
+
+let isMobile = $state(true);
+let buttonContainerHeight = $state('auto');
+// onMount(() => {
+// 	if (browser) {
+// 		resizeButtonContainer();
+// 		window.addEventListener('resize', resizeButtonContainer);
+// 	}
+// });
+
+// onDestroy(() => {
+// 	if (browser) {
+// 		window.removeEventListener('resize', resizeButtonContainer);
+// 	}
+// }); -->
 
 <style lang="postcss">
 	@reference "tailwindcss/theme";
@@ -195,8 +197,9 @@
 		@apply fixed bottom-0 left-0 z-1 flex w-full flex-col items-center justify-center bg-[var(--primary-color)] py-3 md:static md:bottom-10;
 	}
 
+	/* THIS IS A HACK - DECREASING THE WIDTH CREATES A CONVENIENT PIVOT FOR THE ROTATION ON LAPTOP */
 	.buttons-container.minimized {
-		@apply md:w-[80px] md:rotate-[90deg];
+		@apply md:absolute md:top-[10%] md:left-[95%] md:h-[40px] md:origin-left md:rotate-[90deg];
 	}
 
 	/* .buttons-container.minimized {
@@ -244,14 +247,12 @@
 		@apply grid grid-cols-3 gap-2 p-2;
 	}
 
-	.history-img-button {
-		background-color: none;
-		background: none;
-		@apply p-1;
+	.history-img {
+		@apply flex flex-col w-full gap-2;
 	}
 
-	.history-img {
-		@apply w-full;
+	.history-img-button {
+		@apply text-xs p-1;
 	}
 
 	.generating {

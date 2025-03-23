@@ -51,37 +51,54 @@
 	let trippingOut = $state(false);
 </script>
 
-<div class="h-[80vh] md:flex md:h-auto">
+<div class="studio-container">
+	<!-- TRIP OUT BUTTON -->
 	{#if !generate.state.generating}<button
 			class:trippingOut
-			class="absolute top-14 right-2 text-xs z-20"
+			class="absolute top-14 right-2 z-20 text-xs"
 			onclick={() => {
 				trippingOut = !trippingOut;
 				threeScene.toggleDisplacementShader();
 			}}>TRIP OUT</button
 		>{/if}
-	{#if projects.state.initialized}<div
-			class="three-wrapper md:sticky md:top-0"
-			class:minimized={isMinimized}
-		>
+	<!-- END TRIP OUT BUTTON -->
+
+	<!-- RECORD MODEL -->
+	{#if projects.state.initialized}<div class="three-wrapper" class:minimized={isMinimized}>
 			<RecordDesigner {threeScene} loadCachedType="ai" />
 		</div>{/if}
+	<!-- END RECORD MODEL  -->
+
+	<!-- CONTROLS -->
 	<ButtonsContainer {threeScene} bind:isMinimized />
-	<div style="left:{spring.current}%;" class="cute-feedback absolute bottom-50 h-[258px] w-[200px] z-30">
+	<!-- END CONTROLS -->
+
+	<!-- GROOVY FEEDBACK -->
+	<div
+		style="left:{spring.current}%;"
+		class="cute-feedback"
+	>
 		<div class="h-ful relative w-full">
 			<div class="absolute top-0 right-0 rounded-lg bg-white p-4 text-black">Sick!</div>
 			<img class="h-full w-full" src="/characters/spin-color.svg" alt="spin" />
 		</div>
 	</div>
+	<!-- GROOVY FEEDBACK -->
 </div>
 
 <style lang="postcss">
 	@reference "tailwindcss/theme";
+	.studio-container {
+		@apply h-[80vh] md:flex md:h-auto;
+	}
 	.three-wrapper {
-		@apply h-[65%] md:h-[90vh] md:w-[50vw] md:flex-[1_0_50%];
+		@apply h-[65%] md:sticky md:top-0 md:h-[90vh] md:w-[50vw] md:flex-[1_0_50%];
 	}
 	.three-wrapper.minimized {
 		@apply h-[93%] md:h-[90vh] md:w-[90vw];
+	}
+	.cute-feedback {
+		@apply absolute bottom-50 z-30 h-[258px] w-[200px];
 	}
 	button.trippingOut {
 		animation: hueShift 2s infinite linear;

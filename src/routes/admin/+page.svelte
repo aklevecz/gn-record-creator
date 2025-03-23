@@ -15,6 +15,7 @@
       try {
         // await idb.recoverDatabase()
         await idb.deleteDatabase();
+        localStorage.clear();
         await fetch('/api/auth', {
           method: 'DELETE'})
         // delete session cookie
@@ -70,6 +71,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       background-color: #f8f8f8;
+      color: black;
     }
     
     h3 {

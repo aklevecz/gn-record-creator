@@ -15,6 +15,10 @@ export default {
         message: 'Failed to get project',
         code: 'GET_PROJECT_FAILED'
     },
+    DELETE_PROJECT_FAILED: {
+        message: 'Failed to delete project',
+        code: 'DELETE_PROJECT_FAILED'
+    },
     NO_SESSION_FOUND: {
         message: 'No session found',
         code: 'NO_SESSION_FOUND'
@@ -26,5 +30,9 @@ export default {
     IMAGE_GENERATION_FAILED: {
         message: 'Failed to generate image',
         code: 'IMAGE_GENERATION_FAILED'
+    },
+    SUBMISSION_NOT_FOUND: {
+        message: 'Submission not found',
+        code: 'SUBMISSION_NOT_FOUND'
     }
 }

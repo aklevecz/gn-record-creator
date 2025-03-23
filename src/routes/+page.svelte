@@ -11,14 +11,17 @@
 	import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
 	import { debounce, hashFunction } from '$lib/utils';
 	import projects from '$lib/projects.svelte';
+	import { dev } from '$app/environment';
 
-
-	let submitting = $state(false)
+	let submitting = $state(false);
 	async function submitInfo() {
 		submitting = true;
 		const detailResponses = details.remapDetails();
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		await surveyApi.create({ id: project.state.id, responses: { ...detailResponses, status: "submitted" } });
+		await surveyApi.create({
+			id: project.state.id,
+			responses: { ...detailResponses, status: 'submitted' }
+		});
 		await mondayClientApi.create({
 			id: project.state.id,
 			responses: { ...detailResponses, status: 'Submitted' }
@@ -27,14 +30,17 @@
 		goto(`/submission/${project.state.id}`);
 	}
 
-	const FIVE_SECONDS  = 5 * 1000;
+	const FIVE_SECONDS = 5 * 1000;
 	const ONE_MINUTE_MS = 60 * 1000;
 	const THIRTY_SECONDS_MS = 30 * 1000;
 
-	const debouncedCreate = debounce((/** @type {*} */ collectedData) => {
-		mondayClientApi.create(collectedData);
-		surveyApi.create(collectedData);
-	}, FIVE_SECONDS);
+	const debouncedSaveRemote = debounce(
+		(/** @type {*} */ collectedData) => {
+			mondayClientApi.create(collectedData);
+			surveyApi.create(collectedData);
+		},
+		dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
+	);
 
 	let detailsHash = $state('');
 	// THIS GETS TRIGGERED A LOT AT INITIATION
@@ -49,21 +55,24 @@
 			return;
 		}
 
+		// THIS COULD ALSO JUST BE IN DETAILS? - but it's also kind of nice to have it explicitly on this page
 		if (hash !== detailsHash) {
 			detailsHash = hash;
-			// mondayClientApi.create({ id: project.state.id, responses: { ...detailResponses } });
-			debouncedCreate({ id: project.state.id, responses: { ...detailResponses } });
+			debouncedSaveRemote({ id: project.state.id, responses: { ...detailResponses } });
 		}
 	});
 </script>
-<div class="mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0">
-	<h1 class="text-2xl font-bold">Record Setup Form</h1>
-	<div class="text-xs">
+
+<div class="survey-page">
+	<h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
+	<div class="survey-page-cta text-xs">
 		Please fill out the following information so we can set up your project in our system, verify
 		production schedule and get you quotes.
 	</div>
 
-	<div class="mt-4 flex flex-col gap-4">
+	<!-- COULD BE ITS OWN COMPONTENT CALLED LIKE SURVEYSOMETHING -->
+	<!-- BEGIN SURVEY -->
+	<div class="survey-questions">
 		{#each Object.entries(details.state.details) as [key, detail]}
 			{@const type = detail.type}
 			{#if type === 'select'}
@@ -76,25 +85,46 @@
 			{/if}
 		{/each}
 	</div>
+	<!-- END SURVEY -->
+
+	<!-- FLOATING THREEJS RECORD VISUAL -->
 	{#if projects.state.initialized}<ThreeHomepage />{/if}
-	<div class="my-10">
-		<div class="text- mb-2 p-4">
+	<!-- END FLOATING THREEJS RECORD VISUAL -->
+
+	<!-- SUBMIT SURVEY -->
+	<div class="survey-submit my-10">
+		<div class="survey-submit-cta mb-2 p-4">
 			Press submit if you have finished filling out all of the required info. You will be able to
 			edit things later.
 		</div>
-		<button onclick={submitInfo} class="mx-auto block text-2xl">
+		<button onclick={submitInfo} class="mx-auto block text-xl">
 			{#if submitting}
-		<img class="mx-auto" class:isSubmitting={submitting} src="/characters/juggle-color.svg" alt="juggle graphic">
-			Submitting
+				<img
+					class="mx-auto"
+					class:isSubmitting={submitting}
+					src="/characters/juggle-color.svg"
+					alt="juggle graphic"
+				/>
+				Submitting
 			{:else}
 				Submit
 			{/if}
 		</button>
 	</div>
+	<!-- END SUBMIT SURVEY -->
+
 </div>
 
 <style lang="postcss">
 	@reference "tailwindcss/theme";
+
+	.survey-page {
+		@apply  mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0;
+	}
+
+	.survey-questions {
+		@apply  mt-4 flex flex-col gap-4;
+	}
 
 	.design-creator-container {
 		@apply fixed md:fixed md:top-0;

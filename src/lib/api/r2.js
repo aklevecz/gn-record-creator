@@ -4,7 +4,10 @@ const r2Api = () => {
     }
 
     return {
-        /** @param {string} projectId */
+        /** 
+         * @param {string} projectId 
+         * @returns {Promise<string[]>}
+        */
         getAllUploadsByProjectId: async (projectId) => {
             const res = await fetch(`${endpoints.coverUploads}/${projectId}`);
             const data = await res.json();
@@ -12,7 +15,6 @@ const r2Api = () => {
                 console.log(`Error getting uploads for project ${projectId}: ${JSON.stringify(data)}`);
                 throw new Error(`${data.code}: ${data.message}`)
             }
-            console.log(data)
             return data
         }
     }

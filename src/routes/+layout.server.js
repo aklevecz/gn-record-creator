@@ -12,5 +12,5 @@ export async function load({ cookies }) {
 		};
 		cookies.set('session', crypto.randomUUID(), options);
 	}
-	return {};
+	return {session};
 }

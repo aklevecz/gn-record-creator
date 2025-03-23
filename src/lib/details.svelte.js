@@ -1,4 +1,5 @@
 import { colors } from '$lib';
+import projects from './projects.svelte';
 import project from './project.svelte';
 import { toCamelCase } from './utils';
 

@@ -78,12 +78,18 @@
  * @property {number} estimatedCost
  */
 
+/** 
+ * @typedef Texture
+ * @property {string} fileHash
+ */
+
 /**
  * @typedef {Object} Project
  * @property {string} id
  * @property {string} name
  * @property {Date} createdAt
  * @property {Details | null} details
+ * @property {Texture[]} textures
  * @property {Pricing} pricing
  */
 
@@ -124,3 +130,26 @@
  * @property {string} [prompt]
  * @property {string | null} [fileType]
  */
+
+  /** 
+   * @typedef {Object} TextureObject
+   * @property {string} url
+   * @property {string} id
+   * @property {string} seed
+   * @property {string} fileName
+   * @property {string} fileType
+   * @property {ArrayBuffer} arrayBuffer
+  */
+
+    /** 
+   * @typedef {Object} IDBTextureObject
+   * @property {ArrayBuffer} arrayBuffer
+   * @property {string} fileHash
+   * @property {string} fileName
+   * @property {string} fileType
+   * @property {string} id
+   * @property {number} lastModified
+   * @property {string} projectId
+   * @property {string} seed
+  */
+

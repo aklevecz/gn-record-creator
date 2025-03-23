@@ -1,4 +1,6 @@
-// is this more the project api?
+// ID IS PROJECT_ID
+
+// is this more the Project api?
 
 /** @param {import('@cloudflare/workers-types').D1Database} db */
 const dbSurvey = (db) => {
@@ -37,6 +39,10 @@ const dbSurvey = (db) => {
 		/** @param {string} sessionId */
 		async getAllBySessionId(sessionId) {
 			return db.prepare(`SELECT * FROM ${tableName} WHERE session = ?`).bind(sessionId).all();
+		},
+		/** @param {string} projectId */
+		async deleteByProjectId(projectId) {
+			return db.prepare(`DELETE FROM ${tableName} WHERE id = ?`).bind(projectId).run();
 		}
 	};
 };

@@ -24,8 +24,7 @@
 		}
 	});
 
-	// PROBABLY DONT NEED BOTH OF THESE
-
+	// FETCHES PROJECTS BY SESSION
 	async function fetchRemoteProjects() {
 		projectsApi.getProjects().then((fetchedProjects) => {
 			for (const project of fetchedProjects) {
@@ -37,6 +36,7 @@
 					pricing: {
 						...project.pricing
 					},
+					textures: [],
 					details: { details }
 				});
 			}
@@ -47,7 +47,10 @@
 	async function fetchRemoteSurvey(projectId) {
 		try {
 			const remoteSurveyData = await surveyApi.get(projectId);
-			if (!remoteSurveyData) return null;
+			if (!remoteSurveyData) {
+				console.log('No remote survey data for project:', projectId);
+				return null;
+			}
 			// console.log('Remote survey data', remoteSurveyData);
 			// weak update if remote has newer data some how i dunno
 			for (const entry of Object.entries(details.state.details)) {
@@ -69,17 +72,17 @@
 	let lastProjectId = '';
 	$effect(() => {
 		if (!projects.state.initialized) return;
-		if (projects.activeProject?.id && projects.activeProject?.id !== lastProjectId) {
-			lastProjectId = projects.activeProject?.id;
-			fetchRemoteSurvey(lastProjectId);
-		} else {
-			if (!projects.activeProject?.id) {
-				console.log('No active project');
-			}
-			if (projects.activeProject?.id === lastProjectId) {
-				console.log('Project id did not change');
-			}
+		const projectId = projects.activeProject?.id;
+		if (!projectId) {
+			console.log('No active project');
+			return
 		}
+		if (projectId === lastProjectId) {
+			// console.log('Project id did not change');
+			return
+		}
+		fetchRemoteSurvey(projectId);
+		lastProjectId = projectId;
 	});
 
 	onDestroy(() => {
