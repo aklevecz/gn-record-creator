@@ -31,15 +31,25 @@ class IDBStorage {
         );
         if (this.db) return;
 
+        let timeout = setTimeout(() => {
+            if (!this.failAlertShown) alert(somethingWrongMessage);
+            this.failAlertShown = true;
+            alert('Failed to open the cached db. Closing the tab or restarting the browser might help. If not yell at ari, ariel@yaytso.art');
+            throw new Error('Failed to open indexed db');
+        }, 10000);
+
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, this.version);
             request.onerror = () => {
+                clearTimeout(timeout);
                 if (!this.failAlertShown) alert(somethingWrongMessage);
                 this.failAlertShown = true;
+                throw new Error('Failed to open indexed db')
                 reject(new Error('Failed to open indexed db'));
             };
 
             request.onsuccess = () => {
+                clearTimeout(timeout);
                 this.db = request.result;
                 console.log(
                     `idb.js IDBStorage init, request.onsuccess, Successfully initialized - ${this.dbName}`

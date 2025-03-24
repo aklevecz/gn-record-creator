@@ -1,11 +1,12 @@
-// import survey from './survey.svelte';
+import { dev } from '$app/environment';
+import { FIVE_SECONDS, ONE_SECOND_MS, THIRTY_SECONDS_MS } from './constants';
 import db from './db';
 import details from './details.svelte';
-import project from './project.svelte';
+import project, { defaultProjectState } from './project.svelte';
 import { cachedKeys } from './storage';
 import { debounce } from './utils';
-
-const ONE_SECOND_MS = 1000;
+import surveyApi from '$lib/api/survey';
+import mondayClientApi from '$lib/api/monday';
 
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -26,7 +27,7 @@ const createProjects = () => {
             return projects.projects.find((project) => project.id === projects.activeProject);
         },
         async init() {
-			// STILL SHOULD DO SOME LOGIC TO FETCH REMOTE PROJECTS AND COMPARE THEM TO LOCAL
+            // STILL SHOULD DO SOME LOGIC TO FETCH REMOTE PROJECTS AND COMPARE THEM TO LOCAL
             if (projects.projects.length) {
                 console.log('Projects already loaded');
                 return;
@@ -34,8 +35,21 @@ const createProjects = () => {
             const allProjects = await db.getAllProjects();
             let defaultProject = null;
 
-			// If there are existing projects in the cache
+            // If there are existing projects in the cache
             if (allProjects.length) {
+                console.log("Loading existing projects")
+                // Might be important to make sure cached data shares the same current model as things are changing
+                // Or need to version the local state as well-- though this also works?
+                for (let cachedProject of allProjects) {
+                    if (Object.keys(defaultProjectState).every(key => cachedProject[key])) {
+                        console.log(`Project ${cachedProject.id} has all expected keys`)
+                    } else {
+                        console.log(`Project ${cachedProject.id} does not have all expected keys`)
+                        cachedProject = {...defaultProjectState, ...cachedProject} 
+                    }
+                    this.registerProject(cachedProject);
+                }
+
                 const cachedActiveProject = cachedKeys.getActiveProject();
                 if (cachedActiveProject) {
                     defaultProject = allProjects.find(
@@ -45,12 +59,8 @@ const createProjects = () => {
                 if (!defaultProject) {
                     defaultProject = allProjects[0];
                 }
-
-                for (const cachedProject of allProjects) {
-                    this.registerProject(cachedProject);
-                }
             } else {
-				// If there are no existing projects, then create a default project
+                // If there are no existing projects, then create a default project
                 defaultProject = project.create({
                     name: 'default',
                     details: { ...details.state },
@@ -69,8 +79,13 @@ const createProjects = () => {
             projects.projects = [...projects.projects, project];
         },
         /** @param {string} projectId */
-        removeProject(projectId) {
+        unregisterProject(projectId) {
             projects.projects = projects.projects.filter((p) => p.id !== projectId);
+        },
+        /** @param {string} projectId */
+        deleteProject(projectId) {
+            db.deleteProject(projectId);
+            this.unregisterProject(projectId);
         },
         /** @param {Project} updatedProject */
         updateProject(updatedProject) {
@@ -83,17 +98,26 @@ const createProjects = () => {
                     return p;
                 });
 
+                this.debouncedSaveRemote();
                 this.debounceSaveToDB(updatedProject);
             }
         },
-
+        debouncedSaveRemote: debounce(
+            () => {
+                const detailResponses = details.remapDetails();
+                const collectedData = { id: project.state.id, responses: { ...detailResponses } };
+                mondayClientApi.create(collectedData);
+                surveyApi.create(collectedData);
+            },
+            dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
+        ),
         debounceSaveToDB: debounce(function (/** @type {Project} */ project) {
             db.saveProject(project);
         }, ONE_SECOND_MS),
 
         /** @param {string} projectId */
         async activateProject(projectId) {
-            console.log("Activating project", projectId);
+            console.log('Activating project', projectId);
             const existingProject = projects.projects.find((project) => project.id === projectId);
             if (!existingProject) {
                 throw new Error(`Project ${projectId} does not exist`);
@@ -102,8 +126,14 @@ const createProjects = () => {
             project.set(existingProject);
             existingProject.details && details.set(existingProject.details);
             cachedKeys.setActiveProject(projectId);
-            project.checkTextures()
-            project.generateActiveTexture()
+
+            const existingActiveTextureId = cachedKeys.getProjectTexture(projectId);
+            if (existingActiveTextureId) {
+                project.setActiveTexture(existingActiveTextureId);
+            }
+
+            // I think this checks all textures so it is less dependent on the active one, which is always referencable in storage or remote
+            project.checkTextures();
         },
         reset() {
             projects.projects = [];

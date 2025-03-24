@@ -24,6 +24,9 @@
 		}
 	});
 
+	// THESE SHOULD PROBABLY BE PART OF THE INIT?
+	// AND INIT SHOULD HAVE SOME LOGIC THAT IS TRIGGERED BY PROJECT CHANGES?
+	// ARE THERE OTHER CASES THAT THE PROJECT WOULD CHANGE?
 	// FETCHES PROJECTS BY SESSION
 	async function fetchRemoteProjects() {
 		projectsApi.getProjects().then((fetchedProjects) => {
@@ -47,11 +50,11 @@
 	async function fetchRemoteSurvey(projectId) {
 		try {
 			const remoteSurveyData = await surveyApi.get(projectId);
+			console.log(remoteSurveyData)
 			if (!remoteSurveyData) {
 				console.log('No remote survey data for project:', projectId);
 				return null;
 			}
-			// console.log('Remote survey data', remoteSurveyData);
 			// weak update if remote has newer data some how i dunno
 			for (const entry of Object.entries(details.state.details)) {
 				const [key, value] = entry;
@@ -78,7 +81,7 @@
 			return
 		}
 		if (projectId === lastProjectId) {
-			// console.log('Project id did not change');
+			console.log('Project id did not change');
 			return
 		}
 		fetchRemoteSurvey(projectId);

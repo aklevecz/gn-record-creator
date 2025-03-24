@@ -43,6 +43,10 @@ const dbSurvey = (db) => {
 		/** @param {string} projectId */
 		async deleteByProjectId(projectId) {
 			return db.prepare(`DELETE FROM ${tableName} WHERE id = ?`).bind(projectId).run();
+		},
+		/** @param {string} id */
+		async delete(id) {
+			return db.prepare(`DELETE FROM ${tableName} WHERE id = ?`).bind(id).run();
 		}
 	};
 };

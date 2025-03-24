@@ -104,8 +104,8 @@
         fileHash
       });
       await project.checkTextures()
-      await project.generateActiveTexture()
-      threeScene.updateMaterialTexture(project.activeTextureUrl);
+      cachedKeys.setProjectTexture(projectId, fileHash);
+      await project.setActiveTexture(fileHash)
     } catch (/** @type {*} */ error) {
       errorMessage = `Error processing image: ${error.message}`;
       console.log('Error cropping image:', error);

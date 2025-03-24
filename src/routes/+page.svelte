@@ -12,6 +12,7 @@
 	import { debounce, hashFunction } from '$lib/utils';
 	import projects from '$lib/projects.svelte';
 	import { dev } from '$app/environment';
+    import { FIVE_SECONDS, THIRTY_SECONDS_MS } from '$lib/constants';
 
 	let submitting = $state(false);
 	async function submitInfo() {
@@ -30,9 +31,6 @@
 		goto(`/submission/${project.state.id}`);
 	}
 
-	const FIVE_SECONDS = 5 * 1000;
-	const ONE_MINUTE_MS = 60 * 1000;
-	const THIRTY_SECONDS_MS = 30 * 1000;
 
 	const debouncedSaveRemote = debounce(
 		(/** @type {*} */ collectedData) => {
@@ -42,25 +40,26 @@
 		dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
 	);
 
-	let detailsHash = $state('');
-	// THIS GETS TRIGGERED A LOT AT INITIATION
-	$effect(() => {
-		if (!projects.state.initialized) return;
-		const detailResponses = details.remapDetails();
-		const hash = hashFunction(detailResponses);
+	// ADDED THIS TO THE project.svelte
+	// let detailsHash = $state('');
+	// // THIS GETS TRIGGERED A LOT AT INITIATION
+	// $effect(() => {
+	// 	if (!projects.state.initialized) return;
+	// 	const detailResponses = details.remapDetails();
+	// 	const hash = hashFunction(detailResponses);
 
-		// IGNORE FIRST UPDATE
-		if (detailsHash === '') {
-			detailsHash = hash;
-			return;
-		}
+	// 	// IGNORE FIRST UPDATE
+	// 	if (detailsHash === '') {
+	// 		detailsHash = hash;
+	// 		return;
+	// 	}
 
-		// THIS COULD ALSO JUST BE IN DETAILS? - but it's also kind of nice to have it explicitly on this page
-		if (hash !== detailsHash) {
-			detailsHash = hash;
-			debouncedSaveRemote({ id: project.state.id, responses: { ...detailResponses } });
-		}
-	});
+	// 	// THIS COULD ALSO JUST BE IN DETAILS? - but it's also kind of nice to have it explicitly on this page
+	// 	if (hash !== detailsHash) {
+	// 		detailsHash = hash;
+	// 		debouncedSaveRemote({ id: project.state.id, responses: { ...detailResponses } });
+	// 	}
+	// });
 </script>
 
 <div class="survey-page">

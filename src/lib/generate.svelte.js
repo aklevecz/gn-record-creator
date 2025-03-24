@@ -1,12 +1,10 @@
 import generateApi from '$lib/api/generate';
 import uploadApi from '$lib/api/upload';
-// import storage from "$lib/storage";
 import { calculateFileHash, fetchImageAsBlob } from '$lib/utils';
 import db from './db';
 import project from './project.svelte';
 import projects from './projects.svelte';
 import { cachedKeys } from './storage';
-// import history from "./history.svelte";
 
 export const GenerationErrors = {
     NETWORK: 'Check your internet connection and try again',
@@ -17,7 +15,7 @@ export const GenerationErrors = {
     INVALID_ID: 'Invalid generation ID received'
 };
 
-/** @type {{generating: boolean, status: Status, outputs: any[], percentage: number, cachedImgs: GeneratedImgEntry[]}} */
+/** @type {{generating: boolean, status: Status, outputs: any[], percentage: number, cachedImgs: IDBTextureObject[]}} */
 const defaultState = {
     generating: false,
     status: 'idle',
@@ -29,12 +27,13 @@ const createGenerateStore = () => {
     let generate = $state({ ...defaultState });
 
     async function refreshAllGeneratedImgs() {
+        // Using Texture Object instead of generated collection, because the generated collection no longer stores the file buffer
         // const generatedImgs = await db.getAllGeneratedImgs();
         const generatedImgs = await db.getTexturesByProjectId(project.state.id);
         generate.cachedImgs = generatedImgs
             .filter((img) => img.seed !== 'user-upload')
             .sort(
-                (/** @type {GeneratedImgEntry} */ a, /** @type {GeneratedImgEntry} */ b) =>
+                (/** @type {IDBTextureObject} */ a, /** @type {IDBTextureObject} */ b) =>
                     a.lastModified - b.lastModified
             );
     }
@@ -149,8 +148,9 @@ const createGenerateStore = () => {
                             projectId
                         });
                         cachedKeys.setProjectTexture(projectId, fileHash);
+                        project.setActiveTexture(fileHash);
                         project.checkTextures();
-                        project.generateActiveTexture();
+                        // project.generateActiveTexture();
 
                         if (projects.activeProject?.id) {
                             uploadApi.uploadTexture({

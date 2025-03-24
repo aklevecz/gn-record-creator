@@ -16,6 +16,7 @@
 
     // janky because it has to reset the current details applied to the current project
     // this could be inside or project.svelte
+    // CREATE NEW PROJECT AND CHANGE PROJECT FUNCTIONS
     function createNewProject() {
         details.reset();
         const newProjectStore = createProject();
@@ -30,12 +31,6 @@
 
     let activeTexture = $state('/records/cosmic-black.png');
 
-    let activeTextureId = $state('');
-    $effect(() => {
-        activeTextureId = project.activeTextureUrl
-        activeTextureId = cachedKeys.getProjectTexture(project.state.id) || "";
-    })
-
     /** @type {TextureObject[]} */
     let textureObjects = $state([]);
     $effect(() => {
@@ -46,27 +41,24 @@
             // project.state.id !== currentProjectId
             // project.cachedTextures.length
         ) {
-
+            console.log(`Generating gallery textures for projects page`)
             project.generateTextureObjectsWithUrls().then((ts) => {
                 textureObjects = ts;
             });
-
-            // project.generateActiveTexture().then((url) => {
-                // if (url) {
-                    // activeTexture = url;
-                // }
-            // });
-            console.log("EFFECT")
         }
     });
 
-    // CLEAN UP OBJECT URLS
-    onDestroy(() => {
-        console.log('clean up ');
+    function cleanupObjectUrls() {
+        console.log('Clean up object urls in projects +page');
         for (const textureObject of textureObjects) {
             URL.revokeObjectURL(textureObject.url);
         }
-        URL.revokeObjectURL(activeTexture);
+        // I don't think I need this because the active texture is managed by itself and revoked whenever it changes
+        // URL.revokeObjectURL(activeTexture);
+    }
+
+    onDestroy(() => {
+        cleanupObjectUrls()
     });
 
     let deleteProjectModalOpen = $state(false);
@@ -83,25 +75,28 @@
     // DELETEING PROJECT SHOULD CLEAN UP ALL TEXTURES AS WELL
     function executeDeleteProject() {
         // could be project.delete()
-        db.deleteProject(project.state.id);
-        projects.removeProject(project.state.id);
-
-        // Activates the next project, needs to be refactored
+        // db.deleteProject(project.state.id);
+        // projects.unregisterProject(project.state.id);
+        projects.deleteProject(project.state.id)
+        // Activates the next project, needs to be refactored -- CHANGE PROJECT FUNCTION
         const firstProject = projects.state.projects[0];
         projects.activateProject(firstProject.id);
+        cleanupObjectUrls()
 
-        const textureId = cachedKeys.getProjectTexture(projects.state.activeProject);
-
-        if (textureId) {
-            db.getTexture(textureId).then((textureFile) => {
-                if (!textureFile) {
-                    console.log('There is no texture file for the current texture: ', textureId);
-                    return;
-                }
-                const url = URL.createObjectURL(textureFile.imgFile);
-                if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
-            });
-        }
+        // THIS NEEDS TO BE REFACTORED, BUT ISNT AS IMPORTANT SINCE IT IS MORE RARE
+        // Load in a new remaining project
+        // I DONT THINK I NEED THIS IN LIEU OF THE ACTIVE PROJECT HANDLING TEXTURES NOW
+        // const textureId = cachedKeys.getProjectTexture(projects.state.activeProject);
+        // if (textureId) {
+        //     db.getTexture(textureId).then((textureFile) => {
+        //         if (!textureFile) {
+        //             console.log('There is no texture file for the current texture: ', textureId);
+        //             return;
+        //         }
+        //         const url = URL.createObjectURL(textureFile.imgFile);
+        //         if (threeScenes.form) threeScenes.form.updateMaterialTexture(url);
+        //     });
+        // }
         deleteProjectModalOpen = false;
     }
 
@@ -129,8 +124,9 @@
         //     type: fileType
         // });
         try {
-            cachedKeys.setProjectTexture(project.state.id, id);
-            project.generateActiveTexture()
+            // cachedKeys.setProjectTexture(project.state.id, id);
+            project.setActiveTexture(id);
+            // project.generateActiveTexture();
             // activeTextureId = id;
         } catch (error) {
             alert(`SAVE ERROR ${error}`);
@@ -139,7 +135,6 @@
         // activeTexture = url;
     }
 </script>
-
 <ConfirmationModal
     isOpen={deleteProjectModalOpen}
     title="Delete Project"
@@ -186,7 +181,7 @@
                     alt=""
                     class="my-2 w-40"
                 />
-                <img class="w-40 py-4 pr-4" src={project.activeTextureUrl} alt="current texture" />
+                <img class="w-40 py-4 pr-4" src={project.activeTextureUrl || '/records/red-alert.png'} alt="current texture" />
             </div>
             <div class="mt-4 flex gap-3 md:flex-col">
                 <button class="project-edit-buttons delete" onclick={confirmDeleteProject}
@@ -200,7 +195,7 @@
             <div class="imgs">
                 {#each textureObjects as { url, id, seed, fileName, arrayBuffer, fileType }}
                     {@const isGenerated = seed !== 'user-upload'}
-                    {@const isActive = activeTextureId === id}
+                    {@const isActive = project.activeTextureId === id}
                     <div
                         style={isGenerated
                             ? 'background-color: var(--purple);'

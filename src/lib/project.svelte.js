@@ -5,7 +5,7 @@ import r2Api from '$lib/api/r2';
 import { cachedKeys } from './storage';
 
 /** @type {Project} */
-const defaultProjectState = {
+export const defaultProjectState = {
     id: '',
     name: 'default',
     createdAt: new Date(),
@@ -42,6 +42,7 @@ const createProject = () => {
 
     let texturesLoaded = $state(false);
 
+    let activeTextureId = $state('');
 	let activeTextureUrl = $state('');
 
     return {
@@ -53,6 +54,9 @@ const createProject = () => {
         },
         get texturesLoaded() {
             return texturesLoaded;
+        },
+        get activeTextureId() {
+            return activeTextureId;
         },
 		get activeTextureUrl() {
 			return activeTextureUrl;
@@ -134,6 +138,9 @@ const createProject = () => {
             projects.updateProject(serializeDeep(project));
         },
         async checkTextures() {
+            // This checks for textures related to a project
+            // First it checks IDB, then it checks textures loaded into state initially, and then it checks r2
+            // The main question is if we IDB can be reliable or if we need to be smart about checking other sources
 			texturesLoaded = false
             console.log(`Checking textures for project ${project.id}`);
 
@@ -176,10 +183,17 @@ const createProject = () => {
             });
             return textureObjects;
         },
-
+        /** @param {string} textureId */
+        async setActiveTexture(textureId) {
+            // do i need to check if it exists?
+            cachedKeys.setProjectTexture(project.id, textureId);
+            activeTextureId = textureId;
+            this.generateActiveTexture()
+        },
         async generateActiveTexture() {
+            // in theory this could just run whenever activeTextureId changes
 			URL.revokeObjectURL(activeTextureUrl);
-            const activeTextureId = cachedKeys.getProjectTexture(project.id);
+            // const activeTextureId = cachedKeys.getProjectTexture(project.id);
             if (activeTextureId) {
                 try {
 					// This is also only IDB right now

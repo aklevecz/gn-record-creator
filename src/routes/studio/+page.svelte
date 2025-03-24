@@ -1,6 +1,6 @@
 <script>
 	import { browser } from '$app/environment';
-	import ButtonsContainer from '$lib/components/designer/buttons-container.svelte';
+	import DreamControls from '$lib/components/designer/dream-controls.svelte';
 	import RecordDesigner from '$lib/components/designer/record-designer.svelte';
 	import generate from '$lib/generate.svelte';
 	import projects from '$lib/projects.svelte';
@@ -70,7 +70,7 @@
 	<!-- END RECORD MODEL  -->
 
 	<!-- CONTROLS -->
-	<ButtonsContainer {threeScene} bind:isMinimized />
+	<DreamControls {threeScene} bind:isMinimized />
 	<!-- END CONTROLS -->
 
 	<!-- GROOVY FEEDBACK -->

@@ -1,7 +1,8 @@
 // import { FETCHER_SECRET } from '$env/static/private';
+import { FETCHER_SECRET } from '$env/static/private';
 import dbSurvey from '$lib/db/survey';
 import { json } from '@sveltejs/kit';
-const FETCHER_SECRET = "TEST_SECRET"
+// const FETCHER_SECRET = "TEST_SECRET"
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ platform, request }) {
 	if (!platform) {

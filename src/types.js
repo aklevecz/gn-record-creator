@@ -93,6 +93,8 @@
  * @property {Pricing} pricing
  */
 
+
+
 /**
  * @typedef {object} Submission
  * @property {string} id - Unique identifier for the submission
@@ -116,6 +118,7 @@
  * @property {string} test_prints - Number of test pressings required
  * @property {string} packaging - Type of LP jacket to print
  * @property {string} notes - Additional project details, comments, and requests
+ * @property {string} status - Current status of the submission
  */
 
 /**

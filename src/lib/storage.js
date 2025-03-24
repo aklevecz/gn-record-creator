@@ -41,6 +41,10 @@ export const cachedKeys = (() => {
 		/** @param {string} projectId @returns {string | null} */
 		getProjectTexture: (projectId) => {
 			return storage.getItem(`project_${projectId}_texture`);
+		},
+		/** @param {string} projectId */
+		deleteProjectTexture: (projectId) => {
+			storage.removeItem(`project_${projectId}_texture`);
 		}
 		// setActiveTexture(textureId) {
 		// storage.setItem('activeTexture', textureId);
