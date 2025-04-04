@@ -22,7 +22,7 @@ self.addEventListener('install', (event) => {
         const cache = await caches.open(CACHE);
         await cache.addAll(ASSETS);
     }
-
+    self.skipWaiting();
     event.waitUntil(addFilesToCache());
 });
 
@@ -35,6 +35,7 @@ self.addEventListener('activate', (event) => {
     }
 
     event.waitUntil(deleteOldCaches());
+    event.waitUntil(clients.claim());
 });
 
 self.addEventListener('sync', (event) => {
@@ -315,7 +316,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', async (event) => {
     // Make sure we have a port to respond to
-    console.log(event)
+    console.log(event);
     if (!event.ports || event.ports.length === 0) return;
 
     const port = event.ports[0];

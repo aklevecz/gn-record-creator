@@ -128,7 +128,7 @@
         }
     });
 
-    // Simple function to remove a file from cache
+    /** @param {string} url */
     function clearCacheEntry(url) {
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             const messageChannel = new MessageChannel();
