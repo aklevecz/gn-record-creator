@@ -119,6 +119,7 @@
  * @property {string} packaging - Type of LP jacket to print
  * @property {string} notes - Additional project details, comments, and requests
  * @property {string} status - Current status of the submission
+ * @property {string} session - Session identifier associated with the submission
  */
 
 /**

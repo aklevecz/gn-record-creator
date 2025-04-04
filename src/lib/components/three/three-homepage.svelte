@@ -15,10 +15,6 @@
         threeScene = new ThreeSceneModule.default();
         // Initialize your scene here
     });
-
-	$effect(() => {
-		console.log(project.state.pricing)
-	})
 </script>
 
 <div class=" md:fixed md:top-12 md:right-0">
@@ -26,7 +22,13 @@
     <div class="mx-auto block h-[90vw] w-[90vw] md:h-[65vh] md:w-[60vw]">
         {#if threeScene}<RecordDesigner {threeScene} />{/if}
         {#if !threeScene}<div>Loading...</div>{/if}
-		<div class="text-red-400 text-3xl bg-white text-center">{project.state.pricing.estimatedCost}</div>
+    </div>
+    <div class="text-center text-3xl">
+        <span class="font-semibold">Estimated Cost:</span>
+        {project.state.pricing.estimatedCost.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        })}
     </div>
     <Upload />
 </div>

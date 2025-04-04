@@ -14,6 +14,7 @@
     import { dev } from '$app/environment';
     import { FIVE_SECONDS, THIRTY_SECONDS_MS } from '$lib/constants';
     import network from '$lib/network.svelte';
+    import QuestionDropdown from '$lib/components/form/question-dropdown.svelte';
 
     let submitting = $state(false);
     async function submitInfo() {
@@ -78,6 +79,7 @@
                 {@const question = questions[key]}
                 {#if question}
                     <Question {key} label={question.label} options={question.options} />
+                    <QuestionDropdown {key} label={question.label} options={question.options} />
                 {/if}
             {:else}
                 <Detail label={detail.label} {key} description={detail.description} />

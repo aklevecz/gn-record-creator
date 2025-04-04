@@ -132,111 +132,118 @@ function getOutboxItems(db) {
 }
 
 async function saveRequestToOutbox(request) {
-	// Clone the request first to extract the body
-	const requestClone = request.clone();
-	let body = null;
-	
-	// Extract body if present
-	if (['POST', 'PUT', 'PATCH'].includes(requestClone.method)) {
-		try {
-			// Try to get the body as text
-			body = await requestClone.text();
-		} catch (error) {
-			console.error('Could not clone request body', error);
-		}
-	}
-	
-	// Convert headers to plain object
-	const headers = {};
-	requestClone.headers.forEach((value, key) => {
-		headers[key] = value;
-	});
-	
-	// Create outbox item
-	const outboxItem = {
-		url: requestClone.url,
-		method: requestClone.method,
-		headers: headers,
-		body: body,
-		timestamp: Date.now()
-	};
-	
-	// Only open DB connection after all async operations are complete
-	const db = await openDatabase();
-	
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(['outbox'], 'readwrite');
-		const store = transaction.objectStore('outbox');
-		
-		const addRequest = store.add(outboxItem);
-		
-		addRequest.onsuccess = () => {
-			resolve(addRequest.result);
-		};
-		
-		addRequest.onerror = (event) => {
-			reject(new Error('Error saving request: ' + event.target.errorCode));
-		};
-		
-		transaction.oncomplete = () => {
-			db.close();
-		};
-		
-		transaction.onerror = (event) => {
-			db.close();
-			reject(new Error('Transaction error: ' + event.target.errorCode));
-		};
-	});
+    // Clone the request first to extract the body
+    const requestClone = request.clone();
+    let body = null;
+
+    // Extract body if present
+    if (['POST', 'PUT', 'PATCH'].includes(requestClone.method)) {
+        try {
+            // Try to get the body as text
+            body = await requestClone.text();
+        } catch (error) {
+            console.error('Could not clone request body', error);
+        }
+    }
+
+    // Convert headers to plain object
+    const headers = {};
+    requestClone.headers.forEach((value, key) => {
+        headers[key] = value;
+    });
+
+    // Create outbox item
+    const outboxItem = {
+        url: requestClone.url,
+        method: requestClone.method,
+        headers: headers,
+        body: body,
+        timestamp: Date.now()
+    };
+
+    // Only open DB connection after all async operations are complete
+    const db = await openDatabase();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['outbox'], 'readwrite');
+        const store = transaction.objectStore('outbox');
+
+        const addRequest = store.add(outboxItem);
+
+        addRequest.onsuccess = () => {
+            resolve(addRequest.result);
+        };
+
+        addRequest.onerror = (event) => {
+            reject(new Error('Error saving request: ' + event.target.errorCode));
+        };
+
+        transaction.oncomplete = () => {
+            db.close();
+        };
+
+        transaction.onerror = (event) => {
+            db.close();
+            reject(new Error('Transaction error: ' + event.target.errorCode));
+        };
+    });
 }
 
 function deleteOutboxItem(db, id) {
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(['outbox'], 'readwrite');
-		const store = transaction.objectStore('outbox');
-		const request = store.delete(id);
-		
-		request.onsuccess = () => resolve();
-		request.onerror = (event) => reject(new Error('Error deleting outbox item: ' + event.target.errorCode));
-	});
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['outbox'], 'readwrite');
+        const store = transaction.objectStore('outbox');
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) =>
+            reject(new Error('Error deleting outbox item: ' + event.target.errorCode));
+    });
 }
 
 function shouldQueueRequest(request) {
-	// Queue non-GET requests to your API endpoints
-	// Customize this logic based on your app's needs
-	
-	// Only handle POST, PUT, DELETE, PATCH methods
-	const queueableMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
-	
-	return queueableMethods.includes(request.method) && 
-		// Only queue API requests
-		request.url.includes('/api/') && 
-		// Only queue JSON requests or form data
-		(request.headers.get('content-type')?.includes('application/json') || 
-		 request.headers.get('content-type')?.includes('form'));
+    // Queue non-GET requests to your API endpoints
+    // Customize this logic based on your app's needs
+
+    // Only handle POST, PUT, DELETE, PATCH methods
+    const queueableMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
+
+    return (
+        queueableMethods.includes(request.method) &&
+        // Only queue API requests
+        request.url.includes('/api/') &&
+        // Only queue JSON requests or form data
+        (request.headers.get('content-type')?.includes('application/json') ||
+            request.headers.get('content-type')?.includes('form'))
+    );
 }
 
 self.addEventListener('fetch', (event) => {
     // Check if this is a request that should be queued when offline
-	if (shouldQueueRequest(event.request)) {
-		// If offline, queue the request and return a success response
-		if (!navigator.onLine) {
-			event.respondWith(
-				(async () => {
-					await saveRequestToOutbox(event.request.clone());
-					// Register for background sync
-					await self.registration.sync.register(QUEUE_NAME);
-					// Return a "request queued" response
-					return new Response(JSON.stringify({ 
-						success: true, 
-						message: 'Your request has been queued and will be sent when you are back online.' 
-					}), {
-						headers: { 'Content-Type': 'application/json' }
-					});
-				})()
-			);
-			return;
-		}
-	}
+    if (shouldQueueRequest(event.request)) {
+        // If offline, queue the request and return a success response
+        if (!navigator.onLine) {
+            event.respondWith(
+                (async () => {
+                    await saveRequestToOutbox(event.request.clone());
+                    // Register for background sync
+                    await self.registration.sync.register(QUEUE_NAME);
+                    // Return a "request queued" response
+                    return new Response(
+                        JSON.stringify({
+                            success: true,
+                            message:
+                                'Your request has been queued and will be sent when you are back online.'
+                        }),
+                        {
+                            headers: { 'Content-Type': 'application/json' }
+                        }
+                    );
+                })()
+            );
+            return;
+        }
+    }
     // ignore POST requests etc
     if (event.request.method !== 'GET') return;
 
@@ -304,4 +311,49 @@ self.addEventListener('fetch', (event) => {
     }
 
     event.respondWith(respond());
+});
+
+self.addEventListener('message', async (event) => {
+    // Make sure we have a port to respond to
+    console.log(event)
+    if (!event.ports || event.ports.length === 0) return;
+
+    const port = event.ports[0];
+
+    if (event.data.type === 'GET_CACHE_FILES') {
+        console.log('Getting cache files');
+        const cache = await caches.open(CACHE);
+        const keys = await cache.keys();
+        const urls = keys.map((key) => key.url);
+
+        // Send the list back through the message port
+        port.postMessage({
+            type: 'CACHE_FILES',
+            payload: urls
+        });
+    }
+
+    if (event.data.type === 'DELETE_CACHE_FILE') {
+        const url = event.data.payload;
+        const cache = await caches.open(CACHE);
+        const result = await cache.delete(url);
+
+        // Respond with success status
+        port.postMessage({
+            success: result,
+            type: 'CACHE_FILE_DELETED'
+        });
+    }
+
+    if (event.data.type === 'CLEAR_CACHE') {
+        const result = await caches.delete(CACHE);
+        // Recreate the cache for future use
+        await caches.open(CACHE);
+
+        // Respond with success status
+        port.postMessage({
+            success: result,
+            type: 'CACHE_CLEARED'
+        });
+    }
 });
