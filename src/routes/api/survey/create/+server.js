@@ -17,7 +17,6 @@ export async function POST({ cookies, platform, request }) {
 
 	const logging = logger(ctx);
 	try {
-		console.log(responses, session)
 		ctx.waitUntil(dbSurvey(db).upsert(id, { ...responses, session }));
 		logging.info(`Upsert survey for ${id} with responses ${JSON.stringify(responses)}`);
 		return json({ success:true });

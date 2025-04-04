@@ -67,14 +67,14 @@
 
 /** 
  * @typedef Pricing
- * @property {string} record_color
+ * @property {number} record_color
  * @property {number} total_units
  * @property {number} records_per_set
- * @property {string} record_format
- * @property {string} lacquers
- * @property {string} metalwork
+ * @property {number} record_format
+ * @property {number} lacquers
+ * @property {number} metalwork
  * @property {number} test_prints
- * @property {string} packaging
+ * @property {number} packaging
  * @property {number} estimatedCost
  */
 

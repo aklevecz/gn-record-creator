@@ -9,9 +9,11 @@
     let {
         width = '100%',
         height = '100%',
-        threeScene = new ThreeScene(),
+        threeScene,
         loadCachedType = 'texture'
     } = $props();
+
+    // let threeScene = new ThreeScene();
 
     /** @type {null | HTMLElement}*/
     let container = $state(null);
@@ -83,8 +85,8 @@
 
     $effect(() => {
         if (project.activeTextureUrl) {
-			// Not sure why the random texture overwrites this one sometimes, so the timeout seems to solve the issue
-			// or the random texture should just be part of the three initialization, and then this will gracefully overwrite it
+            // Not sure why the random texture overwrites this one sometimes, so the timeout seems to solve the issue
+            // or the random texture should just be part of the three initialization, and then this will gracefully overwrite it
             setTimeout(() => {
                 threeScene.updateMaterialTexture(project.activeTextureUrl);
             }, 50);

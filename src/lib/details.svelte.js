@@ -82,7 +82,7 @@ const detailsDict = {
         type: 'number'
     },
     records_per_set: {
-        label: '# of records pet set',
+        label: '# of records per set',
         description:
             "Is this a single LP or perhaps a double-LP product? We usually recommend each side of a record doesn't go beyond 22 minutes in duration",
         value: '',

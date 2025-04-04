@@ -232,6 +232,11 @@ export function toCamelCase(hyphenatedString) {
 	return hyphenatedString.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
 }
 
+/** @param {string} string */
+export function toSnakeCase(string) {
+	return string.replace(/ /g, '_').toLowerCase();
+}
+
 /**
  * Calculate a SHA-256 hash of a file
  * @param {File | Blob} file - The file to hash

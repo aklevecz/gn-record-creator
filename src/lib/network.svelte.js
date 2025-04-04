@@ -8,9 +8,18 @@ const defaultNetworkState = {
     isOnline: navigator.onLine
 };
 
+let FORCE_OFFLINE = false;
+
+/** @type {*} */
+const testNavigator = {
+    onLine: false
+};
+
 const createNetwork = () => {
     let network = $state({ ...defaultNetworkState });
 
+    /** @type {Navigator | null} */
+    let navigator = null;
     return {
         get state() {
             return network;
@@ -19,16 +28,17 @@ const createNetwork = () => {
          * Initializes event listeners for online/offline events.
          */
         init() {
+            navigator = FORCE_OFFLINE ? testNavigator : window.navigator;
             window.addEventListener('online', this.updateNetworkStatus);
             window.addEventListener('offline', this.updateNetworkStatus);
 
             // Set the initial state
-            setTimeout(() => this.updateNetworkStatus(), 1000);
+            setTimeout(() => this.updateNetworkStatus(), 0);
         },
 
         updateNetworkStatus() {
-            console.log("CHECK")
-            network.isOnline = navigator.onLine;
+            console.log(navigator)
+            network.isOnline = navigator ? navigator.onLine : true;
             console.log('Network is online:', network.isOnline);
         },
         /**

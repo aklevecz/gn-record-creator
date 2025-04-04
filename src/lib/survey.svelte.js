@@ -1,6 +1,5 @@
 // STRUCTURED DATA
 
-import project from './project.svelte';
 
 /** @type {Questions} */
 export const questions = {
@@ -13,7 +12,7 @@ export const questions = {
 		]
 	},
 	records_per_set: {
-		label: '# of records pet set',
+		label: '# of records per set',
 		options: [
 			{ img: '', text: '1LP' },
 			{ img: '', text: '2LP' },
