@@ -316,13 +316,11 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', async (event) => {
     // Make sure we have a port to respond to
-    console.log(event);
     if (!event.ports || event.ports.length === 0) return;
 
     const port = event.ports[0];
 
     if (event.data.type === 'GET_CACHE_FILES') {
-        console.log('Getting cache files');
         const cache = await caches.open(CACHE);
         const keys = await cache.keys();
         const urls = keys.map((key) => key.url);

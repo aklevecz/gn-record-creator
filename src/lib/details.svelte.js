@@ -72,7 +72,7 @@ const detailsDict = {
         description:
             'Or would you prefer to arrange your own pickup via your preferred transit company?',
         value: '',
-        type: 'select'
+        type: 'dropdown'
     },
     total_units: {
         label: 'How many total units would you like to manufacture? Our minimum run is 500 units',
@@ -86,7 +86,7 @@ const detailsDict = {
         description:
             "Is this a single LP or perhaps a double-LP product? We usually recommend each side of a record doesn't go beyond 22 minutes in duration",
         value: '',
-        type: 'select'
+        type: 'dropdown'
     },
     record_format: {
         label: 'RPM / Record Format',
@@ -137,7 +137,7 @@ const detailsDict = {
 };
 
 /** @type {Details} */
-const defaultDetailState = {
+export const defaultDetailState = {
     details: detailsDict
 };
 

@@ -1,12 +1,13 @@
 import { dev } from '$app/environment';
 import { FIVE_SECONDS, ONE_SECOND_MS, THIRTY_SECONDS_MS } from './constants';
 import db from './db';
-import details from './details.svelte';
+import details, { defaultDetailState } from './details.svelte';
 import project, { defaultProjectState } from './project.svelte';
 import { cachedKeys } from './storage';
 import { debounce } from './utils';
 import surveyApi from '$lib/api/survey';
 import mondayClientApi from '$lib/api/monday';
+import { DATA_VERSION } from '$lib';
 
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -37,15 +38,27 @@ const createProjects = () => {
 
             // If there are existing projects in the cache
             if (allProjects.length) {
-                console.log("Loading existing projects")
                 // Might be important to make sure cached data shares the same current model as things are changing
                 // Or need to version the local state as well-- though this also works?
                 for (let cachedProject of allProjects) {
-                    if (Object.keys(defaultProjectState).every(key => cachedProject[key])) {
-                        console.log(`Project ${cachedProject.id} has all expected keys`)
+                    let forceUpdate = false
+                    if (cachedProject.version !== DATA_VERSION) {
+                        forceUpdate = true
+                        // NEED TO IMPROVE: This just sets their detail values to the default
+                        cachedProject.details = { ...defaultDetailState };
+                        cachedProject.version = DATA_VERSION
+                    }
+
+                    // This wouldn't solve differences in details
+                    if (Object.keys(defaultProjectState).every((key) => cachedProject[key])) {
+                        console.log(`Project ${cachedProject.id} has all expected keys`);
                     } else {
-                        console.log(`Project ${cachedProject.id} does not have all expected keys`)
-                        cachedProject = {...defaultProjectState, ...cachedProject} 
+                        forceUpdate = true
+                        console.log(`Project ${cachedProject.id} does not have all expected keys`);
+                        cachedProject = { ...defaultProjectState, ...cachedProject };
+                    }
+                    if (forceUpdate) {
+                        db.saveProject(cachedProject)
                     }
                     this.registerProject(cachedProject);
                 }

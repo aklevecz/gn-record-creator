@@ -92,7 +92,6 @@
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             // Create a message channel
             const messageChannel = new MessageChannel();
-            console.log("GHALO")
             // Set up the message handler
             messageChannel.port1.onmessage = (event) => {
                 if (event.data && event.data.type === 'CACHE_FILES') {

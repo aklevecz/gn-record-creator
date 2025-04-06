@@ -24,7 +24,7 @@
  * @property {string} label
  * @property {string} description
  * @property {string} value
- * @property {string} type
+ * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'phone'} type
  */
 
 /**
@@ -65,7 +65,7 @@
  * @property {string} prompt
  */
 
-/** 
+/**
  * @typedef Pricing
  * @property {number} record_color
  * @property {number} total_units
@@ -78,7 +78,7 @@
  * @property {number} estimatedCost
  */
 
-/** 
+/**
  * @typedef Texture
  * @property {string} fileHash
  */
@@ -86,14 +86,13 @@
 /**
  * @typedef {Object} Project
  * @property {string} id
+ * @property {string} version
  * @property {string} name
  * @property {Date} createdAt
  * @property {Details | null} details
  * @property {Texture[]} textures
  * @property {Pricing} pricing
  */
-
-
 
 /**
  * @typedef {object} Submission
@@ -135,25 +134,24 @@
  * @property {string | null} [fileType]
  */
 
-  /** 
-   * @typedef {Object} TextureObject
-   * @property {string} url
-   * @property {string} id
-   * @property {string} seed
-   * @property {string} fileName
-   * @property {string} fileType
-   * @property {ArrayBuffer} arrayBuffer
-  */
+/**
+ * @typedef {Object} TextureObject
+ * @property {string} url
+ * @property {string} id
+ * @property {string} seed
+ * @property {string} fileName
+ * @property {string} fileType
+ * @property {ArrayBuffer} arrayBuffer
+ */
 
-    /** 
-   * @typedef {Object} IDBTextureObject
-   * @property {ArrayBuffer} arrayBuffer
-   * @property {string} fileHash
-   * @property {string} fileName
-   * @property {string} fileType
-   * @property {string} id
-   * @property {number} lastModified
-   * @property {string} projectId
-   * @property {string} seed
-  */
-
+/**
+ * @typedef {Object} IDBTextureObject
+ * @property {ArrayBuffer} arrayBuffer
+ * @property {string} fileHash
+ * @property {string} fileName
+ * @property {string} fileType
+ * @property {string} id
+ * @property {number} lastModified
+ * @property {string} projectId
+ * @property {string} seed
+ */

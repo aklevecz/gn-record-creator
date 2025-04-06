@@ -37,7 +37,6 @@ const createNetwork = () => {
         },
 
         updateNetworkStatus() {
-            console.log(navigator)
             network.isOnline = navigator ? navigator.onLine : true;
             console.log('Network is online:', network.isOnline);
         },

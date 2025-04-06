@@ -75,12 +75,11 @@
     <div class="survey-questions">
         {#each Object.entries(details.state.details) as [key, detail]}
             {@const type = detail.type}
+            {@const question = questions[key]}
             {#if type === 'select'}
-                {@const question = questions[key]}
-                {#if question}
-                    <Question {key} label={question.label} options={question.options} />
-                    <QuestionDropdown {key} label={question.label} options={question.options} />
-                {/if}
+                <Question {key} label={question.label} options={question.options} />
+            {:else if type === 'dropdown'}
+                <QuestionDropdown {key} label={question.label} options={question.options} />
             {:else}
                 <Detail label={detail.label} {key} description={detail.description} />
             {/if}
@@ -89,7 +88,7 @@
     <!-- END SURVEY -->
 
     <!-- FLOATING THREEJS RECORD VISUAL -->
-    {#if projects.state.initialized}<ThreeHomepage />{/if}
+    <!-- {#if projects.state.initialized}<ThreeHomepage />{/if} -->
     <!-- END FLOATING THREEJS RECORD VISUAL -->
 
     <!-- SUBMIT SURVEY -->

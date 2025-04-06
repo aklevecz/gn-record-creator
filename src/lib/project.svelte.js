@@ -3,10 +3,12 @@ import projects from './projects.svelte';
 import { serializeDeep, toSnakeCase } from './utils';
 import r2Api from '$lib/api/r2';
 import { cachedKeys } from './storage';
+import { DATA_VERSION } from '$lib';
 
 /** @type {Project} */
 export const defaultProjectState = {
     id: '',
+    version: DATA_VERSION,
     name: 'default',
     createdAt: new Date(),
     details: null,
@@ -134,6 +136,7 @@ const createProject = () => {
 
             return {
                 id: project.id,
+                version: project.version,
                 name: project.name,
                 details: project.details,
                 textures: project.textures,
