@@ -15,7 +15,7 @@
         id={key}
         name={key}
         onchange={onChange}
-        bind:value={details.state.details[key].value}
+        bind:value={details.state[key].value}
         class="w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg"
     >
         {#each options as option}

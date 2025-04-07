@@ -3,18 +3,21 @@
     import Question from '$lib/components/form/question.svelte';
     import details from '$lib/details.svelte';
     import project from '$lib/project.svelte';
-    import { questions } from '$lib/survey.svelte';
+    // import { questions } from '$lib/survey.svelte';
 
-    import { goto } from '$app/navigation';
-    import surveyApi from '$lib/api/survey';
-    import mondayClientApi from '$lib/api/monday';
-    import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
-    import { debounce, hashFunction } from '$lib/utils';
-    import projects from '$lib/projects.svelte';
     import { dev } from '$app/environment';
-    import { FIVE_SECONDS, THIRTY_SECONDS_MS } from '$lib/constants';
-    import network from '$lib/network.svelte';
+    import { goto } from '$app/navigation';
+    import mondayClientApi from '$lib/api/monday';
+    import surveyApi from '$lib/api/survey';
     import QuestionDropdown from '$lib/components/form/question-dropdown.svelte';
+    import PhoneInput from '$lib/components/input/phone-input.svelte';
+    import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
+    import { FIVE_SECONDS, THIRTY_SECONDS_MS } from '$lib/constants';
+    import projects from '$lib/projects.svelte';
+    import { questions } from '$lib/survey-data-model';
+    import { debounce } from '$lib/utils';
+    import Tooltip from '$lib/components/form/tooltip.svelte';
+    import AddressInput from '$lib/components/input/address-input.svelte';
 
     let submitting = $state(false);
     async function submitInfo() {
@@ -72,23 +75,37 @@
 
     <!-- COULD BE ITS OWN COMPONTENT CALLED LIKE SURVEYSOMETHING -->
     <!-- BEGIN SURVEY -->
+    <!-- TODO: DIFFERENCE BETWEEN QUESTION AND DETAIL IS CONFUSING -->
     <div class="survey-questions">
-        {#each Object.entries(details.state.details) as [key, detail]}
+        {#each Object.entries(details.state) as [key, detail]}
             {@const type = detail.type}
             {@const question = questions[key]}
             {#if type === 'select'}
+                <!-- Buttons instead of input element -- maybe only for the record color picker? -->
                 <Question {key} label={question.label} options={question.options} />
             {:else if type === 'dropdown'}
                 <QuestionDropdown {key} label={question.label} options={question.options} />
+            {:else if type === 'tel'}
+                <PhoneInput />
+            {:else if type === 'address'}
+                <AddressInput {key} label={detail.label} description={detail.description} />
             {:else}
-                <Detail label={detail.label} {key} description={detail.description} />
+                <Detail
+                    label={detail.label}
+                    {key}
+                    description={detail.description}
+                    type={detail.type}
+                />
+            {/if}
+            {#if detail.tooltip}
+                <Tooltip tooltip={detail.tooltip} />
             {/if}
         {/each}
     </div>
     <!-- END SURVEY -->
 
     <!-- FLOATING THREEJS RECORD VISUAL -->
-    <!-- {#if projects.state.initialized}<ThreeHomepage />{/if} -->
+    {#if projects.state.initialized}<ThreeHomepage />{/if}
     <!-- END FLOATING THREEJS RECORD VISUAL -->
 
     <!-- SUBMIT SURVEY -->
@@ -123,10 +140,6 @@
 
     .survey-questions {
         @apply mt-4 flex flex-col gap-4;
-    }
-
-    .design-creator-container {
-        @apply fixed md:fixed md:top-0;
     }
     img.isSubmitting {
         animation: hue-rotate 1s infinite;

@@ -33,6 +33,7 @@
 	"dependencies": {
 		"@logtail/edge": "^0.5.2",
 		"@sentry/sveltekit": "^9.7.0",
+		"libphonenumber-js": "^1.12.6",
 		"three": "^0.174.0"
 	}
 }

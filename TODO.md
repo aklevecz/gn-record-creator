@@ -1,0 +1,7 @@
+- Model Carbon savings calculator
+- Cool generative design for carbon calculator
+- Consider AR component for visualizing the Record
+- Tool tips or links for understanding different questions
+- Some intelligent address capture
+- Special inputs for date and such
+- Calendar integration into Monday, but I still dont have much access

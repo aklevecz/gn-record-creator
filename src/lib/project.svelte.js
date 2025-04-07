@@ -26,11 +26,14 @@ export const defaultProjectState = {
     }
 };
 
-const pricingKeys = Object.keys(defaultProjectState.pricing).filter(
-    (key) => key !== 'estimatedCost'
-);
+/** @typedef {keyof Omit<Pricing, 'estimatedCost'>} PricingKey */
 
-/** @type {Record<string, any>} pricingGuide */
+/** @type {PricingKey[]} */
+const pricingKeys = /** @type {PricingKey[]} */ (Object.keys(defaultProjectState.pricing).filter(
+    (key) => key !== 'estimatedCost'
+));
+
+/** @type {Record<PricingKey, any>} pricingGuide */
 const pricingGuide = {
     record_color: {
         habanero: 5,
@@ -167,15 +170,19 @@ const createProject = () => {
             // update pricing -- doesn't need to pass details in? but maybe safer
             this.updatePricing(details);
 
-            project.name = project.details?.details.project_name.value || project.name;
+            project.name = project.details?.project_name.value || project.name;
             projects.updateProject(serializeDeep(project));
         },
         /** @param {Details} details */
         updatePricing(details) {
-            // Get items that determine pricing and their values
             const pricingObjects = pricingKeys.reduce(
                 (/** @type {Record<string, string>} */ acc, key) => {
-                    acc[key] = toSnakeCase(details.details[key].value);
+                    if (details && details[key] && typeof details[key].value !== 'undefined') {
+                        acc[key] = toSnakeCase(String(details[key].value));
+                    } else {
+                        acc[key] = '';
+                        console.warn(`Missing value for pricing key: ${key}`);
+                    }
                     return acc;
                 },
                 {}
@@ -183,59 +190,53 @@ const createProject = () => {
 
             let estimatedCost = 0;
 
-            // Total units
-            project.pricing.total_units =
-                parseInt(pricingObjects.total_units) * pricingGuide.total_units.value;
-            if (!isNaN(project.pricing.total_units)) {
-                estimatedCost += project.pricing.total_units;
-            }
+            pricingKeys.forEach((pricingKey) => {
+                const guide = pricingGuide[pricingKey];
+                const valueStr = pricingObjects[pricingKey];
+                let itemCost = 0;
 
-            // Records per set
-            project.pricing.records_per_set = parseInt(
-                pricingGuide.records_per_set[pricingObjects.records_per_set]
-            );
-            if (!isNaN(project.pricing.records_per_set)) {
-                estimatedCost += project.pricing.records_per_set;
-            }
+                if (!guide || !valueStr) {
+                    project.pricing[pricingKey] = 0;
+                    return;
+                }
 
-            // Record color
-            project.pricing.record_color =
-                pricingGuide.record_color[pricingObjects.record_color] || 0;
-            if (!isNaN(project.pricing.record_color)) {
-                estimatedCost += project.pricing.record_color;
-            }
+                try {
+                    if (guide.type === 'scale') {
+                        const valueNum = parseInt(valueStr);
+                        if (!isNaN(valueNum) && typeof guide.value === 'number') {
+                            itemCost = valueNum * guide.value;
+                        }
+                    } else if (guide.type === 'categorical' || guide.type === 'category') {
+                        const costValue = guide[valueStr];
+                        if (typeof costValue === 'number') {
+                            itemCost = costValue;
+                        } else {
+                            const parsedCost = parseInt(costValue);
+                            if (!isNaN(parsedCost)) {
+                                itemCost = parsedCost;
+                            } else {
+                                itemCost = 0;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error calculating pricing for key ${pricingKey}:`, error);
+                    itemCost = 0;
+                }
 
-            // Record format
-            project.pricing.record_format =
-                pricingGuide.record_format[pricingObjects.record_format] || 0;
-            if (!isNaN(project.pricing.record_format)) {
-                estimatedCost += project.pricing.record_format;
-            }
+                if (isNaN(itemCost)) {
+                    console.warn(`Calculated NaN for pricing key: ${pricingKey}. Setting to 0.`);
+                    itemCost = 0;
+                }
 
-            // Lacquers
-            project.pricing.lacquers = pricingGuide.lacquers[pricingObjects.lacquers] || 0;
-            if (!isNaN(project.pricing.lacquers)) {
-                estimatedCost += project.pricing.lacquers;
-            }
+                if (isNaN(itemCost)) {
+                    console.warn(`Calculated NaN for pricing key: ${String(pricingKey)}. Setting to 0.`);
+                    itemCost = 0;
+                }
 
-            // Metalwork
-            project.pricing.metalwork = pricingGuide.metalwork[pricingObjects.metalwork] || 0;
-            if (!isNaN(project.pricing.metalwork)) {
-                estimatedCost += project.pricing.metalwork;
-            }
-
-            // Test prints
-            project.pricing.test_prints =
-                parseInt(pricingObjects.test_prints) * pricingGuide.test_prints.value;
-            if (!isNaN(project.pricing.test_prints)) {
-                estimatedCost += project.pricing.test_prints;
-            }
-
-            // Packaging
-            project.pricing.packaging = pricingGuide.packaging[pricingObjects.packaging] || 0;
-            if (!isNaN(project.pricing.packaging)) {
-                estimatedCost += project.pricing.packaging;
-            }
+                project.pricing[pricingKey] = itemCost;
+                estimatedCost += itemCost;
+            });
 
             project.pricing.estimatedCost = estimatedCost;
         },

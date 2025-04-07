@@ -99,7 +99,7 @@
     {#if !isMinimized}
         {#if buttonView === 'upload'}
             <div class="px-12 py-4">Press the button or drag an image onto it to upload</div>
-            <Upload {threeScene} />
+            <Upload />
         {/if}
         {#if buttonView === 'ai'}
             <div class="view">

@@ -19,7 +19,7 @@
 		{#each options as option}
 			<!-- {JSON.stringify(survey.state.answers[key] === option.text)} -->
 			<button
-				class:isSelected={details.state.details[key].value === option.text}
+				class:isSelected={details.state[key].value === option.text}
 				onclick={() => handleAnswer(option)}
 			>
 				{#if option.img}

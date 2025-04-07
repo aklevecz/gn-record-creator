@@ -7,8 +7,6 @@
     import details from '$lib/details.svelte';
     import project, { createProject } from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
-    import { cachedKeys } from '$lib/storage';
-    import threeScenes from '$lib/three.svelte';
     import { onDestroy } from 'svelte';
 
     /** @type {{ data: import('./$types').PageData }} */
@@ -172,12 +170,12 @@
             <div class="mb-2 pr-4">
                 <Detail label="Project Name" key="project_name" description="" />
             </div>
-            <div class="project-info-line">{project.state.details?.details.artist.value}</div>
-            <div class="project-info-line">{project.state.details?.details.label.value}</div>
-            <div class="project-info-line">{project.state.details?.details.record_color.value}</div>
+            <div class="project-info-line">{project.state.details?.artist.value}</div>
+            <div class="project-info-line">{project.state.details?.label.value}</div>
+            <div class="project-info-line">{project.state.details?.record_color.value}</div>
             <div class="flex flex-row justify-between md:flex-col">
                 <img
-                    src={`/records/${project.state.details?.details.record_color.value || 'cosmic-black'}.png`}
+                    src={`/records/${project.state.details?.record_color.value || 'cosmic-black'}.png`}
                     alt=""
                     class="my-2 w-40"
                 />

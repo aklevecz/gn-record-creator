@@ -287,7 +287,7 @@ class IDBStorage {
         await this.set(this.stores.projects, {
             // id: project.name,
             ...plainProject,
-            name: project.details?.details.project_name.value || project.name,
+            name: project.details?.project_name.value || project.name,
             lastModified: Date.now()
         });
     }

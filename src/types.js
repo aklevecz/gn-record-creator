@@ -19,17 +19,30 @@
  * @property {Record<string, string>} answers
  */
 
+/** 
+ * @typedef Tooltip
+ * @property {string} name
+ * @property {string} cta
+ * @property {string} description
+ * @property {string} link
+ */
+
 /**
  * @typedef Detail
  * @property {string} label
  * @property {string} description
  * @property {string} value
- * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'phone'} type
+ * @property {Tooltip} [tooltip]
+ * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'tel' | 'email' | 'address'} type
  */
 
-/**
- * @typedef Details
- * @property {Record<string, Detail>} details
+// /**
+//  * @typedef Details
+//  * @property {Record<string, Detail>} details
+//  */
+
+/** 
+ * @typedef {Record<string, Detail>} Details
  */
 
 /** @typedef {('idle'|'starting'|'processing'|'succeeded'|'failed'|'canceled')} Status */

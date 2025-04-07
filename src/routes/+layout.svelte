@@ -36,13 +36,14 @@
                 const details = unmapDetails(project);
                 projects.registerProject({
                     id: project.id,
+                    version: project.version,
                     name: project.project_name,
                     createdAt: new Date(),
                     pricing: {
                         ...project.pricing
                     },
                     textures: [],
-                    details: { details }
+                    details
                 });
             }
         });
@@ -57,7 +58,7 @@
                 return null;
             }
             // weak update if remote has newer data some how i dunno
-            for (const entry of Object.entries(details.state.details)) {
+            for (const entry of Object.entries(details.state)) {
                 const [key, value] = entry;
                 const remoteValue = remoteSurveyData[key];
                 const localValue = value.value;

@@ -1,7 +1,7 @@
 // place files you want to import through the `$lib` alias in this folder.
 export const CURRENT_TEXTURE = 'current_texture';
 
-export const DATA_VERSION = "1.2"
+export const DATA_VERSION = "1.32122"
 
 /** @type {Record<string, string>} */
 export const colors = {

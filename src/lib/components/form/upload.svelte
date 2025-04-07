@@ -304,10 +304,10 @@
         font-weight: bold;
     }
 
-    .hint {
+    /* .hint {
         font-size: 0.5rem;
         color: #718096;
-    }
+    } */
 
     .file-input {
         display: none;
@@ -326,12 +326,12 @@
         margin-top: 1.5rem;
     }
 
-    .preview-container h3 {
+    /* .preview-container h3 {
         font-size: 1rem;
         margin-bottom: 0.75rem;
         font-weight: 500;
         color: #2d3748;
-    }
+    } */
 
     .preview-grid {
         display: grid;
