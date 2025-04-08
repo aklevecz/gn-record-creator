@@ -45,12 +45,15 @@ const createDetails = () => {
         },
         validateFormFinished() {
             let isValid = true;
+            /** @type {string[]} missingFields */
+            let missingFields = []
             Object.entries(details).forEach(([key, obj]) => {
                 if (obj.required && !obj.value) {
                     isValid = false;
+                    missingFields.push(key);
                 }
             });
-            return isValid;
+            return {isValid, missingFields};
         },
         reset() {
             details = { ...defaultDetailState };

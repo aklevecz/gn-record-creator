@@ -34,6 +34,9 @@ export const defaultProjectState = {
     }
 };
 
+
+// TODO: MOVE CALCULATOR FUNCTIONS SOMEWHERE ELSE
+
 /** @typedef {keyof Omit<Pricing, 'estimatedCost'>} PricingKey */
 
 /** @type {PricingKey[]} */

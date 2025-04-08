@@ -268,6 +268,7 @@
             'Open Sans', 'Helvetica Neue', sans-serif;
         color: black;
         font-weight: 500;
+        margin-top: -60px;
     }
 
     .dropzone {

@@ -184,7 +184,7 @@
     @reference "tailwindcss/theme";
 
     .address-input-container {
-        @apply mb-4 w-full;
+        @apply mb-0 w-full;
     }
 
     /* .address-label {
