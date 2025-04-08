@@ -34,6 +34,7 @@
  * @property {string} value
  * @property {Tooltip} [tooltip]
  * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'tel' | 'email' | 'address'} type
+ * @property {boolean} required
  */
 
 // /**
@@ -78,6 +79,7 @@
  * @property {string} prompt
  */
 
+// SHOULD THESE BE NUMBERS?
 /**
  * @typedef Pricing
  * @property {number} record_color
@@ -89,6 +91,15 @@
  * @property {number} test_prints
  * @property {number} packaging
  * @property {number} estimatedCost
+ */
+
+/** 
+ * @typedef CarbonSavings
+ * @property {number} record_color
+ * @property {number} total_units
+ * @property {number} packaging
+ * @property {number} shipping_address
+ * @property {number} estimatedCarbonSavings
  */
 
 /**
@@ -105,6 +116,7 @@
  * @property {Details | null} details
  * @property {Texture[]} textures
  * @property {Pricing} pricing
+ * @property {any} carbonSavings // Define the type more specifically if possible
  */
 
 /**

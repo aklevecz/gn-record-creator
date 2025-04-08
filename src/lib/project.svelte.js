@@ -23,15 +23,32 @@ export const defaultProjectState = {
         test_prints: 0,
         packaging: 0,
         estimatedCost: 0
+    },
+    carbonSavings: {
+        // Keys based on src/lib/survey-data-model/index.js
+        packaging: 0,
+        shipping_address: 0, // Placeholder for distance/region calculation
+        record_color: 0,
+        total_units: 0,
+        estimatedCarbonSavings: 0
     }
 };
 
 /** @typedef {keyof Omit<Pricing, 'estimatedCost'>} PricingKey */
 
 /** @type {PricingKey[]} */
-const pricingKeys = /** @type {PricingKey[]} */ (Object.keys(defaultProjectState.pricing).filter(
-    (key) => key !== 'estimatedCost'
-));
+const pricingKeys = /** @type {PricingKey[]} */ (
+    Object.keys(defaultProjectState.pricing).filter((key) => key !== 'estimatedCost')
+);
+
+// /** @typedef {keyof Omit<typeof defaultProjectState.carbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
+/** @typedef {keyof Omit<CarbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
+
+
+/** @type {CarbonSavingsKey[]} */
+const carbonSavingsKeys = /** @type {CarbonSavingsKey[]} */ (
+    Object.keys(defaultProjectState.carbonSavings).filter((key) => key !== 'estimatedCarbonSavings')
+);
 
 /** @type {Record<PricingKey, any>} pricingGuide */
 const pricingGuide = {
@@ -74,6 +91,36 @@ const pricingGuide = {
         single_pocket: 1,
         gatefold: 2,
         single_pocket_with_wide_spine: 3
+    }
+};
+
+/** @type {Record<CarbonSavingsKey, any>} carbonSavingsGuide */
+// Placeholder guide - update with actual calculation logic and values
+const carbonSavingsGuide = {
+    packaging: {
+        type: 'categorical',
+        single_pocket: 5, // Example savings points
+        gatefold: 3,
+        single_pocket_with_wide_spine_2lp: 4, // Ensure snake_case matches toSnakeCase(value)
+        no_packaging_required: 10 // Most savings
+    },
+    shipping_address: {
+        // This needs real logic, e.g., distance calculation or zone mapping.
+        // Placeholder: Assign points based on address string length (highly inaccurate example)
+        type: 'scale',
+        value: -0.01 // Example: Longer address string = slightly less savings (bad proxy for distance)
+    },
+    record_color: {
+        type: 'categorical',
+        cosmic_black: 2, // Example: Black vinyl might have different impact
+        glassy_ice: 1, // Example: Clear vinyl
+        default: 0 // Savings for other colors
+        // Add other specific colors if they have different impacts
+    },
+    total_units: {
+        type: 'scale',
+        // Example: Savings might decrease slightly per unit due to scale, or increase if using bulk eco-materials
+        value: 0.005 // Example: Small saving per unit
     }
 };
 
@@ -136,6 +183,14 @@ const createProject = () => {
                 packaging: 0,
                 estimatedCost: 0
             };
+            project.carbonSavings = {
+                // Initialize with new keys
+                packaging: 0,
+                shipping_address: 0,
+                record_color: 0,
+                total_units: 0,
+                estimatedCarbonSavings: 0
+            };
 
             return {
                 id: project.id,
@@ -144,7 +199,8 @@ const createProject = () => {
                 details: project.details,
                 textures: project.textures,
                 createdAt: project.createdAt,
-                pricing: project.pricing
+                pricing: project.pricing,
+                carbonSavings: project.carbonSavings // Include in returned object
             };
         },
         /** @param {{name: string, details: Details, survey: Survey}} props */
@@ -169,6 +225,7 @@ const createProject = () => {
 
             // update pricing -- doesn't need to pass details in? but maybe safer
             this.updatePricing(details);
+            this.updateCarbonSavings(details); // Add call to update carbon savings
 
             project.name = project.details?.project_name.value || project.name;
             projects.updateProject(serializeDeep(project));
@@ -230,7 +287,9 @@ const createProject = () => {
                 }
 
                 if (isNaN(itemCost)) {
-                    console.warn(`Calculated NaN for pricing key: ${String(pricingKey)}. Setting to 0.`);
+                    console.warn(
+                        `Calculated NaN for pricing key: ${String(pricingKey)}. Setting to 0.`
+                    );
                     itemCost = 0;
                 }
 
@@ -239,6 +298,91 @@ const createProject = () => {
             });
 
             project.pricing.estimatedCost = estimatedCost;
+        },
+        /** @param {Details} details */
+        updateCarbonSavings(details) {
+            // Ensure details object exists
+            if (!details) {
+                console.warn('Cannot update carbon savings: details object is missing.');
+                // Optionally reset savings to 0 or handle as appropriate
+                carbonSavingsKeys.forEach((key) => (project.carbonSavings[key] = 0));
+                project.carbonSavings.estimatedCarbonSavings = 0;
+                return;
+            }
+
+            const savingsObjects = carbonSavingsKeys.reduce(
+                (/** @type {Record<string, string>} */ acc, key) => {
+                    // Check if the key exists in details and has a value property
+                    if (details[key] && typeof details[key].value !== 'undefined') {
+                        // Convert value to snake_case string for categorical matching
+                        // For non-categorical, ensure it's a string for consistent processing initially
+                        acc[key] = toSnakeCase(String(details[key].value));
+                    } else {
+                        acc[key] = ''; // Assign empty string if key or value is missing
+                        console.warn(`Missing value for carbon savings key: ${key} in details`);
+                    }
+                    return acc;
+                },
+                {}
+            );
+
+            let estimatedCarbonSavings = 0;
+
+            carbonSavingsKeys.forEach((savingsKey) => {
+                const guide = carbonSavingsGuide[savingsKey];
+                // Use the snake_cased string value fetched earlier
+                const valueStr = savingsObjects[savingsKey];
+                let itemSavings = 0;
+
+                // Skip calculation if guide or value is missing for this key
+                if (!guide || valueStr === '') {
+                    project.carbonSavings[savingsKey] = 0;
+                    return;
+                }
+
+                try {
+                    if (guide.type === 'scale') {
+                        // For scale, parse the original (non-snake-cased) value if possible
+                        const originalValue = details[savingsKey]?.value;
+                        const valueNum = parseFloat(String(originalValue)); // Use parseFloat for potential decimals
+                        if (!isNaN(valueNum) && typeof guide.value === 'number') {
+                            // Apply scale calculation (adjust logic as needed, e.g., for address)
+                            if (savingsKey === 'shipping_address') {
+                                // Replace with actual distance/zone logic
+                                itemSavings = String(originalValue).length * guide.value; // Bad placeholder logic
+                            } else {
+                                itemSavings = valueNum * guide.value;
+                            }
+                        }
+                    } else if (guide.type === 'categorical') {
+                        // Use the snake_cased valueStr for lookup
+                        const savingsValue = guide[valueStr];
+                        if (typeof savingsValue === 'number') {
+                            itemSavings = savingsValue;
+                        } else if (typeof guide.default === 'number') {
+                            // Fallback to default if specific category value not found
+                            itemSavings = guide.default;
+                        }
+                    }
+                    // Add other types like 'address' if more complex logic is needed
+                } catch (error) {
+                    console.error(`Error calculating carbon savings for key ${savingsKey}:`, error);
+                    itemSavings = 0;
+                }
+
+                // Ensure itemSavings is a number, default to 0 if NaN
+                if (isNaN(itemSavings)) {
+                    console.warn(
+                        `Calculated NaN for carbon savings key: ${String(savingsKey)}. Setting to 0.`
+                    );
+                    itemSavings = 0;
+                }
+
+                project.carbonSavings[savingsKey] = itemSavings;
+                estimatedCarbonSavings += itemSavings;
+            });
+
+            project.carbonSavings.estimatedCarbonSavings = estimatedCarbonSavings;
         },
         /** @param {Texture} texture */
         addTexture(texture) {

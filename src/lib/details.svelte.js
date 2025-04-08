@@ -43,6 +43,15 @@ const createDetails = () => {
             );
             return responses;
         },
+        validateFormFinished() {
+            let isValid = true;
+            Object.entries(details).forEach(([key, obj]) => {
+                if (obj.required && !obj.value) {
+                    isValid = false;
+                }
+            });
+            return isValid;
+        },
         reset() {
             details = { ...defaultDetailState };
         }

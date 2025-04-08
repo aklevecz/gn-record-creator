@@ -22,6 +22,11 @@
     let submitting = $state(false);
     async function submitInfo() {
         submitting = true;
+        const isValid = details.validateFormFinished();
+        if (!isValid) {
+            alert("You aren't done filling out the form")
+            return
+        }
         const detailResponses = details.remapDetails();
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await surveyApi.create({
@@ -65,7 +70,6 @@
     // 	}
     // });
 </script>
-
 <div class="survey-page">
     <h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
     <div class="survey-page-cta text-xs">
@@ -82,19 +86,20 @@
             {@const question = questions[key]}
             {#if type === 'select'}
                 <!-- Buttons instead of input element -- maybe only for the record color picker? -->
-                <Question {key} label={question.label} options={question.options} />
+                <Question {key} label={question.label} options={question.options} required={detail.required} />
             {:else if type === 'dropdown'}
-                <QuestionDropdown {key} label={question.label} options={question.options} />
-            {:else if type === 'tel'}
-                <PhoneInput />
+                <QuestionDropdown {key} label={question.label} options={question.options} required={detail.required} />
+            <!-- {:else if type === 'tel'}
+                <PhoneInput /> -->
             {:else if type === 'address'}
-                <AddressInput {key} label={detail.label} description={detail.description} />
+                <AddressInput {key} label={detail.label} description={detail.description} required={detail.required}/>
             {:else}
                 <Detail
                     label={detail.label}
                     {key}
                     description={detail.description}
                     type={detail.type}
+                    required={detail.required}
                 />
             {/if}
             {#if detail.tooltip}
@@ -104,6 +109,7 @@
     </div>
     <!-- END SURVEY -->
 
+    <!-- THIS COULD ALSO BE THE SIDEPANEL OR END OF SURVEY -->
     <!-- FLOATING THREEJS RECORD VISUAL -->
     {#if projects.state.initialized}<ThreeHomepage />{/if}
     <!-- END FLOATING THREEJS RECORD VISUAL -->
@@ -135,7 +141,7 @@
     @reference "tailwindcss/theme";
 
     .survey-page {
-        @apply mx-auto mb-10 max-w-[570px] rounded-md p-0 px-6 md:mx-0;
+        @apply mx-auto mb-20 max-w-[570px] rounded-md p-0 px-6 md:mx-0;
     }
 
     .survey-questions {

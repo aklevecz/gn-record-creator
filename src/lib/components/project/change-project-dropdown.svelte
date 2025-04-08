@@ -10,6 +10,7 @@
 
 <div class="relative mb-0 inline-block w-full py-2">
     <select
+        name="change-project-dropdown"
         class="focus:shadow-outline block w-full appearance-none rounded border border-gray-300 bg-[var(--primary-color)] px-4 py-2 pr-8 leading-tight shadow hover:border-gray-500 focus:outline-none"
         bind:value={projects.state.activeProject}
         onchange={onChangeProject}

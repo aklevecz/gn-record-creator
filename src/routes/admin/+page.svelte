@@ -264,7 +264,8 @@
         {/if}
     {/if} -->
 
-    <h4>Cache Management</h4>
+    <!-- HIDING CACHE FOR NOW -->
+    <!-- <h4>Cache Management</h4>
     <div class="actions">
         <button onclick={getCachedFiles} class="refresh-button"> Refresh Cache List </button>
         <button onclick={clearAllCache} class="delete-button"> Clear All Cache </button>
@@ -283,7 +284,7 @@
         </div>
     {:else}
         <p>No cached files found. Click "Refresh Cache List" to check again.</p>
-    {/if}
+    {/if} -->
 
     <h4>IndexedDB Management</h4>
     <div class="actions">

@@ -1,8 +1,8 @@
 import { sequence } from '@sveltejs/kit/hooks';
 // import * as Sentry from '@sentry/sveltekit';
-import { handleErrorWithSentry, sentryHandle, initCloudflareSentryHandle } from '@sentry/sveltekit';
-import { PUBLIC_SENTRY_ENDPOINT } from '$env/static/public';
 import { dev } from '$app/environment';
+import { PUBLIC_SENTRY_ENDPOINT } from '$env/static/public';
+import { initCloudflareSentryHandle, sentryHandle } from '@sentry/sveltekit';
 
 // Sentry.init({
 // 	dsn: PUBLIC_SENTRY_ENDPOINT,

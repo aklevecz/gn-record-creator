@@ -206,6 +206,10 @@
         ondragleave={handleDragLeave}
         ondrop={handleDrop}
         onclick={() => fileInput && fileInput.click()}
+        onkeydown={(e) => e.key === 'Enter' && fileInput && fileInput.click()}
+        role="button"
+        tabindex="0"
+        aria-label="Upload image"
     >
         <input
             type="file"

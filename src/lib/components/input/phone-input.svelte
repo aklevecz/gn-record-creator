@@ -72,9 +72,9 @@
 </script>
 
 <div class="phone-input-container">
-    <label for="phone">Phone Number</label>
+    <!-- <label for="phone">Phone Number</label> -->
     <div class="phone-input">
-        <select value={countryValue} onchange={handleCountryChange}>
+        <select id="country-code-select" value={countryValue} onchange={handleCountryChange}>
             {#each countries as country}
                 <option value={country.code}>
                     {country.flag}
@@ -84,6 +84,8 @@
         </select>
 
         <input
+            id="phone"
+            autocomplete="tel"
             type="tel"
             placeholder="Enter phone number"
             value={phoneValue}
@@ -111,25 +113,24 @@
     select {
         padding: 10px 6px;
         border: 1px solid;
-        font-size: 1rem;
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg width='10' height='5' viewBox='0 0 10 5' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 5 5-5z' fill='%23666'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 10px center;
         background-size: 10px 5px;
         flex: 0 0 10%;
-        @apply text-sm;
+        @apply text-lg;
     }
 
-    label {
+    /* label {
         @apply mb-1 text-sm;
-    }
+    } */
 
     input {
         padding: 10px;
         border: 1px solid;
-        font-size: 1rem;
-        width: 235px;
+        width: 205px;
+        @apply text-lg;
     }
 
     input:focus,

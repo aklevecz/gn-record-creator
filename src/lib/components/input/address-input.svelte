@@ -21,7 +21,8 @@
         label = 'Shipping Address',
         key = 'shipping_address',
         description = '',
-        initialValue = ''
+        initialValue = '',
+        required = false
     } = $props();
 
     // Internal reactive state using Svelte 5 runes
@@ -140,12 +141,12 @@
     <!-- {#if label}
         <label for="address-input-{key}" class="address-label">{label}</label>
     {/if} -->
-    <label for={key} class="mb-0">{label}</label>
+    <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
     <div class="mb-2 text-xs opacity-50">{description}</div>
     <div class="input-wrapper">
         <input
             type="text"
-            id="address-input-{key}"
+            id={key}
             placeholder="Start typing address..."
             bind:value
             oninput={handleInput}
@@ -186,9 +187,9 @@
         @apply mb-4 w-full;
     }
 
-    .address-label {
+    /* .address-label {
         @apply mb-1 block text-sm font-medium text-gray-700;
-    }
+    } */
 
     .input-wrapper {
         @apply relative;

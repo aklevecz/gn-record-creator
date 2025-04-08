@@ -1,7 +1,8 @@
 <script>
     import details from '$lib/details.svelte';
+    import PhoneInput from '../input/phone-input.svelte';
 
-    let { label, key, description, type } = $props();
+    let { label, key, description, type, required } = $props();
 
     /** @param {*} e */
     function onInput(e) {
@@ -10,17 +11,21 @@
 </script>
 
 <div class="flex flex-col">
-    <label for={key} class="mb-0">{label}</label>
+    <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
     <div class="mb-2 text-xs opacity-50">{description}</div>
     <div class="relative max-w-[300px]">
-        <input
-            id={key}
-            name={key}
-            {type}
-            oninput={onInput}
-            autocomplete="on"
-            bind:value={details.state[key].value}
-        />
+        {#if type === 'tel'}
+            <PhoneInput />
+        {:else}
+            <input
+                id={key}
+                name={key}
+                {type}
+                oninput={onInput}
+                autocomplete="on"
+                bind:value={details.state[key].value}
+            />
+        {/if}
         {#if type === 'date'}
             <svg
                 class="date-icon"

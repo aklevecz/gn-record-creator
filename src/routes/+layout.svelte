@@ -42,6 +42,9 @@
                     pricing: {
                         ...project.pricing
                     },
+                    carbonSavings: {
+                        ...project.carbon_savings
+                    },
                     textures: [],
                     details
                 });

@@ -11,7 +11,7 @@
     }
 </script>
 
-<div>
+<div class="relative">
     <!-- <div class="tooltip-container" class:open={isOpen}> -->
     {#if isOpen}
         <div transition:slide class="tooltip-container">
@@ -30,7 +30,7 @@
 <style lang="postcss">
     @reference "tailwindcss/theme";
     .tooltip-container {
-        @apply flex flex-col rounded-md mb-2 bg-[var(--secondary-color)] p-2 text-[var(--primary-color)];
+        @apply  rounded-md mb-2 bg-[var(--secondary-color)] p-2 text-[var(--primary-color)] block w-fit;
     }
     button {
         @apply text-xs;
@@ -38,7 +38,7 @@
     a {
         @apply text-[var(--accent-color)] underline;
     }
-    .hidden {
+    /* .hidden {
         @apply hidden;
-    }
+    } */
 </style>

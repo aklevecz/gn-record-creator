@@ -3,6 +3,7 @@
 :root {
     --purple: #9e80ff;
     --green: #b3cd34;
+    --gn-green: #71c46c;
     --primary-color: #1e1e1e;
     --secondary-color: rgb(236, 236, 234);
     --accent-color: var(--purple);

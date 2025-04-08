@@ -1,7 +1,7 @@
 <script>
     import details from '$lib/details.svelte';
 
-    let { label, key, options } = $props();
+    let { label, key, options, required } = $props();
 
     /** @param {*} e */
     function onChange(e) {
@@ -10,13 +10,13 @@
 </script>
 
 <div class="flex flex-col">
-    <label for={key} class="mb-0">{label}</label>
+    <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
     <select
         id={key}
         name={key}
         onchange={onChange}
         bind:value={details.state[key].value}
-        class="w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg"
+        class="mt-2 w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg"
     >
         {#each options as option}
             <option value={option.text}>{option.text}</option>
@@ -30,6 +30,10 @@
         @apply font-semibold;
     }
     select {
-        @apply w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg;
+        @apply w-full max-w-[300px] appearance-none rounded-xs border-1 border-white bg-no-repeat px-2 py-1 text-lg;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-position: right 0.5rem center;
+        background-size: 1em 1em;
+        padding-right: 2.5rem;
     }
 </style>
