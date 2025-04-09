@@ -9,7 +9,6 @@
         // survey.answer(key, option.text);
         details.setValue(key, option.text);
     }
-	console.log(required)
 </script>
 
 <div class="question-container">

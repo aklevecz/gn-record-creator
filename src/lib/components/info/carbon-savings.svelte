@@ -64,7 +64,6 @@
         } else {
             textColor = 'var(--gn-green)'; // High savings (green)
         }
-        console.log(textColor)
     });
 
     // Format the savings for display
@@ -75,7 +74,7 @@
     >CO₂ Savings
     {formattedSavings}</span
 >
-<div class="relative w-[100px]">
+<div class="relative w-[120px]">
     <svg
         class="absolute bottom-[-20px] overflow-visible"
         xmlns="http://www.w3.org/2000/svg"
