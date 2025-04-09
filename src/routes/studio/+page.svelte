@@ -65,7 +65,7 @@
 
 	<!-- RECORD MODEL -->
 	{#if projects.state.initialized}<div class="three-wrapper" class:minimized={isMinimized}>
-			<RecordDesigner {threeScene} loadCachedType="ai" />
+			<RecordDesigner {threeScene}/>
 		</div>{/if}
 	<!-- END RECORD MODEL  -->
 
