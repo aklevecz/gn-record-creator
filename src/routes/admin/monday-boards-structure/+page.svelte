@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+
 	/** @type {import('./$types').PageData} */
 	export let data;
 
@@ -28,6 +30,11 @@
 		}
 		return null;
 	}
+	onMount(() => {
+		data.boards.forEach(element => {
+				console.log(element.name)
+		});
+	})
 </script>
 
 <svelte:head>
@@ -109,7 +116,6 @@
         border-radius: 5px;
         padding: 1.5rem;
         margin-bottom: 2rem;
-        background-color: #f9f9f9;
     }
 	h2 {
 		border-bottom: 1px solid #eee;
@@ -120,13 +126,11 @@
     h3 {
         margin-top: 1.5rem;
         margin-bottom: 0.5rem;
-        color: #333;
     }
 	table {
 		width: 100%;
 		border-collapse: collapse;
 		margin-top: 1rem;
-        background-color: #fff;
 	}
 	th,
 	td {
@@ -137,10 +141,8 @@
         font-size: 0.9rem;
 	}
 	th {
-		background-color: #e9e9e9;
 	}
 	code {
-		background-color: #eee;
 		padding: 0.2em 0.4em;
 		border-radius: 3px;
 		font-size: 85%;
