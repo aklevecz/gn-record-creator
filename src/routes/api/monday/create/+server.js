@@ -12,7 +12,7 @@ export async function POST({ platform, request }) {
 	const logging = logger(ctx);
 	try {
 		const data = await request.json();
-		const existingEntry = await mondayServer.getItemById(data.id);
+		const existingEntry = await mondayServer.getPageItemById(data.id);
 
 		if (existingEntry) {
 			const mondayResponse = await mondayServer.updateItem(existingEntry.id, data.responses);
