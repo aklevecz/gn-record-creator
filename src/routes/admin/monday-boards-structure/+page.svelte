@@ -30,11 +30,6 @@
 		}
 		return null;
 	}
-	onMount(() => {
-		data.boards.forEach(element => {
-				console.log(element.name)
-		});
-	})
 </script>
 
 <svelte:head>

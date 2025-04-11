@@ -17,9 +17,7 @@ export async function load({ platform }) {
 		}
 
 		const boards = boardsData.data.boards;
-		boards.forEach(element => {
-			console.log(element.name)
-		});
+		
 		logging.info(`Successfully fetched ${boards.length} boards.`);
 
 		// Return the necessary data to the page

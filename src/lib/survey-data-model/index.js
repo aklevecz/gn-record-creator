@@ -30,31 +30,32 @@ export const questions = {
     record_color: {
         label: 'Whats your favorite color?',
         options: [
-            { img: 'records/cosmic-black.png', text: 'cosmic-black' },
-            { img: 'records/purple-haze.png', text: 'purple-haze' },
-            { img: 'records/ocean-floor.png', text: 'ocean-floor' },
-            { img: 'records/sky-blue.png', text: 'sky-blue' },
-            { img: 'records/salsa-verde.png', text: 'salsa-verde' },
-            { img: 'records/limoncello.png', text: 'limoncello' },
-            { img: 'records/habanero.png', text: 'habanero' },
-            { img: 'records/red-alert.png', text: 'red-alert' },
-            { img: 'records/hibiscus.png', text: 'hibiscus' },
-            { img: 'records/lightning.png', text: 'lightning' },
-            { img: 'records/glassy-ice.png', text: 'glassy-ice' }
+            { img: 'records/cosmic-black.png', text: 'A: Cosmic Black' },
+            { img: 'records/purple-haze.png', text: 'F: Purple Haze' },
+            { img: 'records/ocean-floor.png', text: 'B: Ocean Floor (Dark Blue)' },
+            { img: 'records/sky-blue.png', text: 'C: Sky Blue' },
+            { img: 'records/salsa-verde.png', text: 'D: Salsa Verde (Green)' },
+            { img: 'records/limoncello.png', text: 'K: Limocello (Yellow)' },
+            { img: 'records/habanero.png', text: 'G: Habanero (Orange)' },
+            { img: 'records/red-alert.png', text: 'H: Red Alert' },
+            { img: 'records/hibiscus.png', text: 'E: Hibiscus (Pink)' },
+            { img: 'records/lightning.png', text: 'J: Lightning (White)' },
+            { img: 'records/glassy-ice.png', text: 'L: Glassy (Clear)' }
         ]
     },
     lacquers: {
         label: 'Lacquers: Would you like us to handle this for you?',
         options: [
+            { img: '', text: "Not Sure. Let's discuss this on a call." },
             { img: '', text: 'Yes, please handle on our behalf' },
-            { img: '', text: 'No, we have this handled and will ship them to you' },
-            { img: '', text: "Not sure, let's discuss this on a call" }
+            { img: '', text: "No, we have this handled and will ship them to you." }
         ]
     },
     metalwork: {
         label: 'Metalwork: What type of stampers do you need?',
         options: [
             { img: '', text: '2 Step Stamper' },
+            { img: '', text: '1 Step Stamper' },
             { img: '', text: '3 Step Stamper' },
             { img: '', text: "Not sure, let's discuss this on a call" },
             { img: '', text: 'Not required, we already have stampers and can ship them to you' }
@@ -63,11 +64,11 @@ export const questions = {
     packaging: {
         label: 'Packaging: What type of LP jacket did you want to print?',
         options: [
-            { img: '', text: 'Single Pocket' },
             { img: '', text: 'Gatefold' },
-            { img: '', text: 'Single Pocket with Wide Spine (2LP)' },
+            { img: '', text: 'Single Pocket' },
             { img: '', text: "No Packaging Required - we'll supply it to you ourselves" },
-            { img: '', text: "Not sure, let's set up a call" }
+            { img: '', text: "Single Pocket with Wide Spine (2LP)" },
+            { img: '', text: "Not Sure. Let's set up a call." }
         ]
     }
 };

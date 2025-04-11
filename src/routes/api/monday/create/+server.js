@@ -13,7 +13,8 @@ export async function POST({ platform, request }) {
 	try {
 		const data = await request.json();
 		const existingEntry = await mondayServer.getPageItemById(data.id);
-
+		console.log(`existingEntry: ${JSON.stringify(existingEntry)}`);
+		// console.log(`data: ${JSON.stringify(data)}`);
 		if (existingEntry) {
 			const mondayResponse = await mondayServer.updateItem(existingEntry.id, data.responses);
 			return json({ mondayResponse });
