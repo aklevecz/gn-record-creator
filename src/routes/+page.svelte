@@ -29,17 +29,18 @@
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await surveyApi.create({
             id: project.state.id,
+            mondayId: project.state.mondayId,
             responses: { ...detailResponses, status: 'submitted' }
         });
         await mondayClientApi.create({
             id: project.state.id,
+            mondayId: project.state.mondayId,
             responses: { ...detailResponses, status: 'Submitted' }
         });
         submitting = false;
         goto(`/submission/${project.state.id}`);
     }
 </script>
-
 <div class="survey-page">
     <h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
     <div class="survey-page-cta text-xs">

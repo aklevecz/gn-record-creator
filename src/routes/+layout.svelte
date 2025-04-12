@@ -36,6 +36,7 @@
                 const details = unmapDetails(project);
                 projects.registerProject({
                     id: project.id,
+                    mondayId: project.mondayId,
                     version: project.version,
                     name: project.project_name,
                     createdAt: new Date(),

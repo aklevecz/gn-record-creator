@@ -15,14 +15,14 @@ const surveyApi = () => {
 			}
 			return data;
 		},
-		/** @param {{id: string, responses: Record<string, string> }} data */
-		async create({ id, responses }) {
+		/** @param {{id: string, mondayId: string, responses: Record<string, string> }} data */
+		async create({ id, mondayId, responses }) {
 			const res = await fetch(endpoints.create, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ id, responses })
+				body: JSON.stringify({ id, mondayId, responses })
 			});
 
 			const data = await res.json();

@@ -110,6 +110,7 @@
 /**
  * @typedef {Object} Project
  * @property {string} id
+ * @property {string} mondayId
  * @property {string} version
  * @property {string} name
  * @property {Date} createdAt

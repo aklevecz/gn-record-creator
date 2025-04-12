@@ -8,6 +8,7 @@ import { debounce } from './utils';
 import surveyApi from '$lib/api/survey';
 import mondayClientApi from '$lib/api/monday';
 import { DATA_VERSION } from '$lib';
+import monday from '$lib/api/monday';
 
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -41,33 +42,31 @@ const createProjects = () => {
                 // Might be important to make sure cached data shares the same current model as things are changing
                 // Or need to version the local state as well-- though this also works?
                 for (let cachedProject of allProjects) {
-                    let forceUpdate = false
+                    let forceUpdate = false;
                     if (cachedProject.version !== DATA_VERSION) {
-                        forceUpdate = true
+                        forceUpdate = true;
                         // NEED TO IMPROVE: This just sets their detail values to the default
                         cachedProject.details = { ...defaultDetailState };
-                        cachedProject.version = DATA_VERSION
+                        cachedProject.version = DATA_VERSION;
                     }
 
                     // This wouldn't solve differences in details
                     if (Object.keys(defaultProjectState).every((key) => cachedProject[key])) {
                         console.log(`Project ${cachedProject.id} has all expected keys`);
                     } else {
-                        forceUpdate = true
+                        forceUpdate = true;
                         console.log(`Project ${cachedProject.id} does not have all expected keys`);
                         cachedProject = { ...defaultProjectState, ...cachedProject };
                     }
                     if (forceUpdate) {
-                        db.saveProject(cachedProject)
+                        db.saveProject(cachedProject);
                     }
                     this.registerProject(cachedProject);
                 }
 
                 const cachedActiveProject = cachedKeys.getActiveProject();
                 if (cachedActiveProject) {
-                    defaultProject = allProjects.find(
-                        (/** @type {Project} */ p) => p.id === cachedActiveProject
-                    );
+                    defaultProject = allProjects.find((/** @type {Project} */ p) => p.id === cachedActiveProject);
                 }
                 if (!defaultProject) {
                     defaultProject = allProjects[0];
@@ -118,9 +117,26 @@ const createProjects = () => {
         debouncedSaveRemote: debounce(
             () => {
                 const detailResponses = details.remapDetails();
-                const collectedData = { id: project.state.id, responses: { ...detailResponses } };
-                mondayClientApi.create(collectedData);
-                surveyApi.create(collectedData);
+                let mondayId = project.state.mondayId;
+                let collectedData = { id: project.state.id, mondayId, responses: { ...detailResponses } };
+                try {
+                    mondayClientApi.create(collectedData).then((res) => {
+                        if (res.mondayId) {
+                            mondayId = res.mondayId;
+                            collectedData.mondayId = mondayId;
+                            project.state.mondayId = mondayId;
+
+                            // I WANT TO UPDATE THE PROJECT HERE WITH THE MONDAY ID, BUT IT WILL CREATE AN INFINITE LOOP
+                        }
+                        // REDUDANCY IN CASE MONDAY FAILS
+                        surveyApi.create(collectedData);
+                    });
+                } catch (e) {
+                    console.error(e);
+                    // REDUNDANCY IN CASE MONDAY FAILS
+                    surveyApi.create(collectedData);
+                } finally {
+                }
             },
             dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
         ),

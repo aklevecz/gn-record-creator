@@ -1,12 +1,11 @@
 import { questions } from "$lib/survey-data-model";
-import { keyToId } from "./mappers";
+import { dealTrackerColumnIdToTitleAndType, keyToId } from "./mappers";
 
 /** @param {Record<string, string>} values */
 export const idToValues = (values) => {
     return Object.entries(values)
                 .reduce((acc, [key, value]) => {
                     const columnId = keyToId[key];
-
                     // @ts-ignore
                     const {type} = dealTrackerColumnIdToTitleAndType[columnId];
 

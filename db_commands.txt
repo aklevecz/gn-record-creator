@@ -1,5 +1,4 @@
 npx wrangler d1 execute DB --local --command "DROP TABLE gn_request_form;"
-
 npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_request_form (
   id TEXT PRIMARY KEY,
   project_name TEXT,
@@ -23,7 +22,8 @@ npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_requ
   packaging TEXT,
   notes TEXT,
   status TEXT,
-  session TEXT
+  session TEXT,
+  monday_id TEXT
 );"
 
 
@@ -31,5 +31,5 @@ npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD CO
 npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD COLUMN session TEXT"
 
 npx wrangler d1 execute DB --local --command "SELECT * FROM gn_request_form"
-npx wrangler d1 execute DB --local --command "SELECT session FROM gn_request_form"
+npx wrangler d1 execute DB --local --command "SELECT monday_id FROM gn_request_form"
 npx wrangler d1 execute DB --local --command "DELETE FROM gn_request_form;"

@@ -8,6 +8,7 @@ import { DATA_VERSION } from '$lib';
 /** @type {Project} */
 export const defaultProjectState = {
     id: '',
+    mondayId: '',
     version: DATA_VERSION,
     name: 'default',
     createdAt: new Date(),
@@ -197,6 +198,7 @@ const createProject = () => {
 
             return {
                 id: project.id,
+                mondayId: project.mondayId,
                 version: project.version,
                 name: project.name,
                 details: project.details,

@@ -12,13 +12,13 @@ export async function POST({ cookies, platform, request }) {
 	const ctx = platform.context;
 
 	const db = platform.env.DB;
-	const { id, responses } = await request.json();
+	const { id, mondayId, responses } = await request.json();
 	const session = cookies.get('session');
 
 	const logging = logger(ctx);
 	try {
-		ctx.waitUntil(dbSurvey(db).upsert(id, { ...responses, session }));
-		logging.info(`Upsert survey for ${id} with responses ${JSON.stringify(responses)}`);
+		ctx.waitUntil(dbSurvey(db).upsert(id, { ...responses, session, monday_id: mondayId }));
+		logging.info(`Upsert survey for id:${id} mondayId:${mondayId} with responses ${JSON.stringify(responses)}`);
 		return json({ success:true });
 	} catch (e) {
 		// maybe dont need both sentry and betterstack logging

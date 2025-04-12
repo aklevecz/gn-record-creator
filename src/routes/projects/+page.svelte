@@ -7,6 +7,7 @@
     import details from '$lib/details.svelte';
     import project, { createProject } from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
+    import { recordColorTextToAsset } from '$lib/survey-data-model';
     import { onDestroy } from 'svelte';
 
     /** @type {{ data: import('./$types').PageData }} */
@@ -168,18 +169,18 @@
             <h1>Project Info</h1>
             <!-- <div class="text-xl">{project.state.name}</div> -->
             <div class="mb-2 pr-4">
-                <Detail label="Project Name" key="project_name" description="" />
+                <Detail label="Project Name" key="project_name" description="" type="text" required={false} />
             </div>
             <div class="project-info-line">{project.state.details?.artist.value}</div>
             <div class="project-info-line">{project.state.details?.label.value}</div>
             <div class="project-info-line">{project.state.details?.record_color.value}</div>
             <div class="flex flex-row justify-between md:flex-col">
                 <img
-                    src={`/records/${project.state.details?.record_color.value || 'cosmic-black'}.png`}
+                    src={`${recordColorTextToAsset[project.state.details?.record_color.value || 'A: Cosmic Black']}`}
                     alt=""
                     class="my-2 w-40"
                 />
-                <img class="w-40 py-4 pr-4" src={project.activeTextureUrl || '/records/red-alert.png'} alt="current texture" />
+                {#if project.activeTextureUrl}<img class="w-40 py-4 pr-4" src={project.activeTextureUrl || '/records/red-alert.png'} alt="current texture" />{/if}
             </div>
             <div class="mt-4 flex gap-3 md:flex-col">
                 <button class="project-edit-buttons delete" onclick={confirmDeleteProject}

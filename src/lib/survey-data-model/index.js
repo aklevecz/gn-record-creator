@@ -1,3 +1,17 @@
+/** @type {Record<string, string>} */
+export const recordColorTextToAsset = {
+    'A: Cosmic Black': 'records/cosmic-black.png',
+    'F: Purple Haze': 'records/purple-haze.png',
+    'B: Ocean Floor (Dark Blue)': 'records/ocean-floor.png',
+    'C: Sky Blue': 'records/sky-blue.png',
+    'D: Salsa Verde (Green)': 'records/salsa-verde.png',
+    'K: Limocello (Yellow)': 'records/limoncello.png',
+    'G: Habanero (Orange)': 'records/habanero.png',
+    'H: Red Alert': 'records/red-alert.png',
+    'E: Hibiscus (Pink)': 'records/hibiscus.png',
+    'J: Lightning (White)': 'records/lightning.png',
+    'L: Glassy (Clear)': 'records/glassy-ice.png'
+};
 // Questions just maps the questions for the survey
 /** @type {Questions} */
 export const questions = {
@@ -48,7 +62,7 @@ export const questions = {
         options: [
             { img: '', text: "Not Sure. Let's discuss this on a call." },
             { img: '', text: 'Yes, please handle on our behalf' },
-            { img: '', text: "No, we have this handled and will ship them to you." }
+            { img: '', text: 'No, we have this handled and will ship them to you.' }
         ]
     },
     metalwork: {
@@ -67,7 +81,7 @@ export const questions = {
             { img: '', text: 'Gatefold' },
             { img: '', text: 'Single Pocket' },
             { img: '', text: "No Packaging Required - we'll supply it to you ourselves" },
-            { img: '', text: "Single Pocket with Wide Spine (2LP)" },
+            { img: '', text: 'Single Pocket with Wide Spine (2LP)' },
             { img: '', text: "Not Sure. Let's set up a call." }
         ]
     }
@@ -79,8 +93,7 @@ export const questions = {
 export const detailsDict = {
     project_name: {
         label: 'Project Name',
-        description:
-            'How would you describe this project? We recommend Artist, Title and Label information',
+        description: 'How would you describe this project? We recommend Artist, Title and Label information',
         value: '',
         type: 'text',
         required: true
@@ -136,32 +149,28 @@ export const detailsDict = {
     },
     depot_date: {
         label: 'Depot Date',
-        description:
-            'When do you need finished units to be at your desired final destination by (Leave blank if not sure)',
+        description: 'When do you need finished units to be at your desired final destination by (Leave blank if not sure)',
         value: '',
         type: 'date',
         required: false
     },
     shipping_address: {
         label: 'Where would you like the finished goods to be shipped?',
-        description:
-            'Either add general city/region, or exact address. This helps us estimate shipping time. (Leave blank if not sure)',
+        description: 'Either add general city/region, or exact address. This helps us estimate shipping time. (Leave blank if not sure)',
         value: '',
         type: 'address',
         required: false
     },
     shipping_logistics: {
         label: 'Should GN handle the shipping logistics of the finished goods?',
-        description:
-            'Or would you prefer to arrange your own pickup via your preferred transit company?',
+        description: 'Or would you prefer to arrange your own pickup via your preferred transit company?',
         value: '',
         type: 'dropdown',
         required: false
     },
     total_units: {
         label: 'How many total units would you like to manufacture? Our minimum run is 500 units',
-        description:
-            'If you want to manufacture multiple color variants, this number should encompass everything',
+        description: 'If you want to manufacture multiple color variants, this number should encompass everything',
         value: '',
         type: 'number',
         required: true
@@ -191,8 +200,7 @@ export const detailsDict = {
     },
     lacquers: {
         label: 'Lacquers: Would you like us to handle this for you?',
-        description:
-            'Do you already have someone cutting the master? If not, we work with some of the best cutters in the world and can help!',
+        description: 'Do you already have someone cutting the master? If not, we work with some of the best cutters in the world and can help!',
         value: '',
         type: 'dropdown',
         tooltip: {
@@ -205,8 +213,7 @@ export const detailsDict = {
     },
     metalwork: {
         label: 'Metalwork: What type of stampers do you need?',
-        description:
-            'Making stampers is a standard step in the record making process. For optimal quality, we recommend that we make your stampers.',
+        description: 'Making stampers is a standard step in the record making process. For optimal quality, we recommend that we make your stampers.',
         value: '',
         type: 'dropdown',
         required: false
@@ -227,8 +234,7 @@ export const detailsDict = {
     },
     notes: {
         label: 'Add your project details, comments and/or requests below.',
-        description:
-            'Did you want any lyric sheets or inserts? Please add any packaging notes we should know about.',
+        description: 'Did you want any lyric sheets or inserts? Please add any packaging notes we should know about.',
         value: '',
         type: 'text',
         required: false
