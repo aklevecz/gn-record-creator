@@ -408,6 +408,8 @@
     {:else}
         <p>No survey entries found.</p>
     {/if}
+
+ <a href="/admin/board/6253075642">View Board 6253075642</a>
 </div>
 
 <style>
