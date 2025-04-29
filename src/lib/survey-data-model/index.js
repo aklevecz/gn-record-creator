@@ -18,71 +18,100 @@ export const questions = {
     shipping_logistics: {
         label: 'Should GN handle the shipping logistics of the finished goods?',
         options: [
-            { img: '', text: 'Yes, please handle the logistics for me' },
-            { img: '', text: 'No, thank you - I will arrange the pickup' },
-            { img: '', text: "Not sure, let's chat" }
+            // { img: '', text: 'Yes, please handle the logistics for me' },
+            // { img: '', text: 'No, thank you - I will arrange the pickup' },
+            // { img: '', text: "Not sure, let's chat" }
+            { img: '', text: 'No' },
+            { img: '', text: 'Yes' },
+            { img: '', text: 'Maybe' }
         ]
     },
     records_per_set: {
         label: '# of records per set',
         options: [
-            { img: '', text: '1LP' },
             { img: '', text: '2LP' },
+            { img: '', text: '1LP' },
             { img: '', text: '3LP' },
             { img: '', text: '4LP' },
-            { img: '', text: "Not sure, let's setup a call" }
+            { img: '', text: 'Not sure' }
+            // { img: '', text: "Not sure, let's setup a call" }
         ]
     },
     record_format: {
         label: 'RPM / Record Format',
         options: [
-            { img: '', text: '33 12in/180g' },
             { img: '', text: '45 12in/180g' },
-            { img: '', text: "Not sure, let's setup a call" }
+            { img: '', text: '33 12in/180g' },
+            { img: '', text: 'Not sure' }
+            // { img: '', text: "Not sure, let's setup a call" }
         ]
     },
     record_color: {
         label: 'Whats your favorite color?',
         options: [
-            { img: 'records/cosmic-black.png', text: 'A: Cosmic Black' },
-            { img: 'records/purple-haze.png', text: 'F: Purple Haze' },
-            { img: 'records/ocean-floor.png', text: 'B: Ocean Floor (Dark Blue)' },
-            { img: 'records/sky-blue.png', text: 'C: Sky Blue' },
-            { img: 'records/salsa-verde.png', text: 'D: Salsa Verde (Green)' },
-            { img: 'records/limoncello.png', text: 'K: Limocello (Yellow)' },
-            { img: 'records/habanero.png', text: 'G: Habanero (Orange)' },
-            { img: 'records/red-alert.png', text: 'H: Red Alert' },
-            { img: 'records/hibiscus.png', text: 'E: Hibiscus (Pink)' },
-            { img: 'records/lightning.png', text: 'J: Lightning (White)' },
-            { img: 'records/glassy-ice.png', text: 'L: Glassy (Clear)' }
+            // { img: 'records/cosmic-black.png', text: 'A: Cosmic Black' },
+            // { img: 'records/purple-haze.png', text: 'F: Purple Haze' },
+            // { img: 'records/ocean-floor.png', text: 'B: Ocean Floor (Dark Blue)' },
+            // { img: 'records/sky-blue.png', text: 'C: Sky Blue' },
+            // { img: 'records/salsa-verde.png', text: 'D: Salsa Verde (Green)' },
+            // { img: 'records/limoncello.png', text: 'K: Limocello (Yellow)' },
+            // { img: 'records/habanero.png', text: 'G: Habanero (Orange)' },
+            // { img: 'records/red-alert.png', text: 'H: Red Alert' },
+            // { img: 'records/hibiscus.png', text: 'E: Hibiscus (Pink)' },
+            // { img: 'records/lightning.png', text: 'J: Lightning (White)' },
+            // { img: 'records/glassy-ice.png', text: 'L: Glassy (Clear)' }
+            { img: 'records/purple-haze.png', text: 'Purple haze' },
+            { img: 'records/cosmic-black.png', text: 'Cosmic black' },
+            { img: 'records/ocean-floor.png', text: 'Ocean floor (dark blue)' },
+            { img: 'records/sky-blue.png', text: 'Sky blue' },
+            { img: 'records/salsa-verde.png', text: 'Salsa verde (green)' },
+            { img: 'records/limoncello.png', text: 'Limocello (yellow)' },
+            { img: 'records/habanero.png', text: 'Habanero (orange)' },
+            { img: 'records/red-alert.png', text: 'Red alert' },
+            { img: 'records/hibiscus.png', text: 'Hibiscus (pink)' },
+            { img: 'records/lightning.png', text: 'Lightning (white)' },
+            { img: 'records/glassy-ice.png', text: 'Glassy (clear)' }
         ]
     },
     lacquers: {
         label: 'Lacquers: Would you like us to handle this for you?',
         options: [
-            { img: '', text: "Not Sure. Let's discuss this on a call." },
-            { img: '', text: 'Yes, please handle on our behalf' },
-            { img: '', text: 'No, we have this handled and will ship them to you.' }
+            // { img: '', text: "Not Sure. Let's discuss this on a call." },
+            // { img: '', text: 'Yes, please handle on our behalf' },
+            // { img: '', text: 'No, we have this handled and will ship them to you.' }
+            { img: '', text: 'Yes' },
+            { img: '', text: 'Maybe' },
+            { img: '', text: 'No' }
         ]
     },
     metalwork: {
         label: 'Metalwork: What type of stampers do you need?',
         options: [
-            { img: '', text: '2 Step Stamper' },
-            { img: '', text: '1 Step Stamper' },
-            { img: '', text: '3 Step Stamper' },
-            { img: '', text: "Not sure, let's discuss this on a call" },
-            { img: '', text: 'Not required, we already have stampers and can ship them to you' }
+            // { img: '', text: '2 Step Stamper' },
+            // { img: '', text: '1 Step Stamper' },
+            // { img: '', text: '3 Step Stamper' },
+            // { img: '', text: "Not sure, let's discuss this on a call" },
+            // { img: '', text: 'Not required, we already have stampers and can ship them to you' }
+            { img: '', text: '1 step stamper' },
+            { img: '', text: '2 step stamper' },
+            { img: '', text: '3 step stamper' },
+            { img: '', text: 'Maybe' },
+            { img: '', text: 'No' }
         ]
     },
     packaging: {
         label: 'Packaging: What type of LP jacket did you want to print?',
         options: [
+            // { img: '', text: 'Gatefold' },
+            // { img: '', text: 'Single Pocket' },
+            // { img: '', text: "No Packaging Required - we'll supply it to you ourselves" },
+            // { img: '', text: 'Single Pocket with Wide Spine (2LP)' },
+            // { img: '', text: "Not Sure. Let's set up a call." }
+            { img: '', text: 'Single pocket' },
             { img: '', text: 'Gatefold' },
-            { img: '', text: 'Single Pocket' },
-            { img: '', text: "No Packaging Required - we'll supply it to you ourselves" },
-            { img: '', text: 'Single Pocket with Wide Spine (2LP)' },
-            { img: '', text: "Not Sure. Let's set up a call." }
+            { img: '', text: 'No' },
+            { img: '', text: 'Single pocket w/ wide spine (2LP)' },
+            { img: '', text: 'Maybe' }
         ]
     }
 };

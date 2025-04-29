@@ -15,9 +15,8 @@ export async function load({ platform }) {
 			logging.error(`Failed to fetch or parse boards info from Monday.com. Response: ${JSON.stringify(boardsData)}`);
 			throw error(500, 'Failed to fetch boards info');
 		}
-
-		const boards = boardsData.data.boards;
 		
+		const boards = boardsData.data.boards;
 		logging.info(`Successfully fetched ${boards.length} boards.`);
 
 		// Return the necessary data to the page

@@ -1,10 +1,11 @@
 import { MONDAY_API_TOKEN } from '$env/static/private';
 import { idToValues } from '$lib/monday';
-import { dealTrackerGroupTitleToId, keyToId } from '$lib/monday/mappers';
+import { dealTrackerGroupTitleToId, intakeFormFields, intakeFormGroupTitleToId, keyToId } from '$lib/monday/mappers';
 
 const YAYTSO_BOARD_ID = 8703967457;
 const RECORD_SETUP_BOARD_ID = 8705909367;
 export const DEAL_TRACKER_BOARD_ID = 6253075642;
+export const NEW_LEADS_BOARD = 9015288436
 
 const GROUP_ID = 'topics';
 
@@ -40,7 +41,7 @@ const mondayServerApi = () => {
     const endpoint = 'https://api.monday.com/v2';
 
     return {
-        getBoardById: async (id = DEAL_TRACKER_BOARD_ID) => {
+        getBoardById: async (id = NEW_LEADS_BOARD) => {
             const query = /* GraphQL */ ` query { boards(ids: ${id}) { id name columns { id title type } items_page(limit: 500) { items { id name column_values { column { id title type } text value } group { id title } } } } } `;
 
             return mondayFetch(query);
@@ -63,7 +64,7 @@ const mondayServerApi = () => {
          * @param {number} [boardId] - The board ID to get items from (defaults to RECORD_SETUP_BOARD_ID)
          * @returns {Promise<any>} - The query result containing all items
          */
-        getPageItemById: async (id, boardId = DEAL_TRACKER_BOARD_ID) => {
+        getPageItemById: async (id, boardId = NEW_LEADS_BOARD) => {
             const query = /* GraphQL */`query { boards(ids: ${boardId}) { items_page (query_params: {rules: [{compare_value: "${id}", column_id: "name", operator: any_of}]}) { items { id name column_values { id type value } } } } }`;
 
             return mondayFetch(query);
@@ -71,21 +72,27 @@ const mondayServerApi = () => {
         /**
          * Query items by name
          * @param {string} name - The name to search for
-         * @param {number} [boardId] - The board ID to get items from (defaults to DEAL_TRACKER_BOARD_ID)
+         * @param {number} [boardId] - The board ID to get items from (defaults to NEW_LEADS_BOARD)
          * @returns {Promise<any>} - The query result containing the items
          */
-        getItemsByName: async (name, boardId = DEAL_TRACKER_BOARD_ID) => {
+        getItemsByName: async (name, boardId = NEW_LEADS_BOARD) => {
             const query = /* GraphQL */ `query { boards(ids: ${boardId}) { items_page(limit: 10, query_params: { rules: [{ column_id: "name", compare_value: ["${name}"], operator: contains }], operator: and }) { cursor items { id name column_values { id type value text column { id title type } } group { id title } } } } }`;
 
             return mondayFetch(query);
         },
         /** @param {string} id @param {Record<string, string>} values */
-        createItem: async (id, values, boardId = DEAL_TRACKER_BOARD_ID, groupId = dealTrackerGroupTitleToId.Tests) => {
+        createItem: async (id, values, boardId = NEW_LEADS_BOARD, groupId = intakeFormGroupTitleToId['Intake Form']) => {
             // const query = `mutation { create_item(board_id: ${boardId}, column_values: ${JSON.stringify(data)}) { id } }`;
             // const query = `mutation{ create_item (board_id: 8703967457, item_name: "New Item"){ id name } } `;
             let idValues = idToValues(values);
             // const item_name = idValues['project_name']
             // idValues = {short_text8__1: 'Api Test'}
+            
+            // ADD NEW STATUS
+            idValues[intakeFormFields.status.id] = {index: intakeFormFields.status.options.new}
+            // ADD NEW SOURCE
+            // idValues[intakeFormFields.source.id] = {index: intakeFormFields.source.options.google_search}
+
             const valuesStrings = JSON.stringify(JSON.stringify(idValues));
             const query = /* GraphQL */ `
                     mutation {
@@ -98,8 +105,10 @@ const mondayServerApi = () => {
             return mondayFetch(query);
         },
         /** @param {string} id @param {Record<string, string>} values */
-        updateItem: async (id, values, boardId = DEAL_TRACKER_BOARD_ID) => {
+        updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
             const idValues = idToValues(values);
+            idValues[intakeFormFields.create_date.id] = {date: new Date().toISOString().split('T')[0]}
+            // console.log(`Updating ${id} with ${JSON.stringify(idValues)}`);
             const valueStrings = JSON.stringify(JSON.stringify(idValues));
             let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
             return mondayFetch(query);
@@ -125,7 +134,7 @@ const mondayServerApi = () => {
 
             return mondayFetch(query);
         },
-        getBoardColumnInfo: async (boardId = DEAL_TRACKER_BOARD_ID) => {
+        getBoardColumnInfo: async (boardId = NEW_LEADS_BOARD) => {
             const query = /* GraphQL */ `query { boards(ids: [${boardId}]) { columns { id title type settings_str } } }`;
 
             return mondayFetch(query);

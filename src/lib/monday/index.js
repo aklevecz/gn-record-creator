@@ -1,5 +1,5 @@
 import { questions } from "$lib/survey-data-model";
-import { dealTrackerColumnIdToTitleAndType, keyToId } from "./mappers";
+import { dealTrackerColumnIdToTitleAndType, intakeFormIdToTitleAndType, keyToId } from "./mappers";
 
 /** @param {Record<string, string>} values */
 export const idToValues = (values) => {
@@ -7,7 +7,8 @@ export const idToValues = (values) => {
                 .reduce((acc, [key, value]) => {
                     const columnId = keyToId[key];
                     // @ts-ignore
-                    const {type} = dealTrackerColumnIdToTitleAndType[columnId];
+                    // const {type} = dealTrackerColumnIdToTitleAndType[columnId];
+                    const {type} = intakeFormIdToTitleAndType[columnId];
 
                     // Skip null or undefined values
                     if (value === null || value === undefined) {

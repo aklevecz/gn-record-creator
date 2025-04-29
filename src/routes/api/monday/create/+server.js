@@ -27,7 +27,6 @@ export async function POST({ platform, request }) {
         // Is using project name dangerous?
         const projectName = data.responses.project_name;
 		const responses = cleanEmptyValues(data.responses)
-		
         let mondayId = data.mondayId;
         let existingEntry = null;
         if (mondayId) {
@@ -50,11 +49,14 @@ export async function POST({ platform, request }) {
         }
         //BETTER CHECK NEEDED
         if (mondayId) {
+            console.log(`Updating existing entry ${data.id} with id ${mondayId}`);
+            console.log(`Entry ${data.id} already exists with id ${mondayId}`);
 			logging.info(`Updating entry ${data.id}`);
             const mondayResponse = await mondayServer.updateItem(mondayId, responses);
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);
+        console.log(`Creating new entry ${data.id}`);
         // return error(500, errors.UPDATE_MONDAY_FAILED);
         // const mondayResponse = await mondayServer.createItem(data.id, data.responses);
         const mondayResponse = await mondayServer.createItem(projectName, responses);

@@ -138,7 +138,7 @@ const createProjects = () => {
                 } finally {
                 }
             },
-            dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
+            dev ? 0 : THIRTY_SECONDS_MS
         ),
         debounceSaveToDB: debounce(function (/** @type {Project} */ project) {
             db.saveProject(project);
