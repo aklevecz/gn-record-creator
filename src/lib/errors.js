@@ -11,6 +11,10 @@ export default {
         message: 'Failed to update survey',
         code: 'UPDATE_SURVEY_FAILED'
     },
+    UPDATE_SURVEY_FAILED_NONAME: {
+        message: 'Failed to update survey',
+        code: 'UPDATE_SURVEY_FAILED_NONAME'
+    },
     GET_PROJECT_FAILED: {
         message: 'Failed to get project',
         code: 'GET_PROJECT_FAILED'

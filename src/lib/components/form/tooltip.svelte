@@ -15,11 +15,10 @@
     <!-- <div class="tooltip-container" class:open={isOpen}> -->
     {#if isOpen}
         <div transition:slide class="tooltip-container">
-            <!-- <div>{tooltip.name}</div> -->
             <div>{tooltip.description}</div>
-            <a target="_blank" href={tooltip.link} aria-label="see more info on {tooltip.name}"
+            <!-- <a target="_blank" href={tooltip.link} aria-label="see more info on {tooltip.name}"
                 >External info</a
-            >
+            > -->
         </div>
     {/if}
     <button onclick={toggleOpen}

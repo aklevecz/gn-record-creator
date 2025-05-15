@@ -1,12 +1,8 @@
-import { colors } from '$lib';
+import { detailsDict } from './form-data-model';
 import project from './project.svelte';
-import { detailsDict } from './survey-data-model';
-import { toCamelCase } from './utils';
-
-
 
 /** @type {Details} */
-export const defaultDetailState = detailsDict
+export const defaultDetailState = detailsDict;
 
 const createDetails = () => {
     let details = $state({ ...defaultDetailState });
@@ -22,38 +18,35 @@ const createDetails = () => {
         /** @param {string} key @param {string} value */
         setValue(key, value) {
             // THIS SHOULD BE SOMEWHERE ELSE -- MAYBE THE COMPONENT SHOULD DETECT IMPLICITLY IF IT IS THIS KEY
-            if (key === 'record_color') {
-                const colorHex = colors[toCamelCase(value)];
-                const changeRecordColorEvent = new CustomEvent('change-record-color', {
-                    detail: { color: colorHex }
-                });
+            // if (key === 'record_color') {
+            //     const colorHex = questions.record_color.options.find((option) => option.text === value)?.color || '#000000';
+            //     const changeRecordColorEvent = new CustomEvent('change-record-color', {
+            //         detail: { color: colorHex }
+            //     });
 
-                window.dispatchEvent(changeRecordColorEvent);
-            }
+            //     window.dispatchEvent(changeRecordColorEvent);
+            // }
             details[key].value = value;
             project.updateDetails(details);
         },
         remapDetails() {
-            const responses = Object.entries(details).reduce(
-                (/** @type {Record<string, string>} */ acc, [key, obj]) => {
-                    acc[key] = obj.value;
-                    return acc;
-                },
-                {}
-            );
+            const responses = Object.entries(details).reduce((/** @type {Record<string, string>} */ acc, [key, obj]) => {
+                acc[key] = obj.value;
+                return acc;
+            }, {});
             return responses;
         },
         validateFormFinished() {
             let isValid = true;
             /** @type {string[]} missingFields */
-            let missingFields = []
+            let missingFields = [];
             Object.entries(details).forEach(([key, obj]) => {
                 if (obj.required && !obj.value) {
                     isValid = false;
                     missingFields.push(key);
                 }
             });
-            return {isValid, missingFields};
+            return { isValid, missingFields };
         },
         reset() {
             details = { ...defaultDetailState };

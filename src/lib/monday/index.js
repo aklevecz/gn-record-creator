@@ -1,5 +1,5 @@
-import { questions } from "$lib/survey-data-model";
-import { dealTrackerColumnIdToTitleAndType, intakeFormIdToTitleAndType, keyToId } from "./mappers";
+import { questions } from "$lib/form-data-model";
+import { intakeFormIdToTitleAndType, keyToId } from "./mappers";
 
 /** @param {Record<string, string>} values */
 export const idToValues = (values) => {

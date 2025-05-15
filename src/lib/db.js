@@ -1,7 +1,6 @@
+import projectsApi from '$lib/api/projects';
 import idb from './idb';
 import { cachedKeys, projectStorage } from './storage';
-import projectsApi from '$lib/api/projects';
-import r2Api from '$lib/api/r2';
 
 const db = () => {
     return {

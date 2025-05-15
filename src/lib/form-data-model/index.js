@@ -1,17 +1,3 @@
-/** @type {Record<string, string>} */
-export const recordColorTextToAsset = {
-    'A: Cosmic Black': 'records/cosmic-black.png',
-    'F: Purple Haze': 'records/purple-haze.png',
-    'B: Ocean Floor (Dark Blue)': 'records/ocean-floor.png',
-    'C: Sky Blue': 'records/sky-blue.png',
-    'D: Salsa Verde (Green)': 'records/salsa-verde.png',
-    'K: Limocello (Yellow)': 'records/limoncello.png',
-    'G: Habanero (Orange)': 'records/habanero.png',
-    'H: Red Alert': 'records/red-alert.png',
-    'E: Hibiscus (Pink)': 'records/hibiscus.png',
-    'J: Lightning (White)': 'records/lightning.png',
-    'L: Glassy (Clear)': 'records/glassy-ice.png'
-};
 // Questions just maps the questions for the survey
 /** @type {Questions} */
 export const questions = {
@@ -60,17 +46,31 @@ export const questions = {
             // { img: 'records/hibiscus.png', text: 'E: Hibiscus (Pink)' },
             // { img: 'records/lightning.png', text: 'J: Lightning (White)' },
             // { img: 'records/glassy-ice.png', text: 'L: Glassy (Clear)' }
-            { img: 'records/purple-haze.png', text: 'Purple haze' },
-            { img: 'records/cosmic-black.png', text: 'Cosmic black' },
-            { img: 'records/ocean-floor.png', text: 'Ocean floor (dark blue)' },
-            { img: 'records/sky-blue.png', text: 'Sky blue' },
-            { img: 'records/salsa-verde.png', text: 'Salsa verde (green)' },
-            { img: 'records/limoncello.png', text: 'Limocello (yellow)' },
-            { img: 'records/habanero.png', text: 'Habanero (orange)' },
-            { img: 'records/red-alert.png', text: 'Red alert' },
-            { img: 'records/hibiscus.png', text: 'Hibiscus (pink)' },
-            { img: 'records/lightning.png', text: 'Lightning (white)' },
-            { img: 'records/glassy-ice.png', text: 'Glassy (clear)' }
+            /** @type {Record<string, string>} */
+            // export const colors = {
+            // 	cosmicBlack: '#030303',
+            // 	glassyIce: '#7e7e7e',
+            // 	habanero: '#ff5214',
+            // 	hibiscus: '#d30273',
+            // 	lightning: '#e2e2e2',
+            // 	limoncello: '#ded028',
+            // 	oceanFloor: '#003479',
+            // 	purpleHaze: '#913574',
+            // 	redAlert: '#dd2a1e',
+            // 	salsaVerde: '#398930',
+            // 	skyBlue: '#0072b0'
+            // };
+            { img: 'records/purple-haze.png', text: 'Purple haze', color: '#913574' },
+            { img: 'records/cosmic-black.png', text: 'Cosmic black', color: '#030303' },
+            { img: 'records/ocean-floor.png', text: 'Ocean floor (dark blue)', color: '#003479' },
+            { img: 'records/sky-blue.png', text: 'Sky blue', color: '#0072b0' },
+            { img: 'records/salsa-verde.png', text: 'Salsa verde (green)', color: '#398930' },
+            { img: 'records/limoncello.png', text: 'Limocello (yellow)', color: '#ded028' },
+            { img: 'records/habanero.png', text: 'Habanero (orange)', color: '#ff5214' },
+            { img: 'records/red-alert.png', text: 'Red alert', color: '#dd2a1e' },
+            { img: 'records/hibiscus.png', text: 'Hibiscus (pink)', color: '#d30273' },
+            { img: 'records/lightning.png', text: 'Lightning (white)', color: '#e2e2e2' },
+            { img: 'records/glassy-ice.png', text: 'Glassy (clear)', color: '#7e7e7e' }
         ]
     },
     lacquers: {
@@ -120,13 +120,6 @@ export const questions = {
 // I could just wrap them all into details
 /** @type {Record<string, Detail>} */
 export const detailsDict = {
-    project_name: {
-        label: 'Project Name',
-        description: 'How would you describe this project? We recommend Artist, Title and Label information',
-        value: '',
-        type: 'text',
-        required: true
-    },
     contact_name: {
         label: 'Contact Name',
         description: "What's your name?",
@@ -146,6 +139,13 @@ export const detailsDict = {
         description: 'Please add the best contact phone number',
         value: '',
         type: 'tel',
+        required: true
+    },
+    project_name: {
+        label: 'Project Name',
+        description: 'How would you describe this project? We recommend Artist, Title and Label information',
+        value: '',
+        type: 'text',
         required: true
     },
     label: {
@@ -235,7 +235,7 @@ export const detailsDict = {
         tooltip: {
             name: 'lacquers',
             cta: 'What are lacquers?',
-            description: 'lacquers are like lacquers that make lacquers',
+            description: 'Extra info coming soon!',
             link: 'https://lacquers.com'
         },
         required: false
