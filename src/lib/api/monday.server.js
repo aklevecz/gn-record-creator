@@ -1,11 +1,11 @@
 import { MONDAY_API_TOKEN } from '$env/static/private';
 import { idToValues } from '$lib/monday';
-import { dealTrackerGroupTitleToId, intakeFormFields, intakeFormGroupTitleToId, keyToId } from '$lib/monday/mappers';
+import { intakeFormFields, intakeFormGroupTitleToId, keyToId } from '$lib/monday/mappers';
 
 const YAYTSO_BOARD_ID = 8703967457;
 const RECORD_SETUP_BOARD_ID = 8705909367;
 export const DEAL_TRACKER_BOARD_ID = 6253075642;
-export const NEW_LEADS_BOARD = 9015288436
+export const NEW_LEADS_BOARD = 9015288436;
 
 const GROUP_ID = 'topics';
 
@@ -47,7 +47,20 @@ const mondayServerApi = () => {
             return mondayFetch(query);
         },
         getBoards: async () => {
-            const query = /* GraphQL */ ` query { boards(limit: 500) { id name columns { id title type settings_str } } } `;
+            const query = /* GraphQL */ `
+                query {
+                    boards(limit: 500) {
+                        id
+                        name
+                        columns {
+                            id
+                            title
+                            type
+                            settings_str
+                        }
+                    }
+                }
+            `;
 
             return mondayFetch(query);
         },
@@ -65,7 +78,7 @@ const mondayServerApi = () => {
          * @returns {Promise<any>} - The query result containing all items
          */
         getPageItemById: async (id, boardId = NEW_LEADS_BOARD) => {
-            const query = /* GraphQL */`query { boards(ids: ${boardId}) { items_page (query_params: {rules: [{compare_value: "${id}", column_id: "name", operator: any_of}]}) { items { id name column_values { id type value } } } } }`;
+            const query = /* GraphQL */ `query { boards(ids: ${boardId}) { items_page (query_params: {rules: [{compare_value: "${id}", column_id: "name", operator: any_of}]}) { items { id name column_values { id type value } } } } }`;
 
             return mondayFetch(query);
         },
@@ -82,16 +95,15 @@ const mondayServerApi = () => {
         },
         /** @param {string} id @param {Record<string, string>} values */
         createItem: async (id, values, boardId = NEW_LEADS_BOARD, groupId = intakeFormGroupTitleToId['Intake Form']) => {
-            // const query = `mutation { create_item(board_id: ${boardId}, column_values: ${JSON.stringify(data)}) { id } }`;
-            // const query = `mutation{ create_item (board_id: 8703967457, item_name: "New Item"){ id name } } `;
+            /** @type {Record<string, any>} */
             let idValues = idToValues(values);
-            // const item_name = idValues['project_name']
-            // idValues = {short_text8__1: 'Api Test'}
-            
-            // ADD NEW STATUS
-            idValues[intakeFormFields.status.id] = {index: intakeFormFields.status.options.new}
-            // ADD NEW SOURCE
-            // idValues[intakeFormFields.source.id] = {index: intakeFormFields.source.options.google_search}
+
+            // Add Status: New
+            idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
+            // Add Create Date
+            idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
+            // Add Source: Google Search for testing
+            idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
 
             const valuesStrings = JSON.stringify(JSON.stringify(idValues));
             const query = /* GraphQL */ `
@@ -106,9 +118,11 @@ const mondayServerApi = () => {
         },
         /** @param {string} id @param {Record<string, string>} values */
         updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
+            /** @type {Record<string, any>} */
             const idValues = idToValues(values);
-            idValues[intakeFormFields.create_date.id] = {date: new Date().toISOString().split('T')[0]}
-            // console.log(`Updating ${id} with ${JSON.stringify(idValues)}`);
+            if (values.contact_name) {
+                idValues.name = values.contact_name;
+            }
             const valueStrings = JSON.stringify(JSON.stringify(idValues));
             let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
             return mondayFetch(query);

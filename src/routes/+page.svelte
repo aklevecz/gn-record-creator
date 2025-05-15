@@ -12,7 +12,9 @@
     import details from '$lib/details.svelte';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
-    import { questions } from '$lib/survey-data-model';
+    import { questions } from '$lib/form-data-model';
+    import Groovy from '$lib/components/toasts/groovy.svelte';
+    import { Spring } from 'svelte/motion';
 
     /** @type {string[]} */
     let missingKeys = $state([]);
@@ -40,7 +42,26 @@
         submitting = false;
         goto(`/submission/${project.state.id}`);
     }
+
+    const offScreenSpring = -50;
+    const spring = new Spring(offScreenSpring, {
+        damping: 1.2,
+        stiffness: 0.1
+    });
+    $effect(() => {
+        if (details.state.contact_name.value) {
+            setTimeout(() => {
+                spring.set(0);
+                setTimeout(() => {
+                    spring.set(offScreenSpring);
+                },2000)
+            }, 2000);
+        } else {
+            spring.set(offScreenSpring);
+        }
+    });
 </script>
+
 <div class="survey-page">
     <h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
     <div class="survey-page-cta text-xs">
@@ -96,9 +117,9 @@
         </button>
     </div>
     <!-- END SUBMIT SURVEY -->
-
-    <CalculatorFooter />
+    <!-- <CalculatorFooter /> -->
 </div>
+<Groovy text={`Hello ${details.state.contact_name.value}!`} bottomPercent={spring.current} />
 
 <style lang="postcss">
     @reference "tailwindcss/theme";

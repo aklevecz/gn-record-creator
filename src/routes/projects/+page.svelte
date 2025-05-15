@@ -5,9 +5,9 @@
     import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
     import db from '$lib/db';
     import details from '$lib/details.svelte';
+    import { questions } from '$lib/form-data-model';
     import project, { createProject } from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
-    import { recordColorTextToAsset } from '$lib/survey-data-model';
     import { onDestroy } from 'svelte';
 
     /** @type {{ data: import('./$types').PageData }} */
@@ -40,7 +40,7 @@
             // project.state.id !== currentProjectId
             // project.cachedTextures.length
         ) {
-            console.log(`Generating gallery textures for projects page`)
+            console.log(`Generating gallery textures for projects page`);
             project.generateTextureObjectsWithUrls().then((ts) => {
                 textureObjects = ts;
             });
@@ -57,15 +57,13 @@
     }
 
     onDestroy(() => {
-        cleanupObjectUrls()
+        cleanupObjectUrls();
     });
 
     let deleteProjectModalOpen = $state(false);
     function confirmDeleteProject() {
         if (projects.state.projects.length === 1) {
-            alert(
-                'You must have at least one project. Create a new one and delete this one if you really need to delete it.'
-            );
+            alert('You must have at least one project. Create a new one and delete this one if you really need to delete it.');
             return;
         }
         deleteProjectModalOpen = true;
@@ -76,11 +74,11 @@
         // could be project.delete()
         // db.deleteProject(project.state.id);
         // projects.unregisterProject(project.state.id);
-        projects.deleteProject(project.state.id)
+        projects.deleteProject(project.state.id);
         // Activates the next project, needs to be refactored -- CHANGE PROJECT FUNCTION
         const firstProject = projects.state.projects[0];
         projects.activateProject(firstProject.id);
-        cleanupObjectUrls()
+        cleanupObjectUrls();
 
         // THIS NEEDS TO BE REFACTORED, BUT ISNT AS IMPORTANT SINCE IT IS MORE RARE
         // Load in a new remaining project
@@ -134,6 +132,7 @@
         // activeTexture = url;
     }
 </script>
+
 <ConfirmationModal
     isOpen={deleteProjectModalOpen}
     title="Delete Project"
@@ -158,14 +157,10 @@
     <div class="flex max-w-lg items-center gap-4 md:w-3/4">
         <ChangeProjectDropdown />
 
-        <button class="text-xs md:w-[300px] md:text-base" onclick={createNewProject}
-            >Create Project</button
-        >
+        <button class="text-xs md:w-[300px] md:text-base" onclick={createNewProject}>Create Project</button>
     </div>
     <div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
-        <div
-            class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4"
-        >
+        <div class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4">
             <h1>Project Info</h1>
             <!-- <div class="text-xl">{project.state.name}</div> -->
             <div class="mb-2 pr-4">
@@ -175,17 +170,20 @@
             <div class="project-info-line">{project.state.details?.label.value}</div>
             <div class="project-info-line">{project.state.details?.record_color.value}</div>
             <div class="flex flex-row justify-between md:flex-col">
+                <!-- {JSON.stringify(project.state.details)} -->
                 <img
-                    src={`${recordColorTextToAsset[project.state.details?.record_color.value || 'A: Cosmic Black']}`}
+                    src={`${questions.record_color.options.find((o) => o.text === project.state.details?.record_color.value)?.img}`}
                     alt=""
                     class="my-2 w-40"
                 />
-                {#if project.activeTextureUrl}<img class="w-40 py-4 pr-4" src={project.activeTextureUrl || '/records/red-alert.png'} alt="current texture" />{/if}
+                {#if project.activeTextureUrl}<img
+                        class="w-40 py-4 pr-4"
+                        src={project.activeTextureUrl || '/records/red-alert.png'}
+                        alt="current texture"
+                    />{/if}
             </div>
             <div class="mt-4 flex gap-3 md:flex-col">
-                <button class="project-edit-buttons delete" onclick={confirmDeleteProject}
-                    >Delete Project</button
-                >
+                <button class="project-edit-buttons delete" onclick={confirmDeleteProject}>Delete Project</button>
             </div>
         </div>
 
@@ -196,9 +194,7 @@
                     {@const isGenerated = seed !== 'user-upload'}
                     {@const isActive = project.activeTextureId === id}
                     <div
-                        style={isGenerated
-                            ? 'background-color: var(--purple);'
-                            : 'background-color: var(--green);color:black;l'}
+                        style={isGenerated ? 'background-color: var(--purple);' : 'background-color: var(--green);color:black;l'}
                         class="history-img-container flex flex-col"
                     >
                         <img src={url} alt="" class="history-img" />
@@ -208,13 +204,9 @@
                                 class:is_active={isActive}
                                 disabled={isActive}
                                 onclick={() => activateTexture(arrayBuffer, fileType, id)}
-                                class="little-button"
-                                >{isActive ? 'Cover Art' : 'Make Cover Art'}</button
+                                class="little-button">{isActive ? 'Cover Art' : 'Make Cover Art'}</button
                             >
-                            <button
-                                class="little-button delete-button"
-                                onclick={() => confirmDeleteImg(id)}>Delete</button
-                            >
+                            <button class="little-button delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
                         </div>
                     </div>
                 {/each}

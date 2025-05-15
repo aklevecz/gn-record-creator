@@ -125,8 +125,6 @@ const createProjects = () => {
                             mondayId = res.mondayId;
                             collectedData.mondayId = mondayId;
                             project.state.mondayId = mondayId;
-
-                            // I WANT TO UPDATE THE PROJECT HERE WITH THE MONDAY ID, BUT IT WILL CREATE AN INFINITE LOOP
                         }
                         // REDUDANCY IN CASE MONDAY FAILS
                         surveyApi.create(collectedData);
@@ -138,7 +136,7 @@ const createProjects = () => {
                 } finally {
                 }
             },
-            dev ? 0 : THIRTY_SECONDS_MS
+            dev ? FIVE_SECONDS : THIRTY_SECONDS_MS
         ),
         debounceSaveToDB: debounce(function (/** @type {Project} */ project) {
             db.saveProject(project);

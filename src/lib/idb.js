@@ -9,7 +9,7 @@ class IDBStorage {
         /** @type {string} */
         this.dbName = 'persistent-data';
         /** @type {number} */
-        this.version = 2;
+        this.version = 3;
         /** @type {IDBDatabase | null} */
         this.db = null;
         this.failAlertShown = false;

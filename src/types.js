@@ -2,6 +2,7 @@
  * @typedef Option
  * @property {string} img
  * @property {string} text
+ * @property {string} [color]
  */
 
 /**
