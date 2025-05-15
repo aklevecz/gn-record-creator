@@ -91,7 +91,7 @@
                 </div>
             {/if}
             {#if detail.tooltip}
-                <Tooltip tooltip={detail.tooltip} />
+                <!-- <Tooltip tooltip={detail.tooltip} /> -->
             {/if}
         {/each}
     </div>
