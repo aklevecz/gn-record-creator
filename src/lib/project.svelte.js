@@ -231,8 +231,8 @@ const createProject = () => {
             // update pricing -- doesn't need to pass details in? but maybe safer
             this.updatePricing(details);
             this.updateCarbonSavings(details); // Add call to update carbon savings
-
-            project.name = project.details?.project_name.value || project.name;
+            console.log(project.details)
+            project.name = project.details?.title.value || project.name;
             projects.updateProject(serializeDeep(project));
         },
         /** @param {Details} details */

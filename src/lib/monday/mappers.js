@@ -12,7 +12,7 @@ const intakeFormTitleToId = {
     Source: 'color_mkqebxff',
     'Create date': 'date_mkqegnht',
     'Contact name': 'text_mkqe97hx',
-    'Project Name': 'text_mkqm48k7',
+    'Title': 'text_mkqm48k7',
     Label: 'text_mkqeg2p5',
     Artist: 'text_mkqek005',
     'Catalog number': 'text_mkqev8rm',
@@ -37,7 +37,7 @@ export const intakeFormIdToTitleAndType = {
         type: 'name'
     },
     text_mkqm48k7: {
-        title: 'Project Name',
+        title: 'Title',
         type: 'text'
     },
     text_mkqe1t5m: {
@@ -143,7 +143,8 @@ export const intakeFormFields = {
             repeat: 4,
             unqualified: 5,
             contact: 6,
-            qualified: 7
+            qualified: 7,
+            submitted: 8
         }
     },
     source: {
@@ -164,7 +165,7 @@ export const intakeFormFields = {
 
 /** @type {Record<string, string>} */
 export const keyToId = {
-    project_name: intakeFormTitleToId['Project Name'],
+    title: intakeFormTitleToId['Title'],
     contact_name: intakeFormTitleToId['Contact name'],
     contact_email: intakeFormTitleToId['Email address'],
     phone: intakeFormTitleToId['Phone number'],
@@ -183,5 +184,6 @@ export const keyToId = {
     metalwork: intakeFormTitleToId['Metalwork'],
     test_prints: intakeFormTitleToId['# of Test Pressings'],
     packaging: intakeFormTitleToId['Packaging'],
-    notes: intakeFormTitleToId['Project details']
+    notes: intakeFormTitleToId['Project details'],
+    status: intakeFormTitleToId.Status
 };

@@ -124,7 +124,7 @@
 /**
  * @typedef {object} Submission
  * @property {string} id - Unique identifier for the submission
- * @property {string} project_name - Name of the project
+ * @property {string} title - Title of the project
  * @property {string} contact_name - Name of the contact person
  * @property {string} contact_email - Email address of the contact
  * @property {string} phone - Phone number

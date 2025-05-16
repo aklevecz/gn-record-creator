@@ -38,7 +38,7 @@
                     id: project.id,
                     mondayId: project.mondayId,
                     version: project.version,
-                    name: project.project_name,
+                    name: project.title,
                     createdAt: new Date(),
                     pricing: {
                         ...project.pricing
