@@ -98,7 +98,7 @@ const mondayServerApi = () => {
             /** @type {Record<string, any>} */
             let idValues = idToValues(values);
 
-            // Add Status: New
+            // Add Status: New -- MAY NEED TO CHECK IF THIS SHOULD BE SUBMITTED IN THE EVENT THAT THEY SOMEHOW DONT UPDATE MONDAY UNTIL SUBMITTING THE FORM?
             idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
             // Add Create Date
             idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
@@ -118,14 +118,21 @@ const mondayServerApi = () => {
         },
         /** @param {string} id @param {Record<string, string>} values */
         updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
-            /** @type {Record<string, any>} */
-            const idValues = idToValues(values);
-            if (values.contact_name) {
-                idValues.name = values.contact_name;
+            try {
+                console.log('henlo');
+                /** @type {Record<string, any>} */
+                const idValues = idToValues(values);
+                if (values.contact_name) {
+                    idValues.name = values.contact_name;
+                }
+                console.log('WTF');
+                console.log(idValues);
+                const valueStrings = JSON.stringify(JSON.stringify(idValues));
+                let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
+                return mondayFetch(query);
+            } catch (e) {
+                console.log(e);
             }
-            const valueStrings = JSON.stringify(JSON.stringify(idValues));
-            let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
-            return mondayFetch(query);
         },
         queryDropdowns: async () => {
             const query = /* GraphQL */ `

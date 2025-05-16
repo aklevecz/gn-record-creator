@@ -24,7 +24,7 @@ export async function POST({ platform, request }) {
     const logging = logger(ctx);
     try {
         const data = await request.json();
-        // const projectName = data.responses.project_name;
+        // const title = data.responses.title;
         const mondayName = data.responses.contact_name;
         const responses = cleanEmptyValues(data.responses);
         let mondayId = data.mondayId;
@@ -58,10 +58,12 @@ export async function POST({ platform, request }) {
         // If Monday entry exists
         if (mondayId) {
             logging.info(`Updating entry ${data.id}`);
+            console.log(`Updating entry ${data.id}`);
             const mondayResponse = await mondayServer.updateItem(mondayId, responses);
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);
+        console.log(`Creating new entry ${data.id}`);
         const mondayResponse = await mondayServer.createItem(mondayName, responses);
         return json({ mondayId: mondayResponse.data.create_item.id });
     } catch (e) {

@@ -5,15 +5,13 @@
     import Detail from '$lib/components/form/detail.svelte';
     import QuestionDropdown from '$lib/components/form/question-dropdown.svelte';
     import Question from '$lib/components/form/question.svelte';
-    import Tooltip from '$lib/components/form/tooltip.svelte';
-    import CalculatorFooter from '$lib/components/info/calculator-footer.svelte';
     import AddressInput from '$lib/components/input/address-input.svelte';
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
+    import Groovy from '$lib/components/toasts/groovy.svelte';
     import details from '$lib/details.svelte';
+    import { questions } from '$lib/form-data-model';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
-    import { questions } from '$lib/form-data-model';
-    import Groovy from '$lib/components/toasts/groovy.svelte';
     import { Spring } from 'svelte/motion';
 
     /** @type {string[]} */
@@ -29,10 +27,11 @@
         }
         const detailResponses = details.remapDetails();
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        // SHOULD THERE BE SOME STATUS TO INDICATE THAT THEY SUBMITTED THE FORM
         await surveyApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
-            responses: { ...detailResponses, status: 'submitted' }
+            responses: { ...detailResponses, status: 'Submitted' }
         });
         await mondayClientApi.create({
             id: project.state.id,
@@ -54,7 +53,7 @@
                 spring.set(0);
                 setTimeout(() => {
                     spring.set(offScreenSpring);
-                },2000)
+                }, 2000);
             }, 2000);
         } else {
             spring.set(offScreenSpring);
@@ -91,7 +90,7 @@
                 </div>
             {/if}
             {#if detail.tooltip}
-                <Tooltip tooltip={detail.tooltip} />
+                <!-- <Tooltip tooltip={detail.tooltip} /> -->
             {/if}
         {/each}
     </div>

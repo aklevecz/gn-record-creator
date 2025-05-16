@@ -164,7 +164,7 @@
             <h1>Project Info</h1>
             <!-- <div class="text-xl">{project.state.name}</div> -->
             <div class="mb-2 pr-4">
-                <Detail label="Project Name" key="project_name" description="" type="text" required={false} />
+                <Detail label="Title" key="title" description="" type="text" required={false} />
             </div>
             <div class="project-info-line">{project.state.details?.artist.value}</div>
             <div class="project-info-line">{project.state.details?.label.value}</div>

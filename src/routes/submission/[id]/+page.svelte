@@ -31,7 +31,7 @@
 
 		<div class="submission-section">
 			<h3>Project Information</h3>
-			{@render submissionField({ label: 'Project Name', value: submission.project_name })}
+			{@render submissionField({ label: 'Title', value: submission.title })}
 			{@render submissionField({ label: 'Artist Name', value: submission.artist })}
 			{@render submissionField({ label: 'Label', value: submission.label })}
 			{@render submissionField({ label: 'Catalog Number', value: submission.catalog_number })}

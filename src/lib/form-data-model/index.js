@@ -79,8 +79,8 @@ export const questions = {
             // { img: '', text: "Not Sure. Let's discuss this on a call." },
             // { img: '', text: 'Yes, please handle on our behalf' },
             // { img: '', text: 'No, we have this handled and will ship them to you.' }
-            { img: '', text: 'Yes' },
             { img: '', text: 'Maybe' },
+            { img: '', text: 'Yes' },
             { img: '', text: 'No' }
         ]
     },
@@ -141,8 +141,22 @@ export const detailsDict = {
         type: 'tel',
         required: true
     },
-    project_name: {
-        label: 'Project Name',
+    catalog_number: {
+        label: 'Catalog Number',
+        description: "If Cat# hasn't been determined yet, please leave blank",
+        value: '',
+        type: 'text',
+        required: false
+    },
+    artist: {
+        label: 'Artist',
+        description: '',
+        value: '',
+        type: 'text',
+        required: true
+    },
+    title: {
+        label: 'Title',
         description: 'How would you describe this project? We recommend Artist, Title and Label information',
         value: '',
         type: 'text',
@@ -155,20 +169,7 @@ export const detailsDict = {
         type: 'text',
         required: true
     },
-    artist: {
-        label: 'Artist',
-        description: '',
-        value: '',
-        type: 'text',
-        required: true
-    },
-    catalog_number: {
-        label: 'Catalog Number',
-        description: "If Cat# hasn't been determined yet, please leave blank",
-        value: '',
-        type: 'text',
-        required: false
-    },
+
     release_date: {
         label: 'Release Date',
         description: 'When is this LP/EP due for release? (Leave blank if not sure)',

@@ -287,7 +287,7 @@ class IDBStorage {
         await this.set(this.stores.projects, {
             // id: project.name,
             ...plainProject,
-            name: project.details?.project_name.value || project.name,
+            name: project.details?.title.value || project.name,
             lastModified: Date.now()
         });
     }
@@ -511,7 +511,6 @@ class IDBStorage {
             /** @param {*} event */
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                console.log(db);
                 // Delete all object stores
                 Array.from(db.objectStoreNames).forEach((storeName) => {
                     db.deleteObjectStore(storeName);

@@ -318,7 +318,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Project Name</th>
+                        <th>Title</th>
                         <th>Contact Name</th>
                         <th>Contact Email</th>
                         <th>Phone</th>
@@ -347,7 +347,7 @@
                     {#each allEntries as entry (entry.id)}
                         <tr>
                             <td>{entry.id || 'N/A'}</td>
-                            <td>{entry.project_name || 'N/A'}</td>
+                            <td>{entry.title || 'N/A'}</td>
                             <td>{entry.contact_name || 'N/A'}</td>
                             <td>{entry.contact_email || 'N/A'}</td>
                             <td>{entry.phone || 'N/A'}</td>
