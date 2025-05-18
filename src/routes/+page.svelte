@@ -118,7 +118,7 @@
     <!-- END SUBMIT SURVEY -->
     <!-- <CalculatorFooter /> -->
 </div>
-<Groovy text={`Hello ${details.state.contact_name.value}!`} bottomPercent={spring.current} />
+<!-- <Groovy text={`Hello ${details.state.contact_name.value}!`} bottomPercent={spring.current} /> -->
 
 <style lang="postcss">
     @reference "tailwindcss/theme";

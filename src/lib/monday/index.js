@@ -1,4 +1,5 @@
 import { questions } from '$lib/form-data-model';
+import parsePhoneNumberFromString, { getCountryCallingCode } from 'libphonenumber-js';
 import { intakeFormFields, intakeFormIdToTitleAndType, keyToId } from './mappers';
 
 /** @param {Record<string, string>} values */
@@ -34,7 +35,7 @@ export const idToValues = (values) => {
         else if (type === 'status') {
             let index = null;
             if (questions[key]) {
-                 index = Math.max(
+                index = Math.max(
                     questions[key].options.findIndex((option) => option.text === value),
                     0
                 );
@@ -78,16 +79,40 @@ export const idToValues = (values) => {
                 }
             };
         } else if (type === 'phone') {
-            const splitPhone = value.split('-');
-            const countryCode = splitPhone[0];
-            const phoneNumber = `+${splitPhone[1]}`;
-            return {
-                ...acc,
-                [columnId]: {
-                    phone: phoneNumber,
-                    countryShortName: countryCode
-                }
-            };
+            // console.log(value);
+            // const parsed = parsePhoneNumberFromString(value, 'US');
+            // console.log(parsed);
+            // const countryCode = parsed.countryCallingCode;
+            // const phoneNumber = parsed.nationalNumber;
+            // // const splitPhone = value.split('-');
+            // // const countryCode = splitPhone[0];
+            // // const phoneNumber = `+${splitPhone[1]}`;
+            // return {
+            //     ...acc,
+            //     [columnId]: {
+            //         phone: phoneNumber,
+            //         countryShortName: parsed.country
+            //     }
+            // };
+            const parsed = parseUserPhoneInput(value, 'US');
+            if (parsed && parsed.isValid()) {
+                return {
+                    ...acc,
+                    [columnId]: {
+                        phone: parsed.nationalNumber,
+                        countryShortName: parsed.country
+                        // countryCallingCode: parsed.countryCallingCode,
+                        // formattedNumber: parsed.formatInternational()
+                    }
+                };
+            } else {
+                return {
+                    ...acc,
+                    [columnId]: {
+                        phone: value
+                    }
+                };
+            }
         }
 
         // Default case - just pass the value as is for text fields and others
@@ -97,3 +122,50 @@ export const idToValues = (values) => {
         };
     }, {});
 };
+
+/**
+ * Parse a phone number string and handle missing country codes or plus signs
+ * @param {string} input - The phone number input
+ * @param {string} defaultCountry - Default country to assume if no country code (e.g., 'US', 'NL')
+ * @returns {Object|null} - Parsed phone number or null if invalid
+ */
+function parseUserPhoneInput(input, defaultCountry = 'US') {
+    if (!input) return null;
+
+    // Clean the input
+    const cleaned = input
+        .toString()
+        .replace(/\s+/g, '')
+        .replace(/[-().]/g, '');
+
+    // Case 1: Try parsing with a + prefix if it doesn't already have one
+    if (!cleaned.startsWith('+')) {
+        let phoneNumber = parsePhoneNumberFromString(`+${cleaned}`);
+
+        // Check if this looks like a valid international number
+        if (phoneNumber && phoneNumber.isValid()) {
+            return phoneNumber;
+        }
+    }
+
+    // Case 2: Try parsing as is (might already have + or be a local number)
+    let phoneNumber = parsePhoneNumberFromString(cleaned, defaultCountry);
+
+    // If valid using the default country, return it
+    if (phoneNumber && phoneNumber.isValid()) {
+        return phoneNumber;
+    }
+
+    // Case 3: If input starts with defaultCountry's calling code but missing +, try that
+    const countryCode = getCountryCallingCode(defaultCountry);
+    if (cleaned.startsWith(countryCode)) {
+        phoneNumber = parsePhoneNumberFromString(`+${cleaned}`);
+        if (phoneNumber && phoneNumber.isValid()) {
+            return phoneNumber;
+        }
+    }
+
+    // Case 4: As a last resort, try with original input and default country
+    phoneNumber = parsePhoneNumberFromString(input, defaultCountry);
+    return phoneNumber; // May be null if all parsing attempts failed
+}

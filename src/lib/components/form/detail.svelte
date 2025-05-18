@@ -14,9 +14,9 @@
     <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
     <div class="mb-2 text-xs opacity-50">{description}</div>
     <div class="relative max-w-[300px]">
-        {#if type === 'tel'}
+        <!-- {#if type === 'tel'}
             <PhoneInput />
-        {:else}
+        {:else} -->
             <input
                 id={key}
                 name={key}
@@ -25,7 +25,7 @@
                 autocomplete="on"
                 bind:value={details.state[key].value}
             />
-        {/if}
+        <!-- {/if} -->
         {#if type === 'date'}
             <svg
                 class="date-icon"

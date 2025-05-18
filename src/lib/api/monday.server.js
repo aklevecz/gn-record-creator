@@ -119,13 +119,11 @@ const mondayServerApi = () => {
         /** @param {string} id @param {Record<string, string>} values */
         updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
             try {
-                console.log('henlo');
                 /** @type {Record<string, any>} */
                 const idValues = idToValues(values);
                 if (values.contact_name) {
                     idValues.name = values.contact_name;
                 }
-                console.log('WTF');
                 console.log(idValues);
                 const valueStrings = JSON.stringify(JSON.stringify(idValues));
                 let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
