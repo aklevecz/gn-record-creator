@@ -3,7 +3,6 @@ OTHER COLORS HAVE BOTH
 WHITE IS JUST OPAQUE
 GLASSY IS ONLY TRANSPARENT
 
-fix phone number
 dropdown for test presses options
 
 WHAT DO CHANGE
@@ -12,16 +11,3 @@ WHAT DO CHANGE
 - at some point it should be locked when its been approved or whatever?
 - auto generate a lead for the person
 
-DONE
-Catalogue Number 
-Artist 
-Title 
-Label Name 
-
-
-
-
-SORT THE FLAGS BETTER
-
-
-submitting is broken

@@ -10,7 +10,7 @@ export const defaultProjectState = {
     id: '',
     mondayId: '',
     version: DATA_VERSION,
-    name: 'default',
+    name: 'new project',
     createdAt: new Date(),
     details: null,
     textures: [],

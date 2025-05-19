@@ -13,7 +13,7 @@ import monday from '$lib/api/monday';
 /** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
     initialized: false,
-    activeProject: 'default',
+    activeProject: 'new project',
     projects: [],
     cachedTextures: []
 };
@@ -48,6 +48,7 @@ const createProjects = () => {
                         // NEED TO IMPROVE: This just sets their detail values to the default
                         cachedProject.details = { ...defaultDetailState };
                         cachedProject.version = DATA_VERSION;
+                        this.reset()
                     }
 
                     // This wouldn't solve differences in details
@@ -74,7 +75,7 @@ const createProjects = () => {
             } else {
                 // If there are no existing projects, then create a default project
                 defaultProject = project.create({
-                    name: 'default',
+                    name: 'new project',
                     details: { ...details.state },
                     textures: []
                 });
@@ -164,7 +165,7 @@ const createProjects = () => {
         },
         reset() {
             projects.projects = [];
-            projects.activeProject = 'default';
+            projects.activeProject = 'new project';
         }
     };
 };

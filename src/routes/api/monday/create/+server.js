@@ -28,7 +28,7 @@ export async function POST({ platform, request }) {
         const mondayName = data.responses.contact_name;
         const responses = cleanEmptyValues(data.responses);
         let mondayId = data.mondayId;
-
+        console.log(`mondayId: ${mondayId}`);
         if (!mondayName) {
             console.log('User has not filled in their name yet');
             return error(400, errors.UPDATE_SURVEY_FAILED_NONAME);

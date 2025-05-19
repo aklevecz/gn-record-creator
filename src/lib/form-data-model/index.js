@@ -113,11 +113,31 @@ export const questions = {
             { img: '', text: 'Single pocket w/ wide spine (2LP)' },
             { img: '', text: 'Maybe' }
         ]
+    },
+    test_prints: {
+        label: '# of Test Pressings',
+        options: [
+            {
+                img: '',
+                text: '0'
+            },
+            {
+                img: '',
+                text: '10'
+            },
+            {
+                img: '',
+                text: '20'
+            },
+            {
+                img: '',
+                text: '30'
+            }
+        ]
     }
 };
 
-// For instance details dict includes all of the above questions, but doesnt have their values
-// I could just wrap them all into details
+// CONFUSING BUT SELECT HERE IS DROPDOWN IN MONDAY AND DROPDOWN HERE IS STATUS IN MONDAY
 /** @type {Record<string, Detail>} */
 export const detailsDict = {
     contact_name: {
@@ -249,10 +269,10 @@ export const detailsDict = {
         required: false
     },
     test_prints: {
-        label: '# of Test Pressings required?',
+        label: '# of Test Pressings',
         description: '',
         value: '',
-        type: 'number',
+        type: 'select',
         required: false
     },
     packaging: {

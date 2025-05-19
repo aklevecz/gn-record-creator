@@ -26,7 +26,7 @@ const intakeFormTitleToId = {
     Colors: 'dropdown_mkqedrj6',
     'Lacquers handling': 'color_mkqenc0a',
     Metalwork: 'color_mkqezhm4',
-    '# of Test Pressings': 'text_mkqekbhs',
+    '# of Test Pressings': 'text_mkr38tqq',
     Packaging: 'color_mkqej81e',
     'Project details': 'long_text_mkqeqcgs'
 };
@@ -116,9 +116,9 @@ export const intakeFormIdToTitleAndType = {
         title: 'Metalwork',
         type: 'status'
     },
-    text_mkqekbhs: {
+    text_mkr38tqq: {
         title: '# of Test Pressings',
-        type: 'text'
+        type: 'dropdown'
     },
     color_mkqej81e: {
         title: 'Packaging',
