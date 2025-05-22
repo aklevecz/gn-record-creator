@@ -1,5 +1,6 @@
 <script>
     import details from '$lib/details.svelte';
+    import { recordColors } from '$lib/form-data-model';
 
     let { label, key, options, required } = $props();
 
@@ -7,10 +8,24 @@
     function onChange(e) {
         details.setValue(key, e.target.value);
     }
+
+    // Conditional rendering of question
+    let hidden = $state(false);
+    $effect(() => {
+        if (key === 'opacity') {
+            if (details.state.record_color.value === recordColors.glassyIce || details.state.record_color.value === recordColors.lightning) {
+                hidden = true;
+            } else {
+                hidden = false;
+            }
+        }
+    });
 </script>
 
-<div class="flex flex-col">
-    <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
+<div class:hidden class="flex flex-col">
+    <label for={key} class="mb-0"
+        >{label}{#if required}*{/if}</label
+    >
     <select
         id={key}
         name={key}
@@ -35,5 +50,8 @@
         background-position: right 0.5rem center;
         background-size: 1em 1em;
         padding-right: 2.5rem;
+    }
+    .hidden {
+        display: none;
     }
 </style>

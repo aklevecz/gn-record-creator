@@ -1,3 +1,17 @@
+export const recordColors = {
+    purpleHaze: 'Purple haze',
+    cosmicBlack: 'Cosmic black',
+    oceanFloor: 'Ocean floor (dark blue)',
+    skyBlue: 'Sky blue',
+    salsaVerde: 'Salsa verde (green)',
+    limoncello: 'Limocello (yellow)',
+    habanero: 'Habanero (orange)',
+    redAlert: 'Red alert',
+    hibiscus: 'Hibiscus (pink)',
+    lightning: 'Lightning (white)',
+    glassyIce: 'Glassy (clear)'
+};
+
 // Questions just maps the questions for the survey
 /** @type {Questions} */
 export const questions = {
@@ -60,17 +74,24 @@ export const questions = {
             // 	salsaVerde: '#398930',
             // 	skyBlue: '#0072b0'
             // };
-            { img: 'records/purple-haze.png', text: 'Purple haze', color: '#913574' },
-            { img: 'records/cosmic-black.png', text: 'Cosmic black', color: '#030303' },
-            { img: 'records/ocean-floor.png', text: 'Ocean floor (dark blue)', color: '#003479' },
-            { img: 'records/sky-blue.png', text: 'Sky blue', color: '#0072b0' },
-            { img: 'records/salsa-verde.png', text: 'Salsa verde (green)', color: '#398930' },
-            { img: 'records/limoncello.png', text: 'Limocello (yellow)', color: '#ded028' },
-            { img: 'records/habanero.png', text: 'Habanero (orange)', color: '#ff5214' },
-            { img: 'records/red-alert.png', text: 'Red alert', color: '#dd2a1e' },
-            { img: 'records/hibiscus.png', text: 'Hibiscus (pink)', color: '#d30273' },
-            { img: 'records/lightning.png', text: 'Lightning (white)', color: '#e2e2e2' },
-            { img: 'records/glassy-ice.png', text: 'Glassy (clear)', color: '#7e7e7e' }
+            { img: 'records/purple-haze.png', text: recordColors.purpleHaze, color: '#913574' },
+            { img: 'records/cosmic-black.png', text: recordColors.cosmicBlack, color: '#030303' },
+            { img: 'records/ocean-floor.png', text: recordColors.oceanFloor, color: '#003479' },
+            { img: 'records/sky-blue.png', text: recordColors.skyBlue, color: '#0072b0' },
+            { img: 'records/salsa-verde.png', text: recordColors.salsaVerde, color: '#398930' },
+            { img: 'records/limoncello.png', text: recordColors.limoncello, color: '#ded028' },
+            { img: 'records/habanero.png', text: recordColors.habanero, color: '#ff5214' },
+            { img: 'records/red-alert.png', text: recordColors.redAlert, color: '#dd2a1e' },
+            { img: 'records/hibiscus.png', text: recordColors.hibiscus, color: '#d30273' },
+            { img: 'records/lightning.png', text: recordColors.lightning, color: '#e2e2e2' },
+            { img: 'records/glassy-ice.png', text: recordColors.glassyIce, color: '#7e7e7e' }
+        ]
+    },
+    opacity: {
+        label: 'Your record has the option of being opaque or transparent',
+        options: [
+            { img: '', text: 'Opaque' },
+            { img: '', text: 'Transparent' }
         ]
     },
     lacquers: {
@@ -247,6 +268,13 @@ export const detailsDict = {
         value: '',
         type: 'select',
         required: true
+    },
+    opacity: {
+        label: 'Your record has the option of being opaque or transparent',
+        description: 'Records can be opaque or transparent',
+        value: '',
+        type: 'dropdown',
+        required: false
     },
     lacquers: {
         label: 'Lacquers: Would you like us to handle this for you?',

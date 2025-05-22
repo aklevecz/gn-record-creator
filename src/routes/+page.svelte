@@ -59,6 +59,9 @@
             spring.set(offScreenSpring);
         }
     });
+    $effect(() => {
+        console.log(details.state.opacity)
+    })
 </script>
 
 <div class="survey-page">

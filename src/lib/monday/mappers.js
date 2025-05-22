@@ -24,6 +24,7 @@ const intakeFormTitleToId = {
     '# of Records': 'color_mkqe5zht',
     'RPM/Record Format': 'color_mkqed74p',
     Colors: 'dropdown_mkqedrj6',
+    Opacity: 'color_mkr58s9v',
     'Lacquers handling': 'color_mkqenc0a',
     Metalwork: 'color_mkqezhm4',
     '# of Test Pressings': 'text_mkr38tqq',
@@ -108,6 +109,10 @@ export const intakeFormIdToTitleAndType = {
         title: 'Colors',
         type: 'dropdown'
     },
+    color_mkr58s9v: {
+        title: 'Opacity',
+        type: 'status'
+    },
     color_mkqenc0a: {
         title: 'Lacquers handling',
         type: 'status'
@@ -180,6 +185,7 @@ export const keyToId = {
     records_per_set: intakeFormTitleToId['# of Records'],
     record_format: intakeFormTitleToId['RPM/Record Format'],
     record_color: intakeFormTitleToId['Colors'],
+    opacity: intakeFormTitleToId['Opacity'],
     lacquers: intakeFormTitleToId['Lacquers handling'],
     metalwork: intakeFormTitleToId['Metalwork'],
     test_prints: intakeFormTitleToId['# of Test Pressings'],
