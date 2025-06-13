@@ -133,6 +133,8 @@ const mondayServerApi = () => {
                 let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
                 return mondayFetch(query);
             } catch (e) {
+                // this probably wont catch because the response is returned
+                console.log("Error updating item");
                 console.log(e);
             }
         },

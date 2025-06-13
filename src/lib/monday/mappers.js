@@ -143,13 +143,13 @@ export const intakeFormFields = {
         options: {
             connected: 0,
             new: 1,
-            opportunity: 2,
-            customer: 3,
-            repeat: 4,
-            unqualified: 5,
-            contact: 6,
-            qualified: 7,
-            submitted: 8
+            // opportunity: 2,
+            // customer: 3,
+            // repeat: 4,
+            // unqualified: 5,
+            // contact: 6,
+            // qualified: 7,
+            // submitted: 8
         }
     },
     source: {

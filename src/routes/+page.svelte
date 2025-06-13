@@ -31,12 +31,16 @@
         await surveyApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
-            responses: { ...detailResponses, status: 'Submitted' }
+            responses: { ...detailResponses, 
+                // submitted: true 
+            }
         });
         await mondayClientApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
-            responses: { ...detailResponses, status: 'Submitted' }
+            responses: { ...detailResponses, 
+                // submitted: true 
+            }
         });
         submitting = false;
         goto(`/submission/${project.state.id}`);

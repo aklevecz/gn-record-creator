@@ -68,6 +68,7 @@ export async function POST({ platform, request }) {
         return json({ mondayId: mondayResponse.data.create_item.id });
     } catch (e) {
         logging.error(`Error updating entry ${JSON.stringify(e)}`);
+        console.log(`Error updating entry ${JSON.stringify(e)}`);
         return error(500, errors.UPDATE_MONDAY_FAILED);
     }
 }

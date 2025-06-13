@@ -27,8 +27,7 @@ npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_requ
 );"
 
 
-npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD COLUMN status TEXT"
-npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD COLUMN session TEXT"
+npx wrangler d1 execute DB --remote --command "ALTER TABLE gn_request_form ADD COLUMN opacity TEXT"
 
 npx wrangler d1 execute DB --local --command "SELECT * FROM gn_request_form"
 npx wrangler d1 execute DB --local --command "SELECT monday_id FROM gn_request_form"

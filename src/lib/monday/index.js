@@ -33,22 +33,22 @@ export const idToValues = (values) => {
 
         // TO DO: FIX THIS -- MAYBE THIS IS A MODEL FOR MOVING AWAY FROM `questions`
         else if (type === 'status') {
-            let index = null;
-            if (questions[key]) {
-                index = Math.max(
-                    questions[key].options.findIndex((option) => option.text === value),
-                    0
-                );
-            } else {
-                // FOR ITEMS THAT ARE NOT IN THE FORM BUT APPEAR IN MONDAY OR WHATEVER CRM
-                index = intakeFormFields[key].options[value.toLowerCase()];
-            }
-            return {
-                ...acc,
-                [columnId]: {
-                    index
-                }
-            };
+            // let index = null;
+            // if (questions[key]) {
+            //     index = Math.max(
+            //         questions[key].options.findIndex((option) => option.text === value),
+            //         0
+            //     );
+            // } else {
+            //     // FOR ITEMS THAT ARE NOT IN THE FORM BUT APPEAR IN MONDAY OR WHATEVER CRM
+            //     index = intakeFormFields[key].options[value.toLowerCase()];
+            // }
+            // return {
+            //     ...acc,
+            //     [columnId]: {
+            //         index
+            //     }
+            // };
         }
 
         // Handle date columns
