@@ -34,6 +34,7 @@
  * @property {string} description
  * @property {string} value
  * @property {Tooltip} [tooltip]
+ * @property {number} [maxSelections]
  * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'tel' | 'email' | 'address'} type
  * @property {boolean} required
  */
@@ -125,7 +126,8 @@
  * @typedef {object} Submission
  * @property {string} id - Unique identifier for the submission
  * @property {string} title - Title of the project
- * @property {string} contact_name - Name of the contact person
+ * @property {string} contact_first_name - Name of the contact person
+ * @property {string} contact_last_name - Last name of the contact
  * @property {string} contact_email - Email address of the contact
  * @property {string} phone - Phone number
  * @property {string} label - Record label

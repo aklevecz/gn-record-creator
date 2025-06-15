@@ -98,13 +98,13 @@ const mondayServerApi = () => {
             try {
                 /** @type {Record<string, any>} */
                 let idValues = idToValues(values);
-                console.log(idValues)
+                console.log(`Create item: ${id} with values: ${JSON.stringify(idValues)}`);
                 // Add Status: New -- MAY NEED TO CHECK IF THIS SHOULD BE SUBMITTED IN THE EVENT THAT THEY SOMEHOW DONT UPDATE MONDAY UNTIL SUBMITTING THE FORM?
                 idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
                 // Add Create Date
                 idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
-                // Add Source: Google Search for testing
-                idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
+                // Add Source: Google Search for testing -- This is part of the survey now
+                // idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
 
                 const valuesStrings = JSON.stringify(JSON.stringify(idValues));
                 const query = /* GraphQL */ `
@@ -124,17 +124,21 @@ const mondayServerApi = () => {
         updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
             try {
                 /** @type {Record<string, any>} */
+                console.log(values)
                 const idValues = idToValues(values);
-                if (values.contact_name) {
-                    idValues.name = values.contact_name;
+                console.log(`Update item: ${id} with values: ${JSON.stringify(idValues)}`);
+                if (values.contact_first_name || values.contact_last_name) {
+                    idValues.name = values.contact_first_name + ' ' + values.contact_last_name;
                 }
+                idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
+
                 console.log(idValues);
                 const valueStrings = JSON.stringify(JSON.stringify(idValues));
                 let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
                 return mondayFetch(query);
             } catch (e) {
                 // this probably wont catch because the response is returned
-                console.log("Error updating item");
+                console.log('Error updating item');
                 console.log(e);
             }
         },

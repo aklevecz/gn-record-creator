@@ -28,6 +28,9 @@ const createProjects = () => {
         get activeProject() {
             return projects.projects.find((project) => project.id === projects.activeProject);
         },
+        get initialized() {
+            return projects.initialized;
+        },
         async init() {
             // STILL SHOULD DO SOME LOGIC TO FETCH REMOTE PROJECTS AND COMPARE THEM TO LOCAL
             if (projects.projects.length) {
@@ -48,7 +51,7 @@ const createProjects = () => {
                         // NEED TO IMPROVE: This just sets their detail values to the default
                         cachedProject.details = { ...defaultDetailState };
                         cachedProject.version = DATA_VERSION;
-                        this.reset()
+                        this.reset();
                     }
 
                     // This wouldn't solve differences in details
@@ -82,7 +85,6 @@ const createProjects = () => {
                 db.saveProject(defaultProject);
                 this.registerProject(defaultProject);
             }
-
             defaultProject.details && details.set(defaultProject.details);
             this.activateProject(defaultProject.id);
             projects.initialized = true;

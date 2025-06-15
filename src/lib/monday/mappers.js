@@ -1,18 +1,20 @@
+
 export const intakeFormGroupTitleToId = {
     'Intake Form': 'topics'
 };
 
-// Semantic mappers
+// Semantic mappers -- just for this file -- maybe not necessary?
 const intakeFormTitleToId = {
     // NAME DEPRECATED TO USE PROJECT NAME BECAUSE CONTACT NAME IS THE DEFAULT ID/NAME FOR MONDAY INTAKE FORM
     Name: 'name',
-    'Email address': 'text_mkqe1t5m',
+    'Email address': 'email_mkrw9e0e',
     'Phone number': 'phone_mkqfjtqw',
     Status: 'color_mkqex5zn',
     Source: 'color_mkqebxff',
     'Create date': 'date_mkqegnht',
-    'Contact name': 'text_mkqe97hx',
-    'Title': 'text_mkqm48k7',
+    'Contact first name': 'text_mkqe97hx',
+    'Contact last name': 'text_mkrnjvq9',
+    Title: 'text_mkqm48k7',
     Label: 'text_mkqeg2p5',
     Artist: 'text_mkqek005',
     'Catalog number': 'text_mkqev8rm',
@@ -29,9 +31,12 @@ const intakeFormTitleToId = {
     Metalwork: 'color_mkqezhm4',
     '# of Test Pressings': 'text_mkr38tqq',
     Packaging: 'color_mkqej81e',
-    'Project details': 'long_text_mkqeqcgs'
+    'Project details': 'long_text_mkqeqcgs',
+    submitted: 'color_mkqezh4h'
 };
 
+
+// This is important for remapping values
 export const intakeFormIdToTitleAndType = {
     name: {
         title: 'Name',
@@ -41,9 +46,9 @@ export const intakeFormIdToTitleAndType = {
         title: 'Title',
         type: 'text'
     },
-    text_mkqe1t5m: {
+    email_mkrw9e0e: {
         title: 'Email address',
-        type: 'text'
+        type: 'email'
     },
     phone_mkqfjtqw: {
         title: 'Phone number',
@@ -62,7 +67,11 @@ export const intakeFormIdToTitleAndType = {
         type: 'date'
     },
     text_mkqe97hx: {
-        title: 'Contact name',
+        title: 'Contact first name',
+        type: 'text'
+    },
+    text_mkrnjvq9: {
+        title: 'Contact last name',
         type: 'text'
     },
     text_mkqeg2p5: {
@@ -132,6 +141,10 @@ export const intakeFormIdToTitleAndType = {
     long_text_mkqeqcgs: {
         title: 'Project details',
         type: 'long_text'
+    },
+    color_mkryy8hj: {
+        title: 'submitted',
+        type: 'status'
     }
 };
 
@@ -142,7 +155,7 @@ export const intakeFormFields = {
         title: 'Status',
         options: {
             connected: 0,
-            new: 1,
+            new: 1
             // opportunity: 2,
             // customer: 3,
             // repeat: 4,
@@ -160,18 +173,38 @@ export const intakeFormFields = {
             google_search: 1,
             repeat: 2,
             personal_connection: 3
+        },
+        remap: {
+            'Heard about good neighbor from a friend': 'Referral',
+            'was googling': 'Google search',
+            'not my first time with good neighbor': 'Repeat',
+            'friend of good neighbor': 'Personal connection'
         }
     },
     create_date: {
         id: 'date_mkqegnht',
         title: 'Create date'
+    },
+    updated_at: {
+        id: "date_mkrym40t",
+        title: 'Updated at'
+    },
+    submitted: {
+        id: "color_mkryy8hj",
+        title: 'Submitted',
+        options: {
+            submitted: 0,
+            autosaved: 1
+        }
     }
 };
 
+// This is important for remapping values
 /** @type {Record<string, string>} */
 export const keyToId = {
     title: intakeFormTitleToId['Title'],
-    contact_name: intakeFormTitleToId['Contact name'],
+    contact_first_name: intakeFormTitleToId['Contact first name'],
+    contact_last_name: intakeFormTitleToId['Contact last name'],
     contact_email: intakeFormTitleToId['Email address'],
     phone: intakeFormTitleToId['Phone number'],
     label: intakeFormTitleToId['Label'],
@@ -191,5 +224,7 @@ export const keyToId = {
     test_prints: intakeFormTitleToId['# of Test Pressings'],
     packaging: intakeFormTitleToId['Packaging'],
     notes: intakeFormTitleToId['Project details'],
-    status: intakeFormTitleToId.Status
+    source: intakeFormTitleToId.Source,
+    status: intakeFormTitleToId.Status,
+    submitted: intakeFormFields.submitted.id
 };

@@ -135,12 +135,25 @@ export const questions = {
             { img: '', text: 'Maybe' }
         ]
     },
+    source: {
+        label: 'How did you hear about us?',
+        options: [
+            { img: '', text: 'Heard about good neighbor from a friend' },
+            { img: '', text: 'was googling' },
+            { img: '', text: 'not my first time with good neighbor' },
+            { img: '', text: 'friend of good neighbor' }
+        ]
+    },
     test_prints: {
         label: '# of Test Pressings',
         options: [
             {
                 img: '',
-                text: '0'
+                text: '2'
+            },
+            {
+                img: '',
+                text: '5'
             },
             {
                 img: '',
@@ -148,28 +161,32 @@ export const questions = {
             },
             {
                 img: '',
-                text: '20'
-            },
-            {
-                img: '',
-                text: '30'
+                text: 'Not sure'
             }
         ]
     }
 };
 
+// This is used in the detail dict to for the survey
 // CONFUSING BUT SELECT HERE IS DROPDOWN IN MONDAY AND DROPDOWN HERE IS STATUS IN MONDAY
 /** @type {Record<string, Detail>} */
 export const detailsDict = {
-    contact_name: {
-        label: 'Contact Name',
+    contact_first_name: {
+        label: 'First Name',
+        description: "What's your name?",
+        value: '',
+        type: 'text',
+        required: true
+    },
+    contact_last_name: {
+        label: 'Last Name',
         description: "What's your name?",
         value: '',
         type: 'text',
         required: true
     },
     contact_email: {
-        label: 'Contact Email',
+        label: 'Email',
         description: 'Who should we email about this project?',
         value: '',
         type: 'email',
@@ -267,6 +284,7 @@ export const detailsDict = {
             'Our records can be manufactured as solid or translucent colors. If unsure, please leave blank. Color options here: https://www.goodneighbormusic.com',
         value: '',
         type: 'select',
+        maxSelections: 3,
         required: true
     },
     opacity: {
@@ -305,6 +323,13 @@ export const detailsDict = {
     },
     packaging: {
         label: 'Packaging: What type of LP jacket did you want to print?',
+        description: '',
+        value: '',
+        type: 'dropdown',
+        required: false
+    },
+    source: {
+        label: 'Source: How did you hear about us?',
         description: '',
         value: '',
         type: 'dropdown',

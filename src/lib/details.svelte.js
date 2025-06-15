@@ -26,6 +26,12 @@ const createDetails = () => {
 
             //     window.dispatchEvent(changeRecordColorEvent);
             // }
+
+            // if array then join with DELIMITER
+            // if (value instanceof Array) {
+            //     value = value.join(DELIMITER);
+            // }
+            // or it could turn it into a string when submitting it to the api
             details[key].value = value;
             project.updateDetails(details);
         },

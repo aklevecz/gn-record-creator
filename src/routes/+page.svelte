@@ -22,6 +22,7 @@
         const { isValid, missingFields } = details.validateFormFinished();
         if (!isValid) {
             missingKeys = missingFields;
+            submitting = false;
             alert("You aren't done filling out the form");
             return;
         }
@@ -31,16 +32,12 @@
         await surveyApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
-            responses: { ...detailResponses, 
-                // submitted: true 
-            }
+            responses: { ...detailResponses, submitted: 'Submitted' }
         });
         await mondayClientApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
-            responses: { ...detailResponses, 
-                // submitted: true 
-            }
+            responses: { ...detailResponses, submitted: 'Submitted' }
         });
         submitting = false;
         goto(`/submission/${project.state.id}`);
@@ -51,8 +48,9 @@
         damping: 1.2,
         stiffness: 0.1
     });
+
     $effect(() => {
-        if (details.state.contact_name.value) {
+        if (details.state.contact_first_name.value) {
             setTimeout(() => {
                 spring.set(0);
                 setTimeout(() => {
@@ -63,9 +61,6 @@
             spring.set(offScreenSpring);
         }
     });
-    $effect(() => {
-        console.log(details.state.opacity)
-    })
 </script>
 
 <div class="survey-page">
@@ -83,7 +78,14 @@
             {@const question = questions[key]}
             {#if type === 'select'}
                 <!-- Buttons instead of input element -- maybe only for the record color picker? -->
-                <Question {key} label={question.label} options={question.options} required={detail.required} />
+                {JSON.stringify(detail)}
+                <Question
+                    {key}
+                    label={question.label}
+                    options={question.options}
+                    required={detail.required}
+                    maxSelections={detail.maxSelections ?? 1}
+                />
             {:else if type === 'dropdown'}
                 <QuestionDropdown {key} label={question.label} options={question.options} required={detail.required} />
             {:else if type === 'address'}
@@ -125,7 +127,8 @@
     <!-- END SUBMIT SURVEY -->
     <!-- <CalculatorFooter /> -->
 </div>
-<!-- <Groovy text={`Hello ${details.state.contact_name.value}!`} bottomPercent={spring.current} /> -->
+
+<!-- <Groovy text={`Hello ${details.state.contact_first_name.value}!`} bottomPercent={spring.current} /> -->
 
 <style lang="postcss">
     @reference "tailwindcss/theme";

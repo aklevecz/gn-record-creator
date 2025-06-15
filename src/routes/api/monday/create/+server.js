@@ -17,6 +17,8 @@ function cleanEmptyValues(obj) {
 
     return result;
 }
+
+// CREATE & UPDATE
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ platform, request }) {
     /** @type {*} */
@@ -25,7 +27,7 @@ export async function POST({ platform, request }) {
     try {
         const data = await request.json();
         // const title = data.responses.title;
-        const mondayName = data.responses.contact_name;
+        const mondayName = data.responses.contact_first_name + ' ' + data.responses.contact_last_name;
         const responses = cleanEmptyValues(data.responses);
         let mondayId = data.mondayId;
         console.log(`mondayId: ${mondayId}`);

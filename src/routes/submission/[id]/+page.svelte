@@ -39,7 +39,7 @@
 
 		<div class="submission-section">
 			<h3>Contact Information</h3>
-			{@render submissionField({ label: 'Contact Name', value: submission.contact_name })}
+			{@render submissionField({ label: 'Contact Name', value: submission.contact_first_name + ' ' + submission.contact_last_name })}
 			{@render submissionField({ label: 'Contact Email', value: submission.contact_email })}
 			{@render submissionField({ label: 'Phone', value: submission.phone })}
 		</div>

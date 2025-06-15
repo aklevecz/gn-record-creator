@@ -348,7 +348,8 @@
                         <tr>
                             <td>{entry.id || 'N/A'}</td>
                             <td>{entry.title || 'N/A'}</td>
-                            <td>{entry.contact_name || 'N/A'}</td>
+                            <td>{entry.contact_first_name || 'N/A'}</td>
+                            <td>{entry.contact_last_name || 'N/A'}</td>
                             <td>{entry.contact_email || 'N/A'}</td>
                             <td>{entry.phone || 'N/A'}</td>
                             <td>{entry.label || 'N/A'}</td>

@@ -18,7 +18,17 @@ export const idToValues = (values) => {
             return acc;
         }
 
+        console.log(`${key} ${type} ${value}`);
         // Handle different column types based on their ID or expected format
+
+        // Handle special keys for possible remapping
+        if (key === 'source') {
+            const mondayValue = intakeFormFields.source.remap[value];
+            return {
+                ...acc,
+                [columnId]: mondayValue
+            };
+        }
 
         // Handle email columns
         if (type === 'email') {
@@ -32,6 +42,7 @@ export const idToValues = (values) => {
         }
 
         // TO DO: FIX THIS -- MAYBE THIS IS A MODEL FOR MOVING AWAY FROM `questions`
+        // THIS SHOULD BE REMOVED -- STATUS IS NEW WHEN FIRST CREATED AND THEN EDITED ON MONDAY BY GNER
         else if (type === 'status') {
             // let index = null;
             // if (questions[key]) {
