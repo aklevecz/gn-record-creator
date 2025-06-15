@@ -12,19 +12,19 @@
     let questionContainer = $state(null);
     let isInView = $state(false);
 
-    /** @type {string[]} */
-    let selections = $state([]);
+    // /** @type {string[]} */
+    // let selections = $state([]);
 
     // Kind of hacky to initialize this and set a local state variable for collecting the array and then passing it as a string
     // I could just pass an array to details
-    const DELIMITER = ',';
-    let once = false;
-    $effect(() => {
-        if (!once && projects.initialized) {
-            once = true;
-            selections = details.state[key].value.split(DELIMITER);
-        }
-    });
+    // const DELIMITER = ',';
+    // let once = false;
+    // $effect(() => {
+    //     if (!once && projects.initialized) {
+    //         once = true;
+    //         selections = details.state[key].value.split(DELIMITER);
+    //     }
+    // });
 
     onMount(() => {
         const observer = new IntersectionObserver(
@@ -67,6 +67,10 @@
     /** @param {Option} option */
     function handleAnswer(option) {
         // survey.answer(key, option.text);
+        // Migration to using array
+        const isString = typeof details.state[key].value === 'string';
+        let selections = isString ? [] : details.state[key].value;
+
         if (selections.length >= maxSelections) {
             selections = selections.slice(1, selections.length).flat();
             selections.push(option.text);
@@ -76,9 +80,9 @@
         // details.setValue(key, option.text);
         // Selection could be passed to setValue and then it understands type
         // But then there is some trickiness with initalizing it still
-        details.setValue(key, selections.join(DELIMITER));
+        // details.setValue( key, selections.join(DELIMITER));
         // COULD TRY THIS
-        // details.setValue(key, selections)
+        details.setValue(key, selections)
         if (key === 'record_color') {
             const color = option.text;
             const colorHex = questions.record_color.options.find((option) => option.text === color)?.color || '#000000';
@@ -92,15 +96,14 @@
 </script>
 
 <div class="question-container" bind:this={questionContainer}>
-    {JSON.stringify(selections)}
     <div class="label">
         {label}{#if required}*{/if}
     </div>
     <div class="question-buttons-container">
         {#each options as option}
             <!-- {JSON.stringify(survey.state.answers[key] === option.text)} -->
-            <!-- class:isSelected={details.state[key].value === option.text} -->
-            <button class:isSelected={selections.includes(option.text)} onclick={() => handleAnswer(option)}>
+             <!-- class:isSelected={selections.includes(option.text)} -->
+            <button class:isSelected={details.state[key].value.includes(option.text)} onclick={() => handleAnswer(option)}>
                 {#if option.img}
                     <img src={option.img} alt={option.text} />
                 {/if}{option.text.replace('-', ' ')}</button

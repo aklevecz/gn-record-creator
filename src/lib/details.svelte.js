@@ -15,7 +15,7 @@ const createDetails = () => {
         set(newState) {
             details = newState;
         },
-        /** @param {string} key @param {string} value */
+        /** @param {string} key @param {string | string[]} value */
         setValue(key, value) {
             // THIS SHOULD BE SOMEWHERE ELSE -- MAYBE THE COMPONENT SHOULD DETECT IMPLICITLY IF IT IS THIS KEY
             // if (key === 'record_color') {
@@ -35,9 +35,14 @@ const createDetails = () => {
             details[key].value = value;
             project.updateDetails(details);
         },
-        remapDetails() {
-            const responses = Object.entries(details).reduce((/** @type {Record<string, string>} */ acc, [key, obj]) => {
-                acc[key] = obj.value;
+        // Remap and turn array to strings?
+        remapDetailsAndStringify(stringifyArrays = true) {
+            const responses = Object.entries(details).reduce((/** @type {Record<string, string | string[]>} */ acc, [key, obj]) => {
+                if (stringifyArrays && Array.isArray(obj.value)) {
+                    acc[key] = obj.value.join(',');
+                } else {
+                    acc[key] = obj.value;
+                }
                 return acc;
             }, {});
             return responses;

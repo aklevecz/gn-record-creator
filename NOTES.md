@@ -9,9 +9,10 @@ WHAT DO CHANGE
 
 - first name and last name separated
 - but contact name is concatenated
-- can select up to three colors
-- set email to the email column
+- - set email to the email column
 - tesrt pressing: 2,5,10,N/A
+-  restart if submit fails
+- can select up to three colors
 - how did you hear about us for source
   personal connection - friend of good neighbor
   repeat - not my first time with good neighbor
@@ -19,10 +20,9 @@ WHAT DO CHANGE
   referral - heard about good neighbor from a friend
 
 
+
   once they complete it-- some celebratatory message
 
   you will hear from your good neighbor
-
-  restart if submit fails
 
   receipt more compact and friendly

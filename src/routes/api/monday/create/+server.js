@@ -27,10 +27,9 @@ export async function POST({ platform, request }) {
     try {
         const data = await request.json();
         // const title = data.responses.title;
-        const mondayName = data.responses.contact_first_name + ' ' + data.responses.contact_last_name;
+        const mondayName = data.responses.contact_first_name || 'No first name' + ' ' + data.responses.contact_last_name || 'No last name';
         const responses = cleanEmptyValues(data.responses);
         let mondayId = data.mondayId;
-        console.log(`mondayId: ${mondayId}`);
         if (!mondayName) {
             console.log('User has not filled in their name yet');
             return error(400, errors.UPDATE_SURVEY_FAILED_NONAME);
@@ -62,6 +61,7 @@ export async function POST({ platform, request }) {
             logging.info(`Updating entry ${data.id}`);
             console.log(`Updating entry ${data.id}`);
             const mondayResponse = await mondayServer.updateItem(mondayId, responses);
+            console.log(JSON.stringify(mondayResponse));
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);

@@ -32,7 +32,7 @@
  * @typedef Detail
  * @property {string} label
  * @property {string} description
- * @property {string} value
+ * @property {string | string[]} value
  * @property {Tooltip} [tooltip]
  * @property {number} [maxSelections]
  * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'tel' | 'email' | 'address'} type

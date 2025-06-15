@@ -26,7 +26,7 @@
             alert("You aren't done filling out the form");
             return;
         }
-        const detailResponses = details.remapDetails();
+        const detailResponses = details.remapDetailsAndStringify();
         await new Promise((resolve) => setTimeout(resolve, 1000));
         // SHOULD THERE BE SOME STATUS TO INDICATE THAT THEY SUBMITTED THE FORM
         await surveyApi.create({
@@ -78,7 +78,6 @@
             {@const question = questions[key]}
             {#if type === 'select'}
                 <!-- Buttons instead of input element -- maybe only for the record color picker? -->
-                {JSON.stringify(detail)}
                 <Question
                     {key}
                     label={question.label}

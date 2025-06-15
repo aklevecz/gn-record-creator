@@ -17,14 +17,17 @@ npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_requ
   records_per_set TEXT,
   record_format TEXT,
   record_color TEXT,
+  opacity TEXT,
   lacquers TEXT,
   metalwork TEXT,
   test_prints TEXT,
   packaging TEXT,
+  source TEXT,
   notes TEXT,
   status TEXT,
   session TEXT,
-  monday_id TEXT
+  monday_id TEXT,
+  submitted TEXT
 );"
 
 

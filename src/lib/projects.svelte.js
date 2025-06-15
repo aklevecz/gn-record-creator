@@ -119,7 +119,7 @@ const createProjects = () => {
         },
         debouncedSaveRemote: debounce(
             () => {
-                const detailResponses = details.remapDetails();
+                const detailResponses = details.remapDetailsAndStringify();
                 let mondayId = project.state.mondayId;
                 let collectedData = { id: project.state.id, mondayId, responses: { ...detailResponses } };
                 try {

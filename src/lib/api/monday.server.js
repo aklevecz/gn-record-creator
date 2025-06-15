@@ -107,6 +107,7 @@ const mondayServerApi = () => {
                 // idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
 
                 const valuesStrings = JSON.stringify(JSON.stringify(idValues));
+                console.log(`board id: ${boardId}, group id: ${groupId}, item name: ${id}, column values: ${valuesStrings}`);
                 const query = /* GraphQL */ `
                     mutation {
                         create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${id}", column_values: ${valuesStrings}) {
@@ -124,16 +125,17 @@ const mondayServerApi = () => {
         updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
             try {
                 /** @type {Record<string, any>} */
-                console.log(values)
                 const idValues = idToValues(values);
                 console.log(`Update item: ${id} with values: ${JSON.stringify(idValues)}`);
-                if (values.contact_first_name || values.contact_last_name) {
-                    idValues.name = values.contact_first_name + ' ' + values.contact_last_name;
-                }
+                const firstName = values.contact_first_name || 'No first name';
+                const lastName = values.contact_last_name || 'No last name';
+
+                idValues.name = firstName + ' ' + lastName;
                 idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
 
                 console.log(idValues);
                 const valueStrings = JSON.stringify(JSON.stringify(idValues));
+                console.log(`board id: ${boardId}, item id: ${id}, column values: ${valueStrings}`);
                 let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;
                 return mondayFetch(query);
             } catch (e) {

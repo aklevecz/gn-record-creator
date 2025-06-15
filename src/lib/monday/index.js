@@ -1,4 +1,3 @@
-import { questions } from '$lib/form-data-model';
 import parsePhoneNumberFromString, { getCountryCallingCode } from 'libphonenumber-js';
 import { intakeFormFields, intakeFormIdToTitleAndType, keyToId } from './mappers';
 
@@ -6,11 +5,11 @@ import { intakeFormFields, intakeFormIdToTitleAndType, keyToId } from './mappers
 export const idToValues = (values) => {
     return Object.entries(values).reduce((acc, [key, value]) => {
         const columnId = keyToId[key];
-        // @ts-ignore
         // const {type} = dealTrackerColumnIdToTitleAndType[columnId];
         if (!columnId) {
             console.log(`No column ID found for key: ${key}`);
         }
+        // @ts-ignore
         const { type } = intakeFormIdToTitleAndType[columnId];
 
         // Skip null or undefined values
@@ -29,6 +28,15 @@ export const idToValues = (values) => {
                 [columnId]: mondayValue
             };
         }
+
+        // dropdowns are arrays, so we join them into a string -- we could pass indexes too, but whatever
+        // Doing this before sending to server now for better parity
+        // if (type === 'dropdown') {
+        //     return {
+        //         ...acc,
+        //         [columnId]: value.join(',')
+        //     };
+        // }
 
         // Handle email columns
         if (type === 'email') {

@@ -15,7 +15,7 @@ const surveyApi = () => {
 			}
 			return data;
 		},
-		/** @param {{id: string, mondayId: string, responses: Record<string, string> }} data */
+		/** @param {{id: string, mondayId: string, responses: Record<string, string | string[]> }} data */
 		async create({ id, mondayId, responses }) {
 			const res = await fetch(endpoints.create, {
 				method: 'POST',

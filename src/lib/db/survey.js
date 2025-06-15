@@ -23,6 +23,7 @@ const dbSurvey = (db) => {
 						 ON CONFLICT(id) DO UPDATE SET 
 						 ${updatePairs}`
 				)
+				// Needs to destructure values twice for the insert statement and then the update statement
 				.bind(id, ...values, ...values)
 				.run();
 		},

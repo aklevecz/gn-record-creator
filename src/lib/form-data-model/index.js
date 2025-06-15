@@ -282,7 +282,7 @@ export const detailsDict = {
         label: 'What color(s) would you like your records to be?',
         description:
             'Our records can be manufactured as solid or translucent colors. If unsure, please leave blank. Color options here: https://www.goodneighbormusic.com',
-        value: '',
+        value: [],
         type: 'select',
         maxSelections: 3,
         required: true
@@ -317,7 +317,7 @@ export const detailsDict = {
     test_prints: {
         label: '# of Test Pressings',
         description: '',
-        value: '',
+        value: [],
         type: 'select',
         required: false
     },
