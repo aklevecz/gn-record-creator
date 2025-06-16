@@ -105,7 +105,7 @@ const mondayServerApi = () => {
                 let idValues = idToValues(values);
                 console.log(`Create item: ${id} with values: ${JSON.stringify(idValues)}`);
                 // Add Status: New -- MAY NEED TO CHECK IF THIS SHOULD BE SUBMITTED IN THE EVENT THAT THEY SOMEHOW DONT UPDATE MONDAY UNTIL SUBMITTING THE FORM?
-                idValues[formFields.status.id] = { index: formFields.status.options.find((option) => option.value === 'new')?.index };
+                idValues[formFields.status.id] = { index: formFields.status.options?.find((option) => option.value === 'new')?.index };
                 // idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
                 // Add Create Date
                 idValues[formFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };

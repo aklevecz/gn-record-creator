@@ -80,7 +80,7 @@
                 <Question
                     {key}
                     label={question.label}
-                    options={question.options}
+                    options={question.options || []}
                     required={detail.required}
                     maxSelections={detail.maxSelections ?? 1}
                 />

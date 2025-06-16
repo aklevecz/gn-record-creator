@@ -4,7 +4,7 @@
     import { formFields } from '$lib/monday/mappers';
     import { onMount } from 'svelte';
 
-    /** @type {{label: string, options: Option[], key: string, required: boolean, maxSelections?: number}}*/
+    /** @type {{label: string, options: FormFieldOption[], key: string, required: boolean, maxSelections?: number}}*/
     let { label, options, key, required, maxSelections = 1 } = $props();
 
     /** @type {HTMLElement | null} */
@@ -34,7 +34,7 @@
 
                 if (isInView) {
                     const color = details.state.record_color.value;
-                    const colorHex = formFields.record_color.options.find((option) => option.text === color)?.color || '#000000';
+                    const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
                     const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColorOut, {
                         detail: { color: colorHex }
                     });
@@ -63,12 +63,13 @@
         };
     });
 
-    /** @param {Option} option */
+    /** @param {FormFieldOption} option */
     function handleAnswer(option) {
         // survey.answer(key, option.text);
-        // Migration to using array
-        const isString = typeof details.state[key].value === 'string';
-        let selections = isString ? [] : details.state[key].value;
+        // Migration to using array -- slight extreme hack
+        const value = details.state[key].value;
+        const isString = typeof value === 'string';
+        let selections = isString ? [] : typeof value === 'object' ? value : value;
 
         if (selections.length >= maxSelections) {
             selections = selections.slice(1, selections.length).flat();
@@ -84,7 +85,7 @@
         details.setValue(key, selections)
         if (key === 'record_color') {
             const color = option.text;
-            const colorHex = formFields.record_color.options.find((option) => option.text === color)?.color || '#000000';
+            const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
             const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColor, {
                 detail: { color: colorHex }
             });

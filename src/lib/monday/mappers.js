@@ -1,4 +1,3 @@
-
 // Record colors - keeping this separate as it's a clean, focused object
 export const recordColors = {
     purpleHaze: 'Purple haze',
@@ -15,6 +14,7 @@ export const recordColors = {
 };
 
 // Consolidated field definitions - single source of truth
+/** @type {Record<string, FormField>} */
 export const formFields = {
     // Contact Information
     contact_first_name: {
@@ -477,12 +477,14 @@ export const formFields = {
 };
 
 // Derived mappings - these are now generated from the single source above
-export const keyToId = Object.keys(formFields).reduce((acc, key) => {
+/** @type {Record<string, string>} */
+export const keyToId = Object.keys(formFields).reduce((/** @type {Record<string, string>} */ acc, key) => {
     acc[key] = formFields[key].mondayId;
     return acc;
 }, {});
 
-export const idToTitleAndType = Object.keys(formFields).reduce((acc, key) => {
+/** @type {Record<string, {title: string, type: string}>} */
+export const idToTitleAndType = Object.keys(formFields).reduce((/** @type {Record<string, {title: string, type: string}>} */ acc, key) => {
     const field = formFields[key];
     acc[field.mondayId] = {
         title: field.title,
@@ -492,11 +494,34 @@ export const idToTitleAndType = Object.keys(formFields).reduce((acc, key) => {
 }, {});
 
 // Helper functions to work with the consolidated structure
+/**
+ * Get a form field by its key
+ * @param {string} key - The key of the form field
+ * @returns {FormField | undefined}
+ */
 export const getFieldByKey = (key) => formFields[key];
+
+/**
+ * Get a form field by its Monday.com ID
+ * @param {string} id - The Monday.com ID of the form field
+ * @returns {FormField | undefined}
+ */
 export const getFieldById = (id) => Object.values(formFields).find((field) => field.mondayId === id);
+
+/**
+ * Get options for a form field by its key
+ * @param {string} key - The key of the form field
+ * @returns {FormFieldOption[]}
+ */
 export const getFieldOptions = (key) => formFields[key]?.options || [];
+
+/**
+ * Get all required form fields
+ * @returns {FormField[]}
+ */
 export const getRequiredFields = () => Object.values(formFields).filter((field) => field.required);
 
+/** @type {Record<string, string>} */
 export const intakeFormGroupTitleToId = {
     'Intake Form': 'topics'
 };

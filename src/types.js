@@ -1,56 +1,4 @@
 /**
- * @typedef Option
- * @property {string} img
- * @property {string} text
- * @property {string} [color]
- */
-
-/**
- * @typedef Question
- * @type {{label: string, options: Option[]}}
- */
-
-/**
- * @typedef Questions @type {Record<string, Question>}
- */
-
-/**
- * @typedef Survey
- * @property {Questions} questions
- * @property {Record<string, string>} answers
- */
-
-/** 
- * @typedef Tooltip
- * @property {string} name
- * @property {string} cta
- * @property {string} description
- * @property {string} link
- */
-
-/**
- * @typedef Detail
- * @property {string} label
- * @property {string} description
- * @property {string | string[]} value
- * @property {Tooltip} [tooltip]
- * @property {number} [maxSelections]
- * @property {'text' | 'number' | 'select' | 'dropdown' | 'date' | 'tel' | 'email' | 'address'} type
- * @property {boolean} required
- */
-
-// /**
-//  * @typedef Details
-//  * @property {Record<string, Detail>} details
-//  */
-
-/** 
- * @typedef {Record<string, Detail>} Details
- */
-
-/** @typedef {('idle'|'starting'|'processing'|'succeeded'|'failed'|'canceled')} Status */
-
-/**
  * @typedef {Object} ReplicateResponse
  * @property {string} id - Unique identifier for the prediction
  * @property {string} model - Name of the model used for the prediction
@@ -95,7 +43,7 @@
  * @property {number} estimatedCost
  */
 
-/** 
+/**
  * @typedef CarbonSavings
  * @property {number} record_color
  * @property {number} total_units
@@ -184,3 +132,90 @@
  * @property {string} projectId
  * @property {string} seed
  */
+
+/**
+ * @typedef FormFieldOption
+ * @property {string} text
+ * @property {string} value
+ * @property {number} [index]
+ * @property {string} [color]
+ * @property {string} [img]
+ */
+
+/**
+ * @typedef FormField
+ * @property {string} id - Internal field ID
+ * @property {string} mondayId - Monday.com column ID
+ * @property {string} key - Field key for form data
+ * @property {string} title - Monday.com column title
+ * @property {string} label - Form label for user interface
+ * @property {string} description - Help text for the field
+ * @property {'text' | 'email' | 'tel' | 'date' | 'number' | 'address' | 'dropdown' | 'select' | 'status' | 'name'} type - Form input type
+ * @property {'text' | 'email' | 'phone' | 'date' | 'numbers' | 'location' | 'status' | 'dropdown' | 'long_text' | 'name'} mondayType - Monday.com column type
+ * @property {boolean} required - Whether field is required
+ * @property {string | string[]} defaultValue - Default value for the field
+ * @property {FormFieldOption[]} [options] - Available options for dropdown/select fields
+ * @property {number} [maxSelections] - Maximum selections for multi-select fields
+ * @property {Tooltip} [tooltip] - Optional tooltip information
+ * @property {Record<string, string>} [remap] - Value remapping for certain fields
+ */
+
+/**
+ * @typedef FieldState
+ * @property {string | string[]} value - Current field value
+ * @property {boolean} touched - Whether field has been interacted with
+ * @property {string[]} errors - Validation errors for this field
+ */
+
+/**
+ * @typedef FormState
+ * @type {Record<string, FieldState>}
+ */
+
+// Keep your existing types but update Detail to be compatible
+/**
+ * @typedef Option
+ * @property {string} img
+ * @property {string} text
+ * @property {string} [color]
+ */
+
+/**
+ * @typedef Question
+ * @type {{label: string, options: Option[]}}
+ */
+
+/**
+ * @typedef Questions @type {Record<string, Question>}
+ */
+
+/**
+ * @typedef Survey
+ * @property {Questions} questions
+ * @property {Record<string, string>} answers
+ */
+
+/**
+ * @typedef Tooltip
+ * @property {string} name
+ * @property {string} cta
+ * @property {string} description
+ * @property {string} link
+ */
+
+/**
+ * @typedef Detail
+ * @property {string} label
+ * @property {string} description
+ * @property {string | string[]} value
+ * @property {Tooltip} [tooltip]
+ * @property {number} [maxSelections]
+ * @property {'text' | 'email' | 'tel' | 'date' | 'number' | 'address' | 'dropdown' | 'select' | 'status' | 'name'} type
+ * @property {boolean} required
+ */
+
+/**
+ * @typedef {Record<string, Detail>} Details
+ */
+
+/** @typedef {('idle'|'starting'|'processing'|'succeeded'|'failed'|'canceled')} Status */

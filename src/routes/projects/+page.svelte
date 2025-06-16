@@ -28,8 +28,6 @@
         projects.activateProject(newProject.id);
     }
 
-    let activeTexture = $state('/records/cosmic-black.png');
-
     /** @type {TextureObject[]} */
     let textureObjects = $state([]);
     $effect(() => {
