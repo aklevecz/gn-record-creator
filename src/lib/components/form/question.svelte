@@ -1,8 +1,7 @@
 <script>
-    import projects from '$lib/projects.svelte';
     import customEvents from '$lib/custom-events';
     import details from '$lib/details.svelte';
-    import { questions } from '$lib/form-data-model';
+    import { formFields } from '$lib/monday/mappers';
     import { onMount } from 'svelte';
 
     /** @type {{label: string, options: Option[], key: string, required: boolean, maxSelections?: number}}*/
@@ -35,7 +34,7 @@
 
                 if (isInView) {
                     const color = details.state.record_color.value;
-                    const colorHex = questions.record_color.options.find((option) => option.text === color)?.color || '#000000';
+                    const colorHex = formFields.record_color.options.find((option) => option.text === color)?.color || '#000000';
                     const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColorOut, {
                         detail: { color: colorHex }
                     });
@@ -85,7 +84,7 @@
         details.setValue(key, selections)
         if (key === 'record_color') {
             const color = option.text;
-            const colorHex = questions.record_color.options.find((option) => option.text === color)?.color || '#000000';
+            const colorHex = formFields.record_color.options.find((option) => option.text === color)?.color || '#000000';
             const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColor, {
                 detail: { color: colorHex }
             });

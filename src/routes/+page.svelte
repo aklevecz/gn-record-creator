@@ -7,9 +7,8 @@
     import Question from '$lib/components/form/question.svelte';
     import AddressInput from '$lib/components/input/address-input.svelte';
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
-    import Groovy from '$lib/components/toasts/groovy.svelte';
     import details from '$lib/details.svelte';
-    import { questions } from '$lib/form-data-model';
+    import { formFields } from '$lib/monday/mappers';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { Spring } from 'svelte/motion';
@@ -75,7 +74,7 @@
     <div class="survey-questions">
         {#each Object.entries(details.state) as [key, detail]}
             {@const type = detail.type}
-            {@const question = questions[key]}
+            {@const question = formFields[key]}
             {#if type === 'select'}
                 <!-- Buttons instead of input element -- maybe only for the record color picker? -->
                 <Question

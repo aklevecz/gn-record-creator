@@ -1,6 +1,11 @@
 import { MONDAY_API_TOKEN } from '$env/static/private';
 import { idToValues } from '$lib/monday';
-import { intakeFormFields, intakeFormGroupTitleToId, keyToId } from '$lib/monday/mappers';
+import {
+    formFields,
+    // intakeFormFields,
+    intakeFormGroupTitleToId,
+    keyToId
+} from '$lib/monday/mappers';
 
 const YAYTSO_BOARD_ID = 8703967457;
 const RECORD_SETUP_BOARD_ID = 8705909367;
@@ -100,9 +105,11 @@ const mondayServerApi = () => {
                 let idValues = idToValues(values);
                 console.log(`Create item: ${id} with values: ${JSON.stringify(idValues)}`);
                 // Add Status: New -- MAY NEED TO CHECK IF THIS SHOULD BE SUBMITTED IN THE EVENT THAT THEY SOMEHOW DONT UPDATE MONDAY UNTIL SUBMITTING THE FORM?
-                idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
+                idValues[formFields.status.id] = { index: formFields.status.options.find((option) => option.value === 'new')?.index };
+                // idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
                 // Add Create Date
-                idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
+                idValues[formFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
+                // idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
                 // Add Source: Google Search for testing -- This is part of the survey now
                 // idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
 
@@ -131,7 +138,8 @@ const mondayServerApi = () => {
                 const lastName = values.contact_last_name || 'No last name';
 
                 idValues.name = firstName + ' ' + lastName;
-                idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
+                // idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
+                idValues[formFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
 
                 console.log(idValues);
                 const valueStrings = JSON.stringify(JSON.stringify(idValues));

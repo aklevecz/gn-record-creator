@@ -33,6 +33,7 @@
     async function fetchRemoteProjects() {
         projectsApi.getProjects().then((fetchedProjects) => {
             for (const project of fetchedProjects) {
+                // THIS WILL NEED TO ACCOUNT FOR ARRAYS BEING SAVED AS JOINED STRINGS
                 const details = unmapDetails(project);
                 projects.registerProject({
                     id: project.id,

@@ -5,7 +5,7 @@
     import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
     import db from '$lib/db';
     import details from '$lib/details.svelte';
-    import { questions } from '$lib/form-data-model';
+    import { formFields } from '$lib/monday/mappers';
     import project, { createProject } from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { onDestroy } from 'svelte';
@@ -172,7 +172,7 @@
             <div class="flex flex-row justify-between md:flex-col">
                 <!-- {JSON.stringify(project.state.details)} -->
                 <img
-                    src={`${questions.record_color.options.find((o) => o.text === project.state.details?.record_color.value)?.img}`}
+                    src={`${formFields.record_color.options.find((o) => o.text === project.state.details?.record_color.value)?.img}`}
                     alt=""
                     class="my-2 w-40"
                 />
