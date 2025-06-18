@@ -9,6 +9,8 @@
     import { onDestroy, onMount } from 'svelte';
     import '../app.css';
     import network from '$lib/network.svelte';
+    import posthog from 'posthog-js'
+    import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 
     let { children } = $props();
 
@@ -22,8 +24,13 @@
                 // if (projects.activeProject) await db.saveProject(projects.activeProject);
                 idb.close();
             });
-            network.init()
-		}
+            network.init();
+
+            posthog.init(PUBLIC_POSTHOG_KEY, {
+                api_host: 'https://us.i.posthog.com',
+                person_profiles: 'identified_only' // or 'always' to create profiles for anonymous users as well
+            });
+        }
     });
 
     // THESE SHOULD PROBABLY BE PART OF THE INIT?
@@ -110,9 +117,7 @@
     <meta name="og:image" content="/records/purple-haze.png" />
 </svelte:head>
 <header class="flex items-center gap-4">
-    <a class="w-[150px] md:w-[250px]" href="/"
-        ><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a
-    >
+    <a class="w-[150px] md:w-[250px]" href="/"><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a>
     <nav class="md:flex-1">
         <ul class="flex justify-center gap-4">
             <li><a class="icon-link hidden md:block" href="/">home</a></li>

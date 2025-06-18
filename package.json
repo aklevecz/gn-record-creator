@@ -36,6 +36,7 @@
 		"@sentry/sveltekit": "^9.7.0",
 		"chart.js": "^4.4.8",
 		"libphonenumber-js": "^1.12.6",
+		"posthog-js": "^1.254.0",
 		"three": "^0.174.0"
 	}
 }
