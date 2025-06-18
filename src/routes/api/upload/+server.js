@@ -42,16 +42,16 @@ export async function POST({ platform, request }) {
 	};
 
 	// for default image
-	// const filepath = `cover-uploads/${projectId}`;
-	// context.waitUntil(
-	// 	env.R2.put(filepath, image, {
-	// 		httpMetadata: {
-	// 			cacheControl: 'max-age=31536000',
-	// 			contentType
-	// 		},
-	// 		customMetadata
-	// 	})
-	// );
+	const filepath = `cover-uploads/${projectId}`;
+	context.waitUntil(
+		env.R2.put(filepath, image, {
+			httpMetadata: {
+				cacheControl: 'max-age=31536000',
+				contentType
+			},
+			customMetadata
+		})
+	);
 
 	// for individual images
 	const filepath2 = `cover-uploads/${projectId}/${id}`;

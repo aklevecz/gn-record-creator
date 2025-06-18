@@ -1,28 +1,9 @@
-UPDATE DATA MODEL IN CLOUDFLARE -- I think i did this
-
-dropdown for test presses options -- Sort down but should check the numbers
-
-WHAT DO CHANGE
-- unique generated in the form that can be related to Monday because using the project name is too brittle if the monday id is unavailable.
-- at some point it should be locked when its been approved or whatever?
-- auto generate a lead for the person
-
-- first name and last name separated
-- but contact name is concatenated
-- - set email to the email column
-- tesrt pressing: 2,5,10,N/A
--  restart if submit fails
-- can select up to three colors
-- how did you hear about us for source
-  personal connection - friend of good neighbor
-  repeat - not my first time with good neighbor
-  google -was googling
-  referral - heard about good neighbor from a friend
-
-
-
-  once they complete it-- some celebratatory message
-
-  you will hear from your good neighbor
-
-  receipt more compact and friendly
+- submission details is not showing generated or uploaded cover photo
+- don't let 3d record overlap with form
+- better form validation
+- maybe not important for only the first name appeared in "Contact" at first
+- maybe not important but I was able to create duplicates with new tabs
+- new tabs won't be in sync -- could literally just refresh them if they are in different tabs? -- REFRESH DOES SEEM TO WORK
+    - So possible detection:
+      - on blur
+      - return to tab, then refresh -- might be too aggressive -- only do this if multiple tabs -- though it should still be fast as fuck

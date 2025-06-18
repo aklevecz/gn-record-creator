@@ -7,6 +7,7 @@
     import Question from '$lib/components/form/question.svelte';
     import AddressInput from '$lib/components/input/address-input.svelte';
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
+    import Modal from '$lib/components/ui/modal.svelte';
     import details from '$lib/details.svelte';
     import { formFields, hiddenFields } from '$lib/monday/mappers';
     import project from '$lib/project.svelte';
@@ -16,13 +17,16 @@
     /** @type {string[]} */
     let missingKeys = $state([]);
     let submitting = $state(false);
+    let showMissingFieldsModal = $state(false);
+    
     async function submitInfo() {
         submitting = true;
         const { isValid, missingFields } = details.validateFormFinished();
         if (!isValid) {
             missingKeys = missingFields;
+            console.log(missingFields)
             submitting = false;
-            alert("You aren't done filling out the form");
+            showMissingFieldsModal = true;
             return;
         }
         const detailResponses = details.remapDetailsAndStringify();
@@ -128,6 +132,32 @@
 
 <!-- <Groovy text={`Hello ${details.state.contact_first_name.value}!`} bottomPercent={spring.current} /> -->
 
+<Modal 
+    bind:isOpen={showMissingFieldsModal} 
+    title="Missing Required Fields" 
+    size="md"
+>
+    <div class="missing-fields-content">
+        <p class="mb-4">Please complete the following required fields before submitting:</p>
+        <ul class="missing-fields-list">
+            {#each missingKeys as key}
+                <li class="missing-field-item">
+                    <span class="field-name">{formFields[key]?.label || key}</span>
+                </li>
+            {/each}
+        </ul>
+    </div>
+    
+    <div slot="footer">
+        <button 
+            class="modal-button modal-button-primary" 
+            onclick={() => showMissingFieldsModal = false}
+        >
+            OK, I'll complete these fields
+        </button>
+    </div>
+</Modal>
+
 <style lang="postcss">
     @reference "tailwindcss/theme";
 
@@ -149,4 +179,28 @@
             filter: hue-rotate(360deg);
         }
     }
+/* 
+    .missing-fields-content {
+        @apply text-gray-700;
+    } */
+
+    .missing-fields-list {
+        @apply list-none space-y-2 pl-0;
+    }
+
+    .missing-field-item {
+        @apply flex items-center rounded px-0 py-2;
+    }
+
+    .field-name {
+        @apply font-medium text-[var(--red)];
+    }
+
+    /* .modal-button {
+        @apply px-4 py-2 border rounded font-medium transition-colors duration-200;
+    }
+
+    .modal-button-primary {
+        @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700;
+    } */
 </style>
