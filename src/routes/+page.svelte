@@ -8,7 +8,7 @@
     import AddressInput from '$lib/components/input/address-input.svelte';
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
     import details from '$lib/details.svelte';
-    import { formFields } from '$lib/monday/mappers';
+    import { formFields, hiddenFields } from '$lib/monday/mappers';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { Spring } from 'svelte/motion';
@@ -72,7 +72,7 @@
     <!-- BEGIN SURVEY -->
     <!-- TODO: DIFFERENCE BETWEEN QUESTION AND DETAIL IS CONFUSING -->
     <div class="survey-questions">
-        {#each Object.entries(details.state) as [key, detail]}
+        {#each Object.entries(details.state).filter(([key, detail]) => !hiddenFields.includes(key)) as [key, detail]}
             {@const type = detail.type}
             {@const question = formFields[key]}
             {#if type === 'select'}

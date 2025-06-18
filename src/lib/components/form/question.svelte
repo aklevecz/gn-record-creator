@@ -3,6 +3,7 @@
     import details from '$lib/details.svelte';
     import { formFields } from '$lib/monday/mappers';
     import { onMount } from 'svelte';
+    import { run } from 'svelte/legacy';
 
     /** @type {{label: string, options: FormFieldOption[], key: string, required: boolean, maxSelections?: number}}*/
     let { label, options, key, required, maxSelections = 1 } = $props();
@@ -25,30 +26,54 @@
     //     }
     // });
 
+    const ANIMATION_DURATION = 2000;
+    let isAnimating = false;
+    const KEY = 'record_color';
+
+    /** @param {boolean} isInView */
+    function runAnimation(isInView) {
+        if (isInView) {
+            // This doesn't change isAnimate properly
+            isAnimating = true;
+            const color = details.state.record_color.value;
+            const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
+            const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColorOut, {
+                detail: { color: colorHex }
+            });
+
+            window.dispatchEvent(changeRecordColorEvent);
+            setTimeout(() => {
+                isAnimating = false;
+            }, ANIMATION_DURATION);
+        } else {
+            isAnimating = true;
+            const recordBackInEvent = new CustomEvent(customEvents.recordBackIn);
+            window.dispatchEvent(recordBackInEvent);
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, ANIMATION_DURATION);
+        }
+    }
+    let loaded = false;
     onMount(() => {
+        if (key !== KEY) return;
+        setTimeout(() => {
+            loaded = true;
+        }, 1000);
         const observer = new IntersectionObserver(
             (entries) => {
+                if (!loaded) return;
+                // if (isAnimating) return;
                 const entry = entries[0];
-
                 isInView = entry.isIntersecting;
-
-                if (isInView) {
-                    const color = details.state.record_color.value;
-                    const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
-                    const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColorOut, {
-                        detail: { color: colorHex }
-                    });
-
-                    window.dispatchEvent(changeRecordColorEvent);
-                } else {
-                    const recordBackInEvent = new CustomEvent(customEvents.recordBackIn);
-                    window.dispatchEvent(recordBackInEvent);
-                }
+                console.log(`is in view ${isInView}`);
+                runAnimation(isInView);
             },
             {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.2
+                threshold: 0.1
             }
         );
 
@@ -82,8 +107,8 @@
         // But then there is some trickiness with initalizing it still
         // details.setValue( key, selections.join(DELIMITER));
         // COULD TRY THIS
-        details.setValue(key, selections)
-        if (key === 'record_color') {
+        details.setValue(key, selections);
+        if (key === KEY) {
             const color = option.text;
             const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
             const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColor, {
@@ -102,7 +127,7 @@
     <div class="question-buttons-container">
         {#each options as option}
             <!-- {JSON.stringify(survey.state.answers[key] === option.text)} -->
-             <!-- class:isSelected={selections.includes(option.text)} -->
+            <!-- class:isSelected={selections.includes(option.text)} -->
             <button class:isSelected={details.state[key].value.includes(option.text)} onclick={() => handleAnswer(option)}>
                 {#if option.img}
                     <img src={option.img} alt={option.text} />

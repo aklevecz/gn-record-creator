@@ -37,58 +37,43 @@
 </svelte:head>
 
 <div class="container">
-	<h1>Monday.com Boards Structure</h1>
+	<h1>Monday.com Boards</h1>
+	<p>Click on a board to view its detailed structure</p>
 
 	{#if data.boards && data.boards.length > 0}
-		{#each data.boards as board (board.id)}
-			<section class="board-section">
-				<h2>{board.name}</h2>
-				<p>Board ID: <code>{board.id}</code></p>
-
-				{#if board.columns && board.columns.length > 0}
-					<h3>Columns / Fields</h3>
-					<table>
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th>ID</th>
-								<th>Type</th>
-								<th>Settings / Options</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each board.columns as column (column.id)}
-								<tr>
-									<td>{column.title}</td>
-									<td><code>{column.id}</code></td>
-									<td>{column.type}</td>
-									<td>
-										{#if column.type === 'status' || column.type === 'dropdown'}
-											{@const labels = parseSettingsLabels(column.settings_str)}
-											{#if labels && labels.length > 0}
-												<ul>
-													{#each labels as label}
-														<li>{label}</li>
-													{/each}
-												</ul>
-											{:else if labels}
-												<small>No options defined.</small>
-                                            {:else}
-												<small>Could not parse options.</small>
-											{/if}
-										{:else}
-											<small>N/A</small>
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{:else}
-					<p>No columns found for this board.</p>
-				{/if}
-			</section>
-		{/each}
+		<div class="boards-grid">
+			{#each data.boards as board (board.id)}
+				<a href="/admin/monday-boards-structure/{board.id}" class="board-card">
+					<div class="board-header">
+						<h2>{board.name}</h2>
+						<span class="board-id">ID: {board.id}</span>
+					</div>
+					<div class="board-stats">
+						<div class="stat">
+							<span class="stat-number">{board.columns ? board.columns.length : 0}</span>
+							<span class="stat-label">Columns</span>
+						</div>
+						<div class="stat">
+							<span class="stat-number">{board.columns ? board.columns.filter(c => c.type === 'status' || c.type === 'dropdown').length : 0}</span>
+							<span class="stat-label">Options</span>
+						</div>
+					</div>
+					<div class="board-actions">
+						<button 
+							class="data-link" 
+							on:click={(e) => {
+								e.stopPropagation();
+								e.preventDefault();
+								window.location.href = `/admin/monday-board-data/${board.id}`;
+							}}
+						>
+							View Data
+						</button>
+					</div>
+					<div class="board-arrow">→</div>
+				</a>
+			{/each}
+		</div>
 	{:else}
 		<p>No boards found or accessible.</p>
 	{/if}
@@ -100,60 +85,127 @@
 		padding: 2rem;
 		max-width: 1200px;
 		margin: 0 auto;
+		background-color: #f8f9fa;
+		min-height: 100vh;
+		color: #333;
 	}
+
 	h1 {
-		border-bottom: 1px solid #ccc;
-		padding-bottom: 0.5rem;
-		margin-bottom: 1.5rem;
+		color: #2c3e50;
+		margin-bottom: 0.5rem;
 	}
-    .board-section {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-	h2 {
-		border-bottom: 1px solid #eee;
-		padding-bottom: 0.5rem;
-		margin-top: 0;
-        margin-bottom: 0.5rem;
+
+	h1 + p {
+		color: #7f8c8d;
+		margin-bottom: 2rem;
 	}
-    h3 {
-        margin-top: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-	table {
-		width: 100%;
-		border-collapse: collapse;
+
+	.boards-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.board-card {
+		display: flex;
+		flex-direction: column;
+		background: white;
+		border-radius: 12px;
+		padding: 1.5rem;
+		text-decoration: none;
+		color: inherit;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border: 1px solid #e1e8ed;
+		transition: all 0.3s ease;
+		position: relative;
+	}
+
+	.board-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+		border-color: #3498db;
+	}
+
+	.board-header {
+		margin-bottom: 1rem;
+	}
+
+	.board-header h2 {
+		margin: 0 0 0.5rem 0;
+		color: #2c3e50;
+		font-size: 1.25rem;
+	}
+
+	.board-id {
+		background-color: #ecf0f1;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.85rem;
+		color: #7f8c8d;
+		font-family: monospace;
+	}
+
+	.board-stats {
+		display: flex;
+		gap: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.stat {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.stat-number {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #3498db;
+		margin-bottom: 0.25rem;
+	}
+
+	.stat-label {
+		font-size: 0.85rem;
+		color: #7f8c8d;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.board-arrow {
+		position: absolute;
+		top: 1.5rem;
+		right: 1.5rem;
+		font-size: 1.25rem;
+		color: #3498db;
+		transition: transform 0.3s ease;
+	}
+
+	.board-card:hover .board-arrow {
+		transform: translateX(4px);
+	}
+
+	.board-actions {
 		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid #ecf0f1;
 	}
-	th,
-	td {
-		border: 1px solid #ddd;
-		padding: 0.6rem;
-		text-align: left;
-		vertical-align: top;
-        font-size: 0.9rem;
+
+	.data-link {
+		display: inline-block;
+		background: #3498db;
+		color: white;
+		padding: 0.5rem 1rem;
+		border: none;
+		border-radius: 6px;
+		text-decoration: none;
+		font-size: 0.9rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
 	}
-	th {
-	}
-	code {
-		padding: 0.2em 0.4em;
-		border-radius: 3px;
-		font-size: 85%;
-        word-break: break-all;
-	}
-	ul {
-		padding-left: 15px;
-		margin-top: 0.3rem;
-        margin-bottom: 0;
-        list-style: disc;
-	}
-	li {
-		margin-bottom: 0.2rem;
-	}
-	small {
-		color: #777;
-        font-style: italic;
+
+	.data-link:hover {
+		background: #2980b9;
 	}
 </style>

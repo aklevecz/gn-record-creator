@@ -10,7 +10,7 @@ import mondayClientApi from '$lib/api/monday';
 import { DATA_VERSION } from '$lib';
 import monday from '$lib/api/monday';
 
-/** @type {{initialized: boolean,activeProject: string, projects: Project[], cachedTextures: any}} */
+/** @type {{initialized: boolean, activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
     initialized: false,
     activeProject: 'new project',

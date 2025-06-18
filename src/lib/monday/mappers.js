@@ -149,32 +149,6 @@ export const formFields = {
         defaultValue: ''
     },
 
-    create_date: {
-        id: 'date_mkqegnht',
-        mondayId: 'date_mkqegnht',
-        key: 'create_date',
-        title: 'Create date',
-        label: 'Create Date',
-        description: '',
-        type: 'date',
-        mondayType: 'date',
-        required: false,
-        defaultValue: ''
-    },
-
-    updated_at: {
-        id: 'date_mkrym40t',
-        mondayId: 'date_mkrym40t',
-        key: 'updated_at',
-        title: 'Update date',
-        label: 'Update Date',
-        description: '',
-        type: 'date',
-        mondayType: 'date',
-        required: false,
-        defaultValue: ''
-    },
-
     // Shipping
     shipping_address: {
         id: 'text_mkqeanrf',
@@ -388,13 +362,26 @@ export const formFields = {
         ]
     },
 
-    // Meta fields
+    notes: {
+        id: 'long_text_mkqeqcgs',
+        mondayId: 'long_text_mkqeqcgs',
+        key: 'notes',
+        title: 'Project details',
+        label: 'Add your project details, comments and/or requests below.',
+        description: 'Did you want any lyric sheets or inserts? Please add any packaging notes we should know about.',
+        type: 'text',
+        mondayType: 'long_text',
+        required: false,
+        defaultValue: ''
+    },
+
+    // DB/MONDAY ONLY FIELDS
     source: {
         id: 'color_mkqebxff',
         mondayId: 'color_mkqebxff',
         key: 'source',
         title: 'Source',
-        label: 'Source: How did you hear about us?',
+        label: 'How did you hear about us?',
         description: '',
         type: 'dropdown',
         mondayType: 'status',
@@ -448,33 +435,50 @@ export const formFields = {
         ]
     },
 
-    notes: {
-        id: 'long_text_mkqeqcgs',
-        mondayId: 'long_text_mkqeqcgs',
-        key: 'notes',
-        title: 'Project details',
-        label: 'Add your project details, comments and/or requests below.',
-        description: 'Did you want any lyric sheets or inserts? Please add any packaging notes we should know about.',
-        type: 'text',
-        mondayType: 'long_text',
+    create_date: {
+        id: 'date_mkqegnht',
+        mondayId: 'date_mkqegnht',
+        key: 'create_date',
+        title: 'Create date',
+        label: 'Create Date',
+        description: '',
+        type: 'date',
+        mondayType: 'date',
         required: false,
         defaultValue: ''
     },
 
-    // Special name field for Monday
-    name: {
-        id: 'name',
-        mondayId: 'name',
-        key: 'name',
-        title: 'Name',
-        label: 'Name',
+    updated_at: {
+        id: 'date_mkrym40t',
+        mondayId: 'date_mkrym40t',
+        key: 'updated_at',
+        title: 'Update date',
+        label: 'Update Date',
         description: '',
-        type: 'name',
-        mondayType: 'name',
+        type: 'date',
+        mondayType: 'date',
         required: false,
         defaultValue: ''
     }
+
+    // Special name field for Monday
+    // name: {
+    //     id: 'name',
+    //     mondayId: 'name',
+    //     key: 'name',
+    //     title: 'Name',
+    //     label: 'Name',
+    //     description: '',
+    //     type: 'name',
+    //     mondayType: 'name',
+    //     required: false,
+    //     defaultValue: ''
+    // }
 };
+
+const hiddenFields = [formFields.status.key, formFields.submitted.key, formFields.create_date.key, formFields.updated_at.key];
+
+export { hiddenFields };
 
 // Derived mappings - these are now generated from the single source above
 /** @type {Record<string, string>} */

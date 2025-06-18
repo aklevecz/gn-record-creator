@@ -1,5 +1,5 @@
-npx wrangler d1 execute DB --local --command "DROP TABLE gn_request_form;"
-npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_request_form (
+npx wrangler d1 execute DB --remote --command "DROP TABLE gn_request_form;"
+npx wrangler d1 execute DB --remote --command "CREATE TABLE IF NOT EXISTS gn_request_form (
   id TEXT PRIMARY KEY,
   title TEXT,
   contact_first_name TEXT,
@@ -27,7 +27,9 @@ npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_requ
   status TEXT,
   session TEXT,
   monday_id TEXT,
-  submitted TEXT
+  submitted TEXT,
+  create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );"
 
 

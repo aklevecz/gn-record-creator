@@ -73,6 +73,7 @@
 /**
  * @typedef {object} Submission
  * @property {string} id - Unique identifier for the submission
+ * @property {string} monday_id - Monday.com column ID
  * @property {string} title - Title of the project
  * @property {string} contact_first_name - Name of the contact person
  * @property {string} contact_last_name - Last name of the contact
