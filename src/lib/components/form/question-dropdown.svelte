@@ -2,7 +2,7 @@
     import details from '$lib/details.svelte';
     import { recordColors } from '$lib/monday/mappers';
 
-    let { label, key, options, required } = $props();
+    let { label, key, options, required, description } = $props();
 
     /** @param {*} e */
     function onChange(e) {
@@ -26,6 +26,7 @@
     <label for={key} class="mb-0"
         >{label}{#if required}*{/if}</label
     >
+    <div class="mb-2 text-xs opacity-50">{description}</div>
     <select
         id={key}
         name={key}

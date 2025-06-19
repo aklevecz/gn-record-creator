@@ -89,7 +89,7 @@
                     maxSelections={detail.maxSelections ?? 1}
                 />
             {:else if type === 'dropdown'}
-                <QuestionDropdown {key} label={question.label} options={question.options} required={detail.required} />
+                <QuestionDropdown {key} label={question.label} options={question.options} required={detail.required} description={detail.description} />
             {:else if type === 'address'}
                 <AddressInput {key} label={detail.label} description={detail.description} required={detail.required} />
             {:else}

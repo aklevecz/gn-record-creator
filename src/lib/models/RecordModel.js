@@ -31,7 +31,7 @@ export class RecordModel {
     this.vinylRecord = new THREE.Group();
 
     // Record disc - main black part
-    const recordGeometry = new THREE.CylinderGeometry(5.9, 5.9, 0.08, 64);
+    const recordGeometry = new THREE.CylinderGeometry(8.9, 8.9, 0.08, 64);
     const recordMaterial = new THREE.MeshStandardMaterial({
       color: 0xfff,
       roughness: 0.5,

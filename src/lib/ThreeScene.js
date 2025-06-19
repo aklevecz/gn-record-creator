@@ -36,26 +36,28 @@ class ThreeScene {
             active: true
         };
 
+        const vinylStartingPositionPoppingOutOfSleeve = { x: 0, y: 20, z: 8 };
+
         this.vinylRecordAnimation = {
             startTime: 0,
             duration: 2000,
             startPosition: { x: 0, y: 20, z: 0 },
-            endPosition: { x: 0, y: 29, z: 0 },
+            endPosition: vinylStartingPositionPoppingOutOfSleeve,
             active: false
         };
+
+        // this.vinylInteractionAnimation = {
+        //     startTime: 0,
+        //     duration: 2000,
+        //     startPosition: vinylStartingPositionPoppingOutOfSleeve,
+        //     endPosition: { x: -10, y: 29, z: 0 },
+        //     active: false
+        // };
 
         this.vinylInteractionAnimation = {
             startTime: 0,
             duration: 2000,
-            startPosition: { x: 0, y: 29, z: 0 },
-            endPosition: { x: -10, y: 29, z: 0 },
-            active: false
-        };
-
-        this.vinylInteractionAnimation = {
-            startTime: 0,
-            duration: 2000,
-            startPosition: { x: 0, y: 29, z: 0 },
+            startPosition: vinylStartingPositionPoppingOutOfSleeve,
             endPosition: { x: -10, y: 20, z: 0 },
             startRotation: { x: 0, y: 0, z: 0 },
             endRotation: { x: 0, y: -Math.PI * 2, z: 0 },
@@ -66,7 +68,7 @@ class ThreeScene {
             startTime: 0,
             duration: 2000,
             startPosition: { x: -10, y: 20, z: 0 },
-            endPosition: { x: 0, y: 29, z: 0 },
+            endPosition: vinylStartingPositionPoppingOutOfSleeve,
             startRotation: { x: 0, y: -Math.PI * 2, z: 0 },
             endRotation: { x: 0, y: 0, z: 0 },
             active: false
@@ -85,7 +87,7 @@ class ThreeScene {
         this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 200000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setClearColor(0x000000, 0);
-        this.renderer.pixelRatio = window.devicePixelRatio;
+        // this.renderer.pixelRatio = window.devicePixelRatio;
 
         // Set up scene and controls
         this.setupScene(container);
@@ -98,6 +100,11 @@ class ThreeScene {
         // this.animations = setupAnimations(this.recordCover);
         // Add lights
         this.addLights();
+
+        // EACH ANIMATION HAS A DIFFERENT ACTIVE TRIGGER THAT IS THEN CONSUMED BY THE GAME LOOP
+
+        // this.vinylInteractionAnimation is animating the record out of the sleeve
+        // this.revertVinylInteractionAnimation puts it back in
 
         // Set up event listeners
         window.addEventListener('resize', () => this.resize(), false);
@@ -114,6 +121,7 @@ class ThreeScene {
 
         // Forward, but it comes out of the cover, so out makes sense?
         window.addEventListener(customEvents.changeRecordColorOut, (/** @type {*} */ e) => {
+            console.log("Record comes out?")
             if (this.recordModel) {
                 this.recordModel.changeRecordColor(e.detail.color);
                 if (this.vinylInteractionAnimation) this.vinylInteractionAnimation.active = true;
@@ -356,6 +364,7 @@ class ThreeScene {
         // Record cover animation
         const coverProgress = this.calculateAnimationProgress(this.recordCoverAnimation);
 
+        // Animating the cover moving into position
         if (coverProgress >= 0 && this.recordCover) {
             this.interpolatePosition(this.recordCover, this.recordCoverAnimation.startPosition, this.recordCoverAnimation.endPosition, coverProgress);
 
@@ -367,6 +376,7 @@ class ThreeScene {
         }
 
         // Vinyl record animation
+        // Animating the vinyl moving into position
         const vinylProgress = this.calculateAnimationProgress(this.vinylRecordAnimation);
 
         if (vinylProgress >= 0 && this.recordModel?.vinylRecord) {
@@ -392,14 +402,14 @@ class ThreeScene {
             );
 
             // Animate vinyl rotation if needed
-            if (this.vinylInteractionAnimation.startRotation) {
-                this.interpolateRotation(
-                    this.recordModel.vinylRecord,
-                    this.vinylInteractionAnimation.startRotation,
-                    this.vinylInteractionAnimation.endRotation,
-                    progress
-                );
-            }
+            // if (this.vinylInteractionAnimation.startRotation) {
+            //     this.interpolateRotation(
+            //         this.recordModel.vinylRecord,
+            //         this.vinylInteractionAnimation.startRotation,
+            //         this.vinylInteractionAnimation.endRotation,
+            //         progress
+            //     );
+            // }
 
             // Animate record cover if available
             if (this.recordModel.recordCover) {
@@ -429,14 +439,14 @@ class ThreeScene {
             );
 
             // Animate vinyl rotation if needed
-            if (this.revertVinylInteractionAnimation.startRotation) {
-                this.interpolateRotation(
-                    this.recordModel.vinylRecord,
-                    this.revertVinylInteractionAnimation.startRotation,
-                    this.revertVinylInteractionAnimation.endRotation,
-                    progress
-                );
-            }
+            // if (this.revertVinylInteractionAnimation.startRotation) {
+            //     this.interpolateRotation(
+            //         this.recordModel.vinylRecord,
+            //         this.revertVinylInteractionAnimation.startRotation,
+            //         this.revertVinylInteractionAnimation.endRotation,
+            //         progress
+            //     );
+            // }
 
             // Animate record cover if available
             if (this.recordModel.recordCover) {
@@ -481,172 +491,3 @@ class ThreeScene {
 }
 
 export default ThreeScene;
-
-// runRevertVinylInteractionAnimation() {
-//   if (
-//     this.recordModel?.vinylRecord &&
-//     this.revertVinylInteractionAnimation.active
-//   ) {
-//     if (!this.revertVinylInteractionAnimation.startTime) {
-//       this.revertVinylInteractionAnimation.startTime = Date.now();
-//     }
-
-//     const elapsed = Date.now() - this.revertVinylInteractionAnimation.startTime;
-//     const progress = Math.min(elapsed / this.revertVinylInteractionAnimation.duration, 1);
-//     const easedProgress = this.easeOutCubic(progress);
-
-//     if (this.recordModel.recordCover) {
-//       // this.recordModel.recordCover.material.transparent = true;
-//       // this.recordModel.recordCover.material.opacity = easedProgress;
-//       // this.recordModel.recordCover.material.needsUpdate = true;
-
-//       this.recordModel.recordCover.position.y =
-//         this.recordCoverAnimation.startPosition.y +
-//         (this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) *
-//           easedProgress
-//     }
-
-//     this.recordModel.vinylRecord.position.x =
-//       this.revertVinylInteractionAnimation.startPosition.x +
-//       (this.revertVinylInteractionAnimation.endPosition.x -
-//         this.revertVinylInteractionAnimation.startPosition.x) *
-//         easedProgress;
-
-//     this.recordModel.vinylRecord.position.y =
-//       this.revertVinylInteractionAnimation.startPosition.y +
-//       (this.revertVinylInteractionAnimation.endPosition.y -
-//         this.revertVinylInteractionAnimation.startPosition.y) *
-//         easedProgress;
-
-//     this.recordModel.vinylRecord.position.z =
-//       this.revertVinylInteractionAnimation.startPosition.z +
-//       (this.revertVinylInteractionAnimation.endPosition.z -
-//         this.revertVinylInteractionAnimation.startPosition.z) *
-//         easedProgress;
-
-//     if (this.revertVinylInteractionAnimation.startRotation) {
-//       this.recordModel.vinylRecord.rotation.y =
-//         this.revertVinylInteractionAnimation.startRotation.y +
-//         (this.revertVinylInteractionAnimation.endRotation.y -
-//           this.revertVinylInteractionAnimation.startRotation.y) *
-//           easedProgress;
-//     }
-
-//     if (progress === 1) {
-//       this.revertVinylInteractionAnimation.active = false;
-//       this.revertVinylInteractionAnimation.startTime = 0;
-//     }
-//   }
-// }
-
-// runVinylInteractionAnimation() {
-//   if (
-//     this.recordModel?.vinylRecord &&
-//     this.vinylInteractionAnimation.active
-//   ) {
-//     if (!this.vinylInteractionAnimation.startTime) {
-//       this.vinylInteractionAnimation.startTime = Date.now();
-//     }
-//     const elapsed = Date.now() - this.vinylInteractionAnimation.startTime;
-//     const progress = Math.min(elapsed / this.vinylInteractionAnimation.duration, 1);
-//     const easedProgress = this.easeOutCubic(progress);
-
-//     if (this.recordModel.recordCover) {
-//       // this.recordModel.recordCover.material.transparent = true;
-//       // this.recordModel.recordCover.material.opacity = 1 - easedProgress;
-//       // this.recordModel.recordCover.material.needsUpdate = true;
-
-//       // change position of recordCover
-//       this.recordModel.recordCover.position.y =
-//         this.recordCoverAnimation.startPosition.y +
-//         (this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) *
-//           (1 - easedProgress);
-//     }
-
-//     // Update position
-//     this.recordModel.vinylRecord.position.x =
-//       this.vinylInteractionAnimation.startPosition.x +
-//       (this.vinylInteractionAnimation.endPosition.x -
-//         this.vinylInteractionAnimation.startPosition.x) *
-//         easedProgress;
-//     this.recordModel.vinylRecord.position.y =
-//       this.vinylInteractionAnimation.startPosition.y +
-//       (this.vinylInteractionAnimation.endPosition.y -
-//         this.vinylInteractionAnimation.startPosition.y) *
-//         easedProgress;
-//     this.recordModel.vinylRecord.position.z =
-//       this.vinylInteractionAnimation.startPosition.z +
-//       (this.vinylInteractionAnimation.endPosition.z -
-//         this.vinylInteractionAnimation.startPosition.z) *
-//         easedProgress;
-
-//     if (this.vinylInteractionAnimation.startRotation) {
-//       this.recordModel.vinylRecord.rotation.y =
-//         this.vinylInteractionAnimation.startRotation.y +
-//         (this.vinylInteractionAnimation.endRotation.y -
-//           this.vinylInteractionAnimation.startRotation.y) *
-//           easedProgress;
-//     }
-
-//     if (progress === 1) {
-//       this.vinylInteractionAnimation.active = false;
-//       this.vinylInteractionAnimation.startTime = 0;
-//     }
-//   }
-// }
-
-// runInitialRecordAnimation() {
-//   // FIRST PART OF THIS CHAIN
-//   if (this.recordCover && this.recordCoverAnimation && this.recordCoverAnimation.active) {
-//     // Initialize start time on first frame
-//     if (!this.recordCoverAnimation.startTime) {
-//       this.recordCoverAnimation.startTime = Date.now();
-//     }
-
-//     // Calculate animation progress
-//     const elapsed = Date.now() - this.recordCoverAnimation.startTime;
-//     const progress = Math.min(elapsed / this.recordCoverAnimation.duration, 1);
-
-//     // Use easing function for smoother motion
-//     const easedProgress = this.easeOutCubic(progress);
-
-//     // Update position
-//     // console.log(this.recordCover)
-//     this.recordCover.position.y =
-//       this.recordCoverAnimation.startPosition.y +
-//       (this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) *
-//         easedProgress;
-
-//     // End animation when complete
-//     if (progress === 1) {
-//       this.recordCoverAnimation.active = false;
-//       if (this.recordModel && this.recordModel.vinylRecord && this.vinylRecordAnimation) {
-//         this.recordModel.vinylRecord.visible = true;
-//         this.vinylRecordAnimation.active = true;
-//       }
-//     }
-//   }
-
-//   // SECOND PART OF THIS CHAIN
-//   if (
-//     this.recordModel?.vinylRecord &&
-//     this.vinylRecordAnimation.active
-//   ) {
-//     if (!this.vinylRecordAnimation.startTime) {
-//       this.vinylRecordAnimation.startTime = Date.now();
-//     }
-//     const elapsed = Date.now() - this.vinylRecordAnimation.startTime;
-//     const progress = Math.min(elapsed / this.vinylRecordAnimation.duration, 1);
-
-//     const easedProgress = this.easeOutCubic(progress);
-//     this.recordModel.vinylRecord.position.y =
-//       this.vinylRecordAnimation.startPosition.y +
-//       (this.vinylRecordAnimation.endPosition.y - this.vinylRecordAnimation.startPosition.y) *
-//         easedProgress;
-
-//     if (progress === 1) {
-//       this.vinylRecordAnimation.active = false;
-//       this.vinylRecordAnimation.startTime = 0;
-//     }
-//   }
-// }

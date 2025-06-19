@@ -24,11 +24,11 @@ export const idToValues = (values) => {
 
         // Handle special remapping for source
         if (key === 'source' && field.remap && typeof value === 'string') {
-            const mondayValue = field.remap[value];
-            return {
-                ...acc,
-                [columnId]: mondayValue
-            };
+            // const mondayValue = field.remap[value];
+            // return {
+            //     ...acc,
+            //     [columnId]: mondayValue
+            // };
         }
 
         // Handle different Monday column types

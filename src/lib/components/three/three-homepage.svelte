@@ -36,6 +36,6 @@
 
 <style lang="postcss">
     .three-homepage {
-        @apply pointer-events-none;
+        /* @apply pointer-events-none; */
     }
 </style>

@@ -52,7 +52,7 @@
     }
     .date-icon {
         /* Style the icon */
-        pointer-events: none;
+        /* pointer-events: none; */
         position: absolute;
         top: 50%;
         right: 8px; /* Adjust as needed */

@@ -24,6 +24,7 @@ export async function POST({ platform, request }) {
     /** @type {*} */
     const ctx = platform?.context;
     const logging = logger(ctx);
+    let mondayResponse = null;
     try {
         const data = await request.json();
         // const title = data.responses.title;
@@ -60,16 +61,16 @@ export async function POST({ platform, request }) {
         if (mondayId) {
             logging.info(`Updating entry ${data.id}`);
             console.log(`Updating entry ${data.id}`);
-            const mondayResponse = await mondayServer.updateItem(mondayId, responses);
+            mondayResponse = await mondayServer.updateItem(mondayId, responses);
             console.log(JSON.stringify(mondayResponse));
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);
         console.log(`Creating new entry ${data.id}`);
-        const mondayResponse = await mondayServer.createItem(mondayName, responses);
+        mondayResponse = await mondayServer.createItem(mondayName, responses);
         return json({ mondayId: mondayResponse.data.create_item.id });
     } catch (e) {
-        logging.error(`Error updating entry ${JSON.stringify(e)}`);
+        logging.error(`Error updating entry mondayResponse:${JSON.stringify(mondayResponse)} Error:${e}`);
         console.log(`Error updating entry ${JSON.stringify(e)}`);
         return error(500, errors.UPDATE_MONDAY_FAILED);
     }

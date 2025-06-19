@@ -175,9 +175,9 @@ export const formFields = {
         required: false,
         defaultValue: '',
         options: [
-            { value: 'No', text: 'No', index: 0 },
-            { value: 'Yes', text: 'Yes', index: 1 },
-            { value: 'Maybe', text: 'Maybe', index: 2 }
+            { value: 'Yes', text: 'Yes, please handle the logistics for me', index: 1 },
+            { value: 'No', text: 'No, thank you - I will arrange the pickup', index: 0 },
+            { value: 'Maybe', text: "Not sure, let's chat", index: 2 }
         ]
     },
 
@@ -208,11 +208,11 @@ export const formFields = {
         required: true,
         defaultValue: '',
         options: [
-            { value: '2LP', text: '2LP', index: 0 },
             { value: '1LP', text: '1LP', index: 1 },
+            { value: '2LP', text: '2LP', index: 0 },
             { value: '3LP', text: '3LP', index: 2 },
-            { value: '4LP', text: '4LP', index: 3 },
-            { value: 'Not sure', text: 'Not sure', index: 4 }
+            // { value: '4LP', text: '4LP', index: 3 },
+            { value: 'Not sure', text: "Not sure, let's setup a call", index: 4 }
         ]
     },
 
@@ -228,9 +228,9 @@ export const formFields = {
         required: true,
         defaultValue: '',
         options: [
-            { value: '45 12in/180g', text: '45 12in/180g', index: 0 },
             { value: '33 12in/180g', text: '33 12in/180g', index: 1 },
-            { value: 'Not sure', text: 'Not sure', index: 2 }
+            { value: '45 12in/180g', text: '45 12in/180g', index: 0 },
+            { value: 'Not sure', text: "Not sure, let's setup a call", index: 2 }
         ]
     },
 
@@ -297,50 +297,50 @@ export const formFields = {
             link: 'https://lacquers.com'
         },
         options: [
-            { value: 'Maybe', text: 'Maybe', index: 0 },
-            { value: 'Yes', text: 'Yes', index: 1 },
-            { value: 'No', text: 'No', index: 2 }
+            { value: 'Yes', text: 'Cutting by good neighbor', index: 1 },
+            { value: 'No', text: 'We will supply our own', index: 2 },
+            { value: 'Not sure', text: "Not sure, let's setup a call", index: 3 }
         ]
     },
 
-    metalwork: {
-        id: 'color_mkqezhm4',
-        mondayId: 'color_mkqezhm4',
-        key: 'metalwork',
-        title: 'Metalwork',
-        label: 'Metalwork: What type of stampers do you need?',
-        description: 'Making stampers is a standard step in the record making process. For optimal quality, we recommend that we make your stampers.',
-        type: 'dropdown',
-        mondayType: 'status',
-        required: false,
-        defaultValue: '',
-        options: [
-            { value: '1 step stamper', text: '1 step stamper', index: 0 },
-            { value: '2 step stamper', text: '2 step stamper', index: 1 },
-            { value: '3 step stamper', text: '3 step stamper', index: 2 },
-            { value: 'Maybe', text: 'Maybe', index: 3 },
-            { value: 'No', text: 'No', index: 4 }
-        ]
-    },
+    // metalwork: {
+    //     id: 'color_mkqezhm4',
+    //     mondayId: 'color_mkqezhm4',
+    //     key: 'metalwork',
+    //     title: 'Metalwork',
+    //     label: 'Metalwork: What type of stampers do you need?',
+    //     description: 'Making stampers is a standard step in the record making process. For optimal quality, we recommend that we make your stampers.',
+    //     type: 'dropdown',
+    //     mondayType: 'status',
+    //     required: false,
+    //     defaultValue: '',
+    //     options: [
+    //         { value: '1 step stamper', text: '1 step stamper', index: 0 },
+    //         { value: '2 step stamper', text: '2 step stamper', index: 1 },
+    //         { value: '3 step stamper', text: '3 step stamper', index: 2 },
+    //         { value: 'Maybe', text: 'Maybe', index: 3 },
+    //         { value: 'No', text: 'No', index: 4 }
+    //     ]
+    // },
 
-    test_prints: {
-        id: 'text_mkr38tqq',
-        mondayId: 'text_mkr38tqq',
-        key: 'test_prints',
-        title: '# of Test Pressings',
-        label: '# of Test Pressings',
-        description: '',
-        type: 'select',
-        mondayType: 'dropdown',
-        required: false,
-        defaultValue: [],
-        options: [
-            { value: '2', text: '2', index: 0 },
-            { value: '5', text: '5', index: 1 },
-            { value: '10', text: '10', index: 2 },
-            { value: 'Not sure', text: 'Not sure', index: 3 }
-        ]
-    },
+    // test_prints: {
+    //     id: 'text_mkr38tqq',
+    //     mondayId: 'text_mkr38tqq',
+    //     key: 'test_prints',
+    //     title: '# of Test Pressings',
+    //     label: '# of Test Pressings',
+    //     description: '',
+    //     type: 'select',
+    //     mondayType: 'dropdown',
+    //     required: false,
+    //     defaultValue: [],
+    //     options: [
+    //         { value: '2', text: '2', index: 0 },
+    //         { value: '5', text: '5', index: 1 },
+    //         { value: '10', text: '10', index: 2 },
+    //         { value: 'Not sure', text: 'Not sure', index: 3 }
+    //     ]
+    // },
 
     packaging: {
         id: 'color_mkqej81e',
@@ -356,9 +356,29 @@ export const formFields = {
         options: [
             { value: 'Single pocket', text: 'Single pocket', index: 0 },
             { value: 'Gatefold', text: 'Gatefold', index: 1 },
-            { value: 'No', text: 'No', index: 2 },
             { value: 'Single pocket w/ wide spine (2LP)', text: 'Single pocket w/ wide spine (2LP)', index: 3 },
-            { value: 'Maybe', text: 'Maybe', index: 4 }
+            { value: 'No', text: "No Packaging Required - we'll supply it to you ourselves", index: 2 },
+            { value: 'Maybe', text: "No sure. Let's set up a call", index: 4 }
+        ]
+    },
+
+    packaging_sleeve: {
+        id:'',
+        mondayId: '',
+        key: 'packaging_sleeve',
+        title: 'Packaging Sleeve',
+        label: 'Packaging: What tyep of inner-sleeve would you like?',
+        description: 'Please note, we recommend poly-lined to protext the records from abrasion over the course of its lifecycle',
+        type: "dropdown",
+        mondayType: 'status',
+        required: false,
+        defaultValue: '',
+        options: [
+            {value: 'Plain white, Poly-Lined', text: 'Plain white, Poly-Lined', index: 0},
+            {value: "Plain black, Poly-Lined", text: "Plain black, Poly-Lined", index: 1},
+            {value: "Printed (1-Color)(not poly-lined)", text: "Printed (1-Color)(not poly-lined)", index: 2},
+            {value: "Printed (4-Color)(not poly-lined)", text: "Printed (4-Color)(not poly-lined)", index: 3},
+            {value: "Not sure", text: "Not sure. Let's set up a call", index: 4}
         ]
     },
 
@@ -368,7 +388,7 @@ export const formFields = {
         key: 'notes',
         title: 'Project details',
         label: 'Add your project details, comments and/or requests below.',
-        description: 'Did you want any lyric sheets or inserts? Please add any packaging notes we should know about.',
+        description: 'Did you want any lyric sheets, inserts, or shrink wraps? Please add any packaging notes we should know about.',
         type: 'text',
         mondayType: 'long_text',
         required: false,
@@ -388,16 +408,24 @@ export const formFields = {
         required: false,
         defaultValue: '',
         options: [
-            { value: 'Heard about good neighbor from a friend', text: 'Heard about good neighbor from a friend', index: 0 },
-            { value: 'was googling', text: 'was googling', index: 1 },
-            { value: 'not my first time with good neighbor', text: 'not my first time with good neighbor', index: 2 },
-            { value: 'friend of good neighbor', text: 'friend of good neighbor', index: 3 }
+            { value: 'Referral', text: 'Referral', index: 0 },
+            { value: 'Google search', text: 'Google search', index: 1 },
+            { value: 'Repeat', text: 'Repeat', index: 2 },
+            { value: 'Personal connection', text: 'Personal connection', index: 3 },
+            { value: 'Social media', text: 'Social media', index: 4 },
+            { value: 'Event', text: 'Event', index: 5 },
+            { value: 'Blog/article', text: 'Blog or article', index: 6 },
+            { value: 'Other', text: 'Other', index: 7 }
         ],
         remap: {
-            'Heard about good neighbor from a friend': 'Referral',
-            'was googling': 'Google search',
-            'not my first time with good neighbor': 'Repeat',
-            'friend of good neighbor': 'Personal connection'
+            Referral: 'Referral',
+            'Google search': 'Google search',
+            Repeat: 'Repeat',
+            'Personal connection': 'Personal connection',
+            'Social media': 'Social media',
+            Event: 'Event',
+            'Blog or article': 'Blog/article',
+            Other: 'Other'
         }
     },
 
@@ -529,228 +557,3 @@ export const getRequiredFields = () => Object.values(formFields).filter((field) 
 export const intakeFormGroupTitleToId = {
     'Intake Form': 'topics'
 };
-
-// // Semantic mappers -- just for this file -- maybe not necessary?
-// const intakeFormTitleToId = {
-//     // NAME DEPRECATED TO USE PROJECT NAME BECAUSE CONTACT NAME IS THE DEFAULT ID/NAME FOR MONDAY INTAKE FORM
-//     Name: 'name',
-//     'Email address': 'email_mkrw9e0e',
-//     'Phone number': 'phone_mkqfjtqw',
-//     Status: 'color_mkqex5zn',
-//     Source: 'color_mkqebxff',
-//     'Create date': 'date_mkqegnht',
-//     'Contact first name': 'text_mkqe97hx',
-//     'Contact last name': 'text_mkrnjvq9',
-//     Title: 'text_mkqm48k7',
-//     Label: 'text_mkqeg2p5',
-//     Artist: 'text_mkqek005',
-//     'Catalog number': 'text_mkqev8rm',
-//     'Release date': 'date_mkqeje2k',
-//     'Depot date': 'date_mkqewgvs',
-//     'Shipping location': 'text_mkqeanrf',
-//     'Handling shipping': 'color_mkqe347x',
-//     'Total Units': 'text_mkqevd4n',
-//     '# of Records': 'color_mkqe5zht',
-//     'RPM/Record Format': 'color_mkqed74p',
-//     Colors: 'dropdown_mkqedrj6',
-//     Opacity: 'color_mkr58s9v',
-//     'Lacquers handling': 'color_mkqenc0a',
-//     Metalwork: 'color_mkqezhm4',
-//     '# of Test Pressings': 'text_mkr38tqq',
-//     Packaging: 'color_mkqej81e',
-//     'Project details': 'long_text_mkqeqcgs',
-//     submitted: 'color_mkryy8hj'
-// };
-
-// // This is important for remapping values
-// export const intakeFormIdToTitleAndType = {
-//     name: {
-//         title: 'Name',
-//         type: 'name'
-//     },
-//     text_mkqm48k7: {
-//         title: 'Title',
-//         type: 'text'
-//     },
-//     email_mkrw9e0e: {
-//         title: 'Email address',
-//         type: 'email'
-//     },
-//     phone_mkqfjtqw: {
-//         title: 'Phone number',
-//         type: 'phone'
-//     },
-//     color_mkqex5zn: {
-//         title: 'Status',
-//         type: 'status'
-//     },
-//     color_mkqebxff: {
-//         title: 'Source',
-//         type: 'status'
-//     },
-//     date_mkqegnht: {
-//         title: 'Create date',
-//         type: 'date'
-//     },
-//     text_mkqe97hx: {
-//         title: 'Contact first name',
-//         type: 'text'
-//     },
-//     text_mkrnjvq9: {
-//         title: 'Contact last name',
-//         type: 'text'
-//     },
-//     text_mkqeg2p5: {
-//         title: 'Label',
-//         type: 'text'
-//     },
-//     text_mkqek005: {
-//         title: 'Artist',
-//         type: 'text'
-//     },
-//     text_mkqev8rm: {
-//         title: 'Catalog number',
-//         type: 'text'
-//     },
-//     date_mkqeje2k: {
-//         title: 'Release date',
-//         type: 'date'
-//     },
-//     date_mkqewgvs: {
-//         title: 'Depot date',
-//         type: 'date'
-//     },
-//     text_mkqeanrf: {
-//         title: 'Shipping location',
-//         type: 'text'
-//     },
-//     color_mkqe347x: {
-//         title: 'Handling shipping',
-//         type: 'status'
-//     },
-//     text_mkqevd4n: {
-//         title: 'Total Units',
-//         type: 'text'
-//     },
-//     color_mkqe5zht: {
-//         title: '# of Records',
-//         type: 'status'
-//     },
-//     color_mkqed74p: {
-//         title: 'RPM/Record Format',
-//         type: 'status'
-//     },
-//     dropdown_mkqedrj6: {
-//         title: 'Colors',
-//         type: 'dropdown'
-//     },
-//     color_mkr58s9v: {
-//         title: 'Opacity',
-//         type: 'status'
-//     },
-//     color_mkqenc0a: {
-//         title: 'Lacquers handling',
-//         type: 'status'
-//     },
-//     color_mkqezhm4: {
-//         title: 'Metalwork',
-//         type: 'status'
-//     },
-//     text_mkr38tqq: {
-//         title: '# of Test Pressings',
-//         type: 'dropdown'
-//     },
-//     color_mkqej81e: {
-//         title: 'Packaging',
-//         type: 'status'
-//     },
-//     long_text_mkqeqcgs: {
-//         title: 'Project details',
-//         type: 'long_text'
-//     },
-//     color_mkryy8hj: {
-//         title: 'submitted',
-//         type: 'status'
-//     }
-// };
-
-// // Items not in the form, but in Monday -- could just put everything here?
-// export const intakeFormFields = {
-//     status: {
-//         id: 'color_mkqex5zn',
-//         title: 'Status',
-//         options: {
-//             connected: 0,
-//             new: 1
-//             // opportunity: 2,
-//             // customer: 3,
-//             // repeat: 4,
-//             // unqualified: 5,
-//             // contact: 6,
-//             // qualified: 7,
-//             // submitted: 8
-//         }
-//     },
-//     source: {
-//         id: 'color_mkqebxff',
-//         title: 'Source',
-//         options: {
-//             referral: 0,
-//             google_search: 1,
-//             repeat: 2,
-//             personal_connection: 3
-//         },
-//         remap: {
-//             'Heard about good neighbor from a friend': 'Referral',
-//             'was googling': 'Google search',
-//             'not my first time with good neighbor': 'Repeat',
-//             'friend of good neighbor': 'Personal connection'
-//         }
-//     },
-//     create_date: {
-//         id: 'date_mkqegnht',
-//         title: 'Create date'
-//     },
-//     updated_at: {
-//         id: "date_mkrym40t",
-//         title: 'Updated at'
-//     },
-//     submitted: {
-//         id: "color_mkryy8hj",
-//         title: 'Submitted',
-//         options: {
-//             submitted: 0,
-//             autosaved: 1
-//         }
-//     }
-// };
-
-// // This is important for remapping values
-// /** @type {Record<string, string>} */
-// export const keyToId = {
-//     title: intakeFormTitleToId['Title'],
-//     contact_first_name: intakeFormTitleToId['Contact first name'],
-//     contact_last_name: intakeFormTitleToId['Contact last name'],
-//     contact_email: intakeFormTitleToId['Email address'],
-//     phone: intakeFormTitleToId['Phone number'],
-//     label: intakeFormTitleToId['Label'],
-//     artist: intakeFormTitleToId['Artist'],
-//     catalog_number: intakeFormTitleToId['Catalog number'],
-//     release_date: intakeFormTitleToId['Release date'],
-//     depot_date: intakeFormTitleToId['Depot date'],
-//     shipping_address: intakeFormTitleToId['Shipping location'],
-//     shipping_logistics: intakeFormTitleToId['Handling shipping'],
-//     total_units: intakeFormTitleToId['Total Units'],
-//     records_per_set: intakeFormTitleToId['# of Records'],
-//     record_format: intakeFormTitleToId['RPM/Record Format'],
-//     record_color: intakeFormTitleToId['Colors'],
-//     opacity: intakeFormTitleToId['Opacity'],
-//     lacquers: intakeFormTitleToId['Lacquers handling'],
-//     metalwork: intakeFormTitleToId['Metalwork'],
-//     test_prints: intakeFormTitleToId['# of Test Pressings'],
-//     packaging: intakeFormTitleToId['Packaging'],
-//     notes: intakeFormTitleToId['Project details'],
-//     source: intakeFormTitleToId.Source,
-//     status: intakeFormTitleToId.Status,
-//     submitted: intakeFormFields.submitted.id
-// };
