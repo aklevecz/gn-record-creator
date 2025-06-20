@@ -102,7 +102,7 @@
             id="phone"
             autocomplete="tel"
             type="tel"
-            placeholder="Enter phone number"
+            placeholder=""
             value={phone}
             oninput={handleInput}
         />
