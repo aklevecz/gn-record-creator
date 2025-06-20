@@ -6,7 +6,7 @@
     import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
     import db from '$lib/db';
     import details from '$lib/details.svelte';
-    import { formFields } from '$lib/monday/mappers';
+    import { formFields } from '$lib/monday/formFields';
     import project, { createProject } from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { onDestroy } from 'svelte';

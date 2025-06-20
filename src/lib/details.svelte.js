@@ -1,5 +1,5 @@
 // Updated details.svelte.js
-import { formFields } from './monday/mappers';
+import { formFields } from './monday/formFields';
 import project from './project.svelte';
 
 /**

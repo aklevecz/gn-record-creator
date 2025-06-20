@@ -5,7 +5,7 @@ import {
     // intakeFormFields,
     intakeFormGroupTitleToId,
     keyToId
-} from '$lib/monday/mappers';
+} from '$lib/monday/formFields';
 
 const YAYTSO_BOARD_ID = 8703967457;
 const RECORD_SETUP_BOARD_ID = 8705909367;

@@ -1,6 +1,6 @@
 <script>
     import details from '$lib/details.svelte';
-    import { recordColors } from '$lib/monday/mappers';
+    import { recordColors } from '$lib/monday/formFields';
 
     let { label, key, options, required, description } = $props();
 

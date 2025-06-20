@@ -1,5 +1,5 @@
 <script>
-    import { recordColors } from '$lib/monday/mappers';
+    import { recordColors } from '$lib/monday/formFields';
     import { onMount } from 'svelte';
 
     /** @type {{ data: import('./$types').PageData }} */

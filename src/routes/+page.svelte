@@ -9,7 +9,7 @@
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
     import Modal from '$lib/components/ui/modal.svelte';
     import details from '$lib/details.svelte';
-    import { formFields, hiddenFields } from '$lib/monday/mappers';
+    import { formFields, hiddenFields } from '$lib/monday/formFields';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { Spring } from 'svelte/motion';

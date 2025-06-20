@@ -1,5 +1,5 @@
 import parsePhoneNumberFromString, { getCountryCallingCode } from 'libphonenumber-js';
-import { getFieldByKey } from './mappers';
+import { getFieldByKey } from './formFields';
 
 // Updated idToValues function using consolidated structure
 /** @param {Record<string, string | string[] | number | null | undefined>} values */

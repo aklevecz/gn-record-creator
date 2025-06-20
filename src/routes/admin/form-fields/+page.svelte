@@ -1,5 +1,5 @@
 <script>
-    import { formFields } from '$lib/monday/mappers.js';
+    import { formFields } from '$lib/monday/formFields.js';
     
     const auth = 'kjASDhAUwdhuAHWDuhAWudhaUWhduaHWduhasjkjakl';
     

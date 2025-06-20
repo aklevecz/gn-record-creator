@@ -1,7 +1,7 @@
 <script>
     import customEvents from '$lib/custom-events';
     import details from '$lib/details.svelte';
-    import { formFields } from '$lib/monday/mappers';
+    import { formFields } from '$lib/monday/formFields';
     import { onMount } from 'svelte';
 
     /** @type {{label: string, options: FormFieldOption[], key: string, required: boolean, maxSelections?: number}}*/

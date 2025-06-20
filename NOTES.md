@@ -1,28 +1,15 @@
-- submission details is not showing generated or uploaded cover photo
-- maybe not important for only the first name appeared in "Contact" at first
-- maybe not important but I was able to create duplicates with new tabs
-- new tabs won't be in sync -- could literally just refresh them if they are in different tabs? -- REFRESH DOES SEEM TO WORK
-    - So possible detection:
-      - on blur
-      - return to tab, then refresh -- might be too aggressive -- only do this if multiple tabs -- though it should still be fast as fuck
-
-
-DESELECT COLORS
-phone number area code dropdown
-MONDAY ERROR CHECKING
+Monday sync? If data exists in monday but not locally then fill it in? Might be a weird edge case ultimately
+ - There might be a better way to share project across devices, but this also feels like overkill
 
 Metalwork
 - no maybe
 - no no
 
-change the order
-- no 4LP
 
 email interaction
 
 in projects
-- create project - new project - then take you to the homescreen
-- gallery - click into the project
+- gallery - click into the project - dont remember what this means
 
 engage for newsletter if they are playing around - some share cta
 
