@@ -293,9 +293,9 @@ export const formFields = {
             link: 'https://lacquers.com'
         },
         options: [
-            { value: 'Yes', text: 'Cutting by good neighbor', index: 1 },
-            { value: 'No', text: 'We will supply our own', index: 2 },
-            { value: 'Not sure', text: "Not sure, let's setup a call", index: 3 }
+            { value: 'Yes', text: 'Yes, Good Neighbor cuts the master lacquers', index: 1 },
+            { value: 'No', text: 'No, we have our own lacquer cutting arranged', index: 2 },
+            { value: 'Not sure', text: "Unsure, please advise on lacquer options", index: 3 }
         ]
     },
 
