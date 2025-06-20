@@ -134,7 +134,7 @@
 <style lang="postcss">
     @reference "tailwindcss/theme";
     .question-container {
-        @apply mt-4 flex flex-col gap-2;
+        @apply mt-4 flex flex-col gap-2 md:max-w-[46vw];
     }
     .label {
         @apply text-lg font-semibold;
