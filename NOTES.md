@@ -8,13 +8,8 @@
 
 
 DESELECT COLORS
-CHANGE SOURCE OPTIONS
+phone number area code dropdown
 MONDAY ERROR CHECKING
-
-
-inner sleeve
-
-shrink
 
 Metalwork
 - no maybe
@@ -22,8 +17,6 @@ Metalwork
 
 change the order
 - no 4LP
-
-get rid of test pressings
 
 email interaction
 
@@ -33,7 +26,6 @@ in projects
 
 engage for newsletter if they are playing around - some share cta
 
-phone number area code dropdown
 
 make record bigger
 make record from the side

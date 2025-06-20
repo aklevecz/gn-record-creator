@@ -69,14 +69,13 @@ export const formFields = {
         defaultValue: ''
     },
 
-    // Project Information
     title: {
         id: 'text_mkqm48k7',
         mondayId: 'text_mkqm48k7',
         key: 'title',
         title: 'Title',
         label: 'Title',
-        description: 'How would you describe this project? We recommend Artist, Title and Label information',
+        description: '',
         type: 'text',
         mondayType: 'text',
         required: true,
@@ -122,7 +121,6 @@ export const formFields = {
         defaultValue: ''
     },
 
-    // Dates
     release_date: {
         id: 'date_mkqeje2k',
         mondayId: 'date_mkqeje2k',
@@ -149,7 +147,6 @@ export const formFields = {
         defaultValue: ''
     },
 
-    // Shipping
     shipping_address: {
         id: 'text_mkqeanrf',
         mondayId: 'text_mkqeanrf',
@@ -181,7 +178,6 @@ export const formFields = {
         ]
     },
 
-    // Production Details
     total_units: {
         id: 'text_mkqevd4n',
         mondayId: 'text_mkqevd4n',
@@ -358,7 +354,7 @@ export const formFields = {
             { value: 'Gatefold', text: 'Gatefold', index: 1 },
             { value: 'Single pocket w/ wide spine (2LP)', text: 'Single pocket w/ wide spine (2LP)', index: 3 },
             { value: 'No', text: "No Packaging Required - we'll supply it to you ourselves", index: 2 },
-            { value: 'Maybe', text: "No sure. Let's set up a call", index: 4 }
+            { value: 'Not sure', text: "No sure. Let's set up a call", index: 4 }
         ]
     },
 
@@ -367,7 +363,7 @@ export const formFields = {
         mondayId: '',
         key: 'packaging_sleeve',
         title: 'Packaging Sleeve',
-        label: 'Packaging: What tyep of inner-sleeve would you like?',
+        label: 'Packaging: What type of inner-sleeve would you like?',
         description: 'Please note, we recommend poly-lined to protext the records from abrasion over the course of its lifecycle',
         type: "dropdown",
         mondayType: 'status',
@@ -395,7 +391,6 @@ export const formFields = {
         defaultValue: ''
     },
 
-    // DB/MONDAY ONLY FIELDS
     source: {
         id: 'color_mkqebxff',
         mondayId: 'color_mkqebxff',
@@ -429,6 +424,7 @@ export const formFields = {
         }
     },
 
+    // DB/MONDAY ONLY FIELDS
     status: {
         id: 'color_mkqex5zn',
         mondayId: 'color_mkqex5zn',

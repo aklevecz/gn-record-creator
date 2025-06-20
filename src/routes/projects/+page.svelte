@@ -1,4 +1,5 @@
 <script>
+    import { goto } from '$app/navigation';
     import uploadApi from '$lib/api/upload';
     import Detail from '$lib/components/form/detail.svelte';
     import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
@@ -26,6 +27,7 @@
         projects.registerProject(newProject);
         db.saveProject(newProject);
         projects.activateProject(newProject.id);
+        goto('/')
     }
 
     /** @type {TextureObject[]} */
@@ -170,7 +172,8 @@
             <div class="flex flex-row justify-between md:flex-col">
                 <!-- {JSON.stringify(project.state.details)} -->
                 <img
-                    src={`${formFields.record_color.options.find((o) => o.text === project.state.details?.record_color.value)?.img}`}
+                    src={formFields.record_color.options?.find((o) => o.text === project.state.details?.record_color.value)?.img ||
+                        '/records/cosmic-black.png'}
                     alt=""
                     class="my-2 w-40"
                 />

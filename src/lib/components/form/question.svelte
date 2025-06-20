@@ -3,7 +3,6 @@
     import details from '$lib/details.svelte';
     import { formFields } from '$lib/monday/mappers';
     import { onMount } from 'svelte';
-    import { run } from 'svelte/legacy';
 
     /** @type {{label: string, options: FormFieldOption[], key: string, required: boolean, maxSelections?: number}}*/
     let { label, options, key, required, maxSelections = 1 } = $props();
@@ -11,20 +10,6 @@
     /** @type {HTMLElement | null} */
     let questionContainer = $state(null);
     let isInView = $state(false);
-
-    // /** @type {string[]} */
-    // let selections = $state([]);
-
-    // Kind of hacky to initialize this and set a local state variable for collecting the array and then passing it as a string
-    // I could just pass an array to details
-    // const DELIMITER = ',';
-    // let once = false;
-    // $effect(() => {
-    //     if (!once && projects.initialized) {
-    //         once = true;
-    //         selections = details.state[key].value.split(DELIMITER);
-    //     }
-    // });
 
     const ANIMATION_DURATION = 2000;
     let isAnimating = false;
@@ -35,7 +20,7 @@
         if (isInView) {
             // This doesn't change isAnimate properly
             isAnimating = true;
-            const color = details.state.record_color.value;
+            const color = details.state.record_color.value[details.state.record_color.value.length - 1];
             const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
             const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColorOut, {
                 detail: { color: colorHex }
@@ -63,12 +48,14 @@
         }, 1000);
         const observer = new IntersectionObserver(
             (entries) => {
-                if (!loaded) return;
+                const delay = !loaded ? 4000 : 0;
                 // if (isAnimating) return;
                 const entry = entries[0];
                 isInView = entry.isIntersecting;
                 console.log(`is in view ${isInView}`);
-                runAnimation(isInView);
+                setTimeout(() => {
+                    runAnimation(isInView);
+                }, delay);
             },
             {
                 root: null,
@@ -96,11 +83,18 @@
         const isString = typeof value === 'string';
         let selections = isString ? [] : typeof value === 'object' ? value : value;
 
-        if (selections.length >= maxSelections) {
-            selections = selections.slice(1, selections.length).flat();
-            selections.push(option.text);
+        let changeColor = true;
+
+        if (selections.includes(option.text)) {
+            selections = selections.filter((selection) => selection !== option.text);
+            changeColor = false;
         } else {
-            selections.push(option.text);
+            if (selections.length >= maxSelections) {
+                selections = selections.slice(1, selections.length).flat();
+                selections.push(option.text);
+            } else {
+                selections.push(option.text);
+            }
         }
         // details.setValue(key, option.text);
         // Selection could be passed to setValue and then it understands type
@@ -108,7 +102,7 @@
         // details.setValue( key, selections.join(DELIMITER));
         // COULD TRY THIS
         details.setValue(key, selections);
-        if (key === KEY) {
+        if (key === KEY && changeColor) {
             const color = option.text;
             const colorHex = formFields.record_color?.options?.find((option) => option.text === color)?.color || '#000000';
             const changeRecordColorEvent = new CustomEvent(customEvents.changeRecordColor, {

@@ -24,10 +24,14 @@ class ThreeScene {
         // Animation properties
         this.animations = {};
 
+        /** @type {null|'initial'|'vinyl-view'} */
+        this.animationState = null;
+
         // Bind methods
         this.animate = this.animate.bind(this);
         this.handleTextureUpload = this.handleTextureUpload.bind(this);
 
+        // INITIAL ANIMATIONS
         this.recordCoverAnimation = {
             startTime: 0,
             duration: 2000,
@@ -38,6 +42,7 @@ class ThreeScene {
 
         const vinylStartingPositionPoppingOutOfSleeve = { x: 0, y: 20, z: 8 };
 
+        // Vinyl sliding out of the sleeve
         this.vinylRecordAnimation = {
             startTime: 0,
             duration: 2000,
@@ -45,29 +50,39 @@ class ThreeScene {
             endPosition: vinylStartingPositionPoppingOutOfSleeve,
             active: false
         };
+        // END OF INITIAL ANIMATIONS
 
-        // this.vinylInteractionAnimation = {
-        //     startTime: 0,
-        //     duration: 2000,
-        //     startPosition: vinylStartingPositionPoppingOutOfSleeve,
-        //     endPosition: { x: -10, y: 29, z: 0 },
-        //     active: false
-        // };
-
+        // Vinyl animating when the colors come into view
         this.vinylInteractionAnimation = {
             startTime: 0,
             duration: 2000,
             startPosition: vinylStartingPositionPoppingOutOfSleeve,
-            endPosition: { x: -10, y: 20, z: 0 },
+            endPosition: { x: 0, y: 20, z: 0 },
             startRotation: { x: 0, y: 0, z: 0 },
             endRotation: { x: 0, y: -Math.PI * 2, z: 0 },
+            active: false
+        };
+
+        this.recordCoverInteractionAnimation = {
+            startTime: 0,
+            duration: 2000,
+            startPosition: this.recordCoverAnimation.endPosition,
+            endPosition: { ...this.recordCoverAnimation.endPosition, z: -30 },
+            active: false
+        };
+
+        this.revertRecordCoverInteractionAnimation = {
+            startTime: 0,
+            duration: 2000,
+            startPosition: this.recordCoverInteractionAnimation.endPosition,
+            endPosition: this.recordCoverInteractionAnimation.startPosition,
             active: false
         };
 
         this.revertVinylInteractionAnimation = {
             startTime: 0,
             duration: 2000,
-            startPosition: { x: -10, y: 20, z: 0 },
+            startPosition: this.vinylInteractionAnimation.endPosition,
             endPosition: vinylStartingPositionPoppingOutOfSleeve,
             startRotation: { x: 0, y: -Math.PI * 2, z: 0 },
             endRotation: { x: 0, y: 0, z: 0 },
@@ -102,15 +117,13 @@ class ThreeScene {
         this.addLights();
 
         // EACH ANIMATION HAS A DIFFERENT ACTIVE TRIGGER THAT IS THEN CONSUMED BY THE GAME LOOP
-
-        // this.vinylInteractionAnimation is animating the record out of the sleeve
-        // this.revertVinylInteractionAnimation puts it back in
-
         // Set up event listeners
         window.addEventListener('resize', () => this.resize(), false);
+
+        // IS THIS BEING USED?
         window.addEventListener(customEvents.changeRecordColorInOut, (/** @type {*} */ e) => {
             if (this.recordModel) {
-                this.recordModel.changeRecordColor(e.detail.color);
+                this.recordModel.changeRecordColor(e.detail.color[0]);
                 if (this.vinylInteractionAnimation) this.vinylInteractionAnimation.active = true;
 
                 setTimeout(() => {
@@ -121,16 +134,15 @@ class ThreeScene {
 
         // Forward, but it comes out of the cover, so out makes sense?
         window.addEventListener(customEvents.changeRecordColorOut, (/** @type {*} */ e) => {
-            console.log("Record comes out?")
             if (this.recordModel) {
                 this.recordModel.changeRecordColor(e.detail.color);
-                if (this.vinylInteractionAnimation) this.vinylInteractionAnimation.active = true;
+                if (this.recordCoverInteractionAnimation) this.recordCoverInteractionAnimation.active = true;
             }
         });
 
         // Backward
         window.addEventListener(customEvents.recordBackIn, (/** @type {*} */ e) => {
-            if (this.revertVinylInteractionAnimation) this.revertVinylInteractionAnimation.active = true;
+            if (this.revertRecordCoverInteractionAnimation) this.revertRecordCoverInteractionAnimation.active = true;
         });
 
         window.addEventListener(customEvents.changeRecordColor, (/** @type {*} */ e) => {
@@ -372,6 +384,7 @@ class ThreeScene {
             if (coverProgress === 1 && this.recordModel?.vinylRecord && this.vinylRecordAnimation) {
                 this.recordModel.vinylRecord.visible = true;
                 this.vinylRecordAnimation.active = true;
+                this.animationState = 'initial';
             }
         }
 
@@ -390,74 +403,72 @@ class ThreeScene {
     }
 
     runVinylInteractionAnimation() {
-        const progress = this.calculateAnimationProgress(this.vinylInteractionAnimation);
+        const coverProgress = this.calculateAnimationProgress(this.recordCoverInteractionAnimation);
+        if (coverProgress >= 0 && this.recordModel?.recordCover) {
+            // Animate vinyl position
+            this.interpolatePosition(
+                this.recordModel.recordCover,
+                this.recordCoverInteractionAnimation.startPosition,
+                this.recordCoverInteractionAnimation.endPosition,
+                coverProgress
+            );
 
-        if (progress >= 0 && this.recordModel?.vinylRecord) {
+            if (coverProgress > 0.5 && this.recordModel?.recordCover && this.recordCoverInteractionAnimation) {
+                this.recordModel.recordCover.visible = true;
+                this.vinylInteractionAnimation.active = true;
+            }
+        }
+
+        const vinylProgress = this.calculateAnimationProgress(this.vinylInteractionAnimation);
+
+        if (vinylProgress >= 0 && this.recordModel?.vinylRecord) {
             // Animate vinyl position
             this.interpolatePosition(
                 this.recordModel.vinylRecord,
                 this.vinylInteractionAnimation.startPosition,
                 this.vinylInteractionAnimation.endPosition,
-                progress
+                vinylProgress
             );
 
-            // Animate vinyl rotation if needed
-            // if (this.vinylInteractionAnimation.startRotation) {
-            //     this.interpolateRotation(
-            //         this.recordModel.vinylRecord,
-            //         this.vinylInteractionAnimation.startRotation,
-            //         this.vinylInteractionAnimation.endRotation,
-            //         progress
-            //     );
-            // }
-
-            // Animate record cover if available
-            if (this.recordModel.recordCover) {
-                // Animate in opposite direction (1 - progress)
-                this.recordModel.recordCover.position.y =
-                    this.recordCoverAnimation.startPosition.y +
-                    (this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) * (1 - progress);
-
-                // Commented out material changes
-                // this.recordModel.recordCover.material.transparent = true;
-                // this.recordModel.recordCover.material.opacity = 1 - progress;
-                // this.recordModel.recordCover.material.needsUpdate = true;
+            if (vinylProgress === 1) {
+                this.animationState = 'vinyl-view';
             }
         }
     }
 
     runRevertVinylInteractionAnimation() {
-        const progress = this.calculateAnimationProgress(this.revertVinylInteractionAnimation);
+        // Don't run this animation if it is already in this state
+        // Usually happens when the page loads on the vinyl view
+        // Could also trigger that animation after the initial one
+        if (this.animationState === 'initial') {
+            this.revertRecordCoverInteractionAnimation.active = false;
+        }
+        const coverProgress = this.calculateAnimationProgress(this.revertRecordCoverInteractionAnimation);
+        if (coverProgress >= 0 && this.recordModel?.recordCover) {
+            this.interpolatePosition(
+                this.recordModel.recordCover,
+                this.revertRecordCoverInteractionAnimation.startPosition,
+                this.revertRecordCoverInteractionAnimation.endPosition,
+                coverProgress
+            );
+            if (coverProgress > 0.5 && this.recordModel?.recordCover && this.revertRecordCoverInteractionAnimation) {
+                this.recordModel.recordCover.visible = true;
+                this.revertVinylInteractionAnimation.active = true;
+            }
+        }
 
-        if (progress >= 0 && this.recordModel?.vinylRecord) {
-            // Animate vinyl position
+        const vinylProgress = this.calculateAnimationProgress(this.revertVinylInteractionAnimation);
+
+        if (vinylProgress >= 0 && this.recordModel?.vinylRecord) {
             this.interpolatePosition(
                 this.recordModel.vinylRecord,
                 this.revertVinylInteractionAnimation.startPosition,
                 this.revertVinylInteractionAnimation.endPosition,
-                progress
+                vinylProgress
             );
 
-            // Animate vinyl rotation if needed
-            // if (this.revertVinylInteractionAnimation.startRotation) {
-            //     this.interpolateRotation(
-            //         this.recordModel.vinylRecord,
-            //         this.revertVinylInteractionAnimation.startRotation,
-            //         this.revertVinylInteractionAnimation.endRotation,
-            //         progress
-            //     );
-            // }
-
-            // Animate record cover if available
-            if (this.recordModel.recordCover) {
-                this.recordModel.recordCover.position.y =
-                    this.recordCoverAnimation.startPosition.y +
-                    (this.recordCoverAnimation.endPosition.y - this.recordCoverAnimation.startPosition.y) * progress;
-
-                // Commented out material changes
-                // this.recordModel.recordCover.material.transparent = true;
-                // this.recordModel.recordCover.material.opacity = progress;
-                // this.recordModel.recordCover.material.needsUpdate = true;
+            if (vinylProgress === 1) {
+                this.animationState = 'initial';
             }
         }
     }

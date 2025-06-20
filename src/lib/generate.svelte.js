@@ -15,9 +15,10 @@ export const GenerationErrors = {
     INVALID_ID: 'Invalid generation ID received'
 };
 
-/** @type {{generating: boolean, status: Status, outputs: any[], percentage: number, cachedImgs: IDBTextureObject[]}} */
+/** @type {{generating: boolean, message: string, status: Status, outputs: any[], percentage: number, cachedImgs: IDBTextureObject[]}} */
 const defaultState = {
     generating: false,
+    message: '',
     status: 'idle',
     outputs: [],
     percentage: 0,
@@ -29,6 +30,7 @@ const createGenerateStore = () => {
     async function refreshAllGeneratedImgs() {
         // Using Texture Object instead of generated collection, because the generated collection no longer stores the file buffer
         // const generatedImgs = await db.getAllGeneratedImgs();
+        console.log('Refreshing generated images for project ', project.state.id);
         const generatedImgs = await db.getTexturesByProjectId(project.state.id);
         generate.cachedImgs = generatedImgs
             .filter((img) => img.seed !== 'user-upload')
@@ -170,6 +172,7 @@ const createGenerateStore = () => {
                     });
                     clearInterval(interval);
                 } else if (data.status === 'failed') {
+                    generate.message = data.error || 'Generation failed - please try again';
                     generate.generating = false;
                     clearInterval(interval);
                 } else if (data.status === 'canceled') {
@@ -190,6 +193,7 @@ const createGenerateStore = () => {
             generate.status = status;
         },
         reset: () => {
+            console.log('reset');
             generate = { ...defaultState };
         }
     };

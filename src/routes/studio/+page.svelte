@@ -26,6 +26,8 @@
     });
 
     onMount(() => {
+        // is there a reason not to do this? maybe there was a generate.init before?
+        generate.refreshAllGeneratedImgs()
         if (browser) window.addEventListener('resize', resizeThree);
     });
 

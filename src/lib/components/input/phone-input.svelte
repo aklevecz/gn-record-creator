@@ -4,81 +4,96 @@
     import countries from './countries';
     import project from '$lib/project.svelte';
     import details from '$lib/details.svelte';
-    // import user from '$lib/stores/user.svelte';
+    
+    /** @type {Record<string, string>} */
+    const countryNames = {
+        'US': 'United States',
+        'GB': 'United Kingdom', 
+        'CA': 'Canada',
+        'AU': 'Australia',
+        'DE': 'Germany',
+        'FR': 'France',
+        'IT': 'Italy',
+        'ES': 'Spain',
+        'NL': 'Netherlands',
+        'BE': 'Belgium',
+        'CH': 'Switzerland',
+        'SE': 'Sweden',
+        'NO': 'Norway',
+        'DK': 'Denmark',
+        'FI': 'Finland',
+        'JP': 'Japan',
+        'CN': 'China',
+        'IN': 'India',
+        'BR': 'Brazil',
+        'MX': 'Mexico'
+    };
 
     /** @type {import('libphonenumber-js').CountryCode }*/
     let selectedCountry = $state("US");
     let phone = $state('');
     let error = $state('');
 
-    // let phoneValue = $derived(user.state.phoneNumber.number);
-	// IM NOT SURE IF ITS BETTER TO USE THIS DERIVED PATTERN OR BIND VALUE
-    let phoneValue = $derived(project.state.details?.phone.value.split('-').pop());
-	let countryValue = $derived(project.state.details?.phone.value.split('-')[0])
+    // Initialize from saved data on mount
+    $effect(() => {
+        const savedPhone = project.state.details?.phone.value;
+        if (savedPhone && typeof savedPhone === 'string' && savedPhone.includes('-')) {
+            const [country, phoneNumber] = savedPhone.split('-');
+            if (country && phoneNumber !== undefined) {
+                selectedCountry = /** @type {import('libphonenumber-js').CountryCode} */ (country);
+                phone = phoneNumber;
+            }
+        }
+    });
+
 
     function validatePhone() {
         if (!phone.trim()) {
             error = '';
-            return;
+            return true;
         }
         try {
             const parsed = parsePhoneNumberFromString(phone, selectedCountry);
             if (parsed && parsed.isValid()) {
                 error = '';
+                return true;
             } else {
-                error = 'Invalid phone number';
+                const countryName = countryNames[selectedCountry] || selectedCountry;
+                error = `Please enter a valid ${countryName} phone number`;
+                return false;
             }
         } catch (err) {
-            console.log(err);
-            error = 'Invalid phone number';
+            error = 'Invalid phone number format';
+            return false;
         }
     }
 
-    // $effect(() => {
-	// 	/** @type {import('libphonenumber-js').CountryCode | * }*/
-	// 	const savedCountryCode = project.state.details?.phone.value.split('-')[0] 
-	// 	selectedCountry = savedCountryCode || "US"
-    // });
 
-    const getCountryPrefix = () => {
-        return countries.find((c) => c.code === selectedCountry)?.dialCode || '+1';
-    };
 
     /** @param {*} e*/
     function handleInput(e) {
-        // hasSubmittedCode = false;
         phone = e.target.value;
-        validatePhone();
-        // UPDATE DETAILS
-        // user.updateUser({
-        //     phoneNumber: {
-        //         number: phone,
-        //         countryCode: getCountryPrefix()
-        //     }
-        // });
-        details.setValue('phone', `${selectedCountry}-${phone}`);
-		console.log(details.state.phone)
+        if (validatePhone()) {
+            details.setValue('phone', `${selectedCountry}-${phone}`);
+        }
     }
+    
 
     /** @param {*} e*/
     function handleCountryChange(e) {
         selectedCountry = e.target.value;
-        validatePhone();
-        details.setValue('phone', `${selectedCountry}-${phone}`);
-
-        // UPDATE DETAILS
-        // user.updateUser({ phoneNumber: { number: phone, countryCode: getCountryPrefix() } });
+        if (phone.trim() && validatePhone()) {
+            details.setValue('phone', `${selectedCountry}-${phone}`);
+        }
     }
 </script>
 
 <div class="phone-input-container">
-    <!-- <label for="phone">Phone Number</label> -->
     <div class="phone-input">
-        <select id="country-code-select" value={countryValue} onchange={handleCountryChange}>
+        <select id="country-code-select" value={selectedCountry} onchange={handleCountryChange}>
             {#each countries as country}
                 <option value={country.code}>
-                    {country.flag}
-                    {country.dialCode}
+                    {country.flag} {country.dialCode} {country.code}
                 </option>
             {/each}
         </select>
@@ -88,7 +103,7 @@
             autocomplete="tel"
             type="tel"
             placeholder="Enter phone number"
-            value={phoneValue}
+            value={phone}
             oninput={handleInput}
         />
     </div>
@@ -100,14 +115,13 @@
 <style lang="postcss">
     @reference "tailwindcss/theme";
     .phone-input-container {
-        /* max-width: 200px; */
-        /* margin: 20px auto; */
+        width: 100%;
     }
 
     .phone-input {
         display: flex;
         gap: 4px;
-        /* align-items: center; */
+        align-items: stretch;
     }
 
     select {
@@ -118,18 +132,18 @@
         background-repeat: no-repeat;
         background-position: right 10px center;
         background-size: 10px 5px;
-        flex: 0 0 10%;
+        /* min-width: 200px; */
+        max-width: 250px;
+        flex-shrink: 0;
         @apply text-lg;
     }
 
-    /* label {
-        @apply mb-1 text-sm;
-    } */
 
     input {
         padding: 10px;
         border: 1px solid;
-        width: 205px;
+        flex: 1;
+        min-width: 150px;
         @apply text-lg;
     }
 

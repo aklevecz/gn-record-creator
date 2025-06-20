@@ -5,6 +5,7 @@
     import { fade } from 'svelte/transition';
     import Upload from '../form/upload.svelte';
     import project from '$lib/project.svelte';
+    import Modal from '../ui/modal.svelte';
 
     let { isMinimized = $bindable(), threeScene } = $props();
 
@@ -64,31 +65,28 @@
         }
     }
 
+    let showGenerationErrorModal = $derived(Boolean(generate.state.message))
+
     // style={isMinimized ? 'height: 40px;' : `height: ${buttonContainerHeight} `}
 </script>
 
+<Modal
+    title="There was an error generating your dream"
+    isOpen={showGenerationErrorModal}
+    onclose={generate.reset}
+>
+    <div class="py-2 pb-8">
+        <div>{generate.state.message}</div>
+        <button onclick={generate.reset} class="mt-4">Okie dokie</button>
+    </div>
+</Modal>
 <div class:minimized={isMinimized} class="buttons-container">
     <div class="view-button-container">
-        <button
-            class="view-button"
-            class:active={buttonView === 'ai'}
-            onclick={() => toggleView('ai')}>Dream</button
-        >
-        <button
-            class="view-button"
-            class:active={buttonView === 'upload'}
-            onclick={() => toggleView('upload')}>Upload</button
-        >
-        <button
-            class="view-button"
-            class:active={buttonView === 'history'}
-            onclick={() => toggleView('history')}>History</button
-        >
+        <button class="view-button" class:active={buttonView === 'ai'} onclick={() => toggleView('ai')}>Dream</button>
+        <button class="view-button" class:active={buttonView === 'upload'} onclick={() => toggleView('upload')}>Upload</button>
+        <button class="view-button" class:active={buttonView === 'history'} onclick={() => toggleView('history')}>History</button>
         <div class="flex-1"></div>
-        <button
-            style="background:none;"
-            onclick={() => (isMinimized = !isMinimized)}
-            class="view-button"
+        <button style="background:none;" onclick={() => (isMinimized = !isMinimized)} class="view-button"
             ><img
                 style="width: 24px; height: 24px;"
                 src={isMinimized ? '/icons/maximize.svg' : '/icons/minimize.svg'}
@@ -103,10 +101,7 @@
         {/if}
         {#if buttonView === 'ai'}
             <div class="view">
-                {#if generate.state.status !== 'idle'}<div
-                        transition:fade
-                        class="percent-bar-container"
-                    >
+                {#if generate.state.status !== 'idle'}<div transition:fade class="percent-bar-container">
                         <div class="percent-bar" style="width:{generate.state.percentage}%"></div>
                         <div class="generate-status">
                             {generatingMessages[generate.state.status] || generate.state.status}
@@ -121,47 +116,31 @@
                     alt="Infatuation"
                 />
                 <!-- {/if} -->
-                <textarea
-                    class="mt-2 border-1 border-white"
-                    onkeydown={(e) => e.key === 'Enter' && onGenerate()}
-                    name="prompt"
-                    bind:value={prompt}
+                <textarea class="mt-2 border-1 border-white" onkeydown={(e) => e.key === 'Enter' && onGenerate()} name="prompt" bind:value={prompt}
                 ></textarea>
 
-                <button
-                    disabled={generate.state.generating}
-                    class:generating={generate.state.generating}
-                    onclick={onGenerate}
-                    >{generate.state.generating
-                        ? generatingMessages[generate.state.status]
-                        : 'GENERATE'}</button
+                <button disabled={generate.state.generating} class:generating={generate.state.generating} onclick={onGenerate}
+                    >{generate.state.generating ? generatingMessages[generate.state.status] : 'GENERATE'}</button
                 >
             </div>
         {/if}
         {#if buttonView === 'history'}
-            <div class="px-10">This is where your dreams are stored</div>
+            <div class="px-10 mb-2">Oh hey look at your dreams</div>
             {#if generate.state.cachedImgs.length === 0}
                 <div>No dreams yet. What are you waiting for?</div>
-                <img
-                    src="/characters/hifive-color.svg"
-                    class="h-20 invert md:h-auto"
-                    alt="Infatuation"
-                />
+                <img src="/characters/hifive-color.svg" class="h-20 invert md:h-auto" alt="Infatuation" />
                 <button class="mt-4" onclick={() => toggleView('ai')}>Create a dream</button>
             {/if}
             <div class="history-container overflow-scroll">
                 {#each generate.state.cachedImgs as cachedImg}
                     <!-- CHANGED TO USE TEXTURES COLLECTION BUT FILTERED FOR GENERATED ONES -->
-                    {@const url = URL.createObjectURL(
-                        new Blob([cachedImg.arrayBuffer], { type: 'image/webp' })
-                    )}
+                    {@const url = URL.createObjectURL(new Blob([cachedImg.arrayBuffer], { type: 'image/webp' }))}
                     <div class="history-img">
                         <img src={url} alt="" />
-                        <button
-                            class="history-img-button"
-                            onclick={() => showImgOnCover({ url, id: cachedImg.id })}
-                            >Make Cover Art
-                        </button>
+                        <div class="flex gap-2">
+                        <button class="history-img-button" onclick={() => showImgOnCover({ url, id: cachedImg.id })}>Make Cover Art </button>
+                        <button class="history-img-button" onclick={() => console.log("share on social media")}>Share</button>
+                        </div>
                     </div>
                 {/each}
             </div>
@@ -265,7 +244,7 @@ let buttonContainerHeight = $state('auto');
     }
 
     .history-img-button {
-        @apply p-1 text-xs;
+        @apply p-1 px-3 text-xs;
     }
 
     .generating {

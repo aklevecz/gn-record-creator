@@ -134,6 +134,7 @@
 
 <Modal 
     bind:isOpen={showMissingFieldsModal} 
+    onclose={() => {}}
     title="Missing Required Fields" 
     size="md"
 >

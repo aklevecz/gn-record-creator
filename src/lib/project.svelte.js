@@ -410,7 +410,6 @@ const createProject = () => {
 
             // local texture ids that should match the above from idb
             const textures = project.textures;
-
             // just in case fetched from the r2
             const remoteTexturesPaths = await r2Api.getAllUploadsByProjectId(project.id);
             remoteTextureIds = remoteTexturesPaths
