@@ -403,6 +403,9 @@ class ThreeScene {
     }
 
     runVinylInteractionAnimation() {
+        if (this.animationState === 'vinyl-view') {
+            this.recordCoverInteractionAnimation.active = false
+        }
         const coverProgress = this.calculateAnimationProgress(this.recordCoverInteractionAnimation);
         if (coverProgress >= 0 && this.recordModel?.recordCover) {
             // Animate vinyl position
