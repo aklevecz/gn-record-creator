@@ -8,27 +8,57 @@ import { ShaderUtils } from './utils/ShaderUtils';
 import customEvents from './custom-events';
 
 /**
+ * @typedef {{x: number, y: number, z: number}} Vector3Like
+ */
+
+/**
+ * @typedef {object} Animation
+ * @property {number} startTime
+ * @property {number} duration
+ * @property {boolean} active
+ * @property {Vector3Like} startPosition
+ * @property {Vector3Like} endPosition
+ * @property {Vector3Like} [startRotation]
+ * @property {Vector3Like} [endRotation]
+ */
+
+/**
  * This simplified version uses a lock mechanism to ensure
  * only one animation sequence can run at a time, period.
  * No overlaps, no glitches, guaranteed.
  */
 export class SimpleLockThreeScene {
+    /**
+     * Constructs a new SimpleLockThreeScene instance.
+     * Initializes Three.js components, utilities, animation states, and binds methods.
+     */
     constructor() {
         // All the standard initialization
+        /** @type {HTMLElement | null} */
         this.container = null;
+        /** @type {number} */
         this.width = 0;
+        /** @type {number} */
         this.height = 0;
+        /** @type {THREE.Scene} */
         this.scene = new THREE.Scene();
+        /** @type {THREE.PerspectiveCamera} */
         this.camera = new THREE.PerspectiveCamera();
+        /** @type {THREE.WebGLRenderer | null} */
         this.renderer = null;
+        /** @type {THREE.Clock} */
         this.clock = new THREE.Clock();
 
         // Initialize utilities
+        /** @type {SceneControls | null} */
         this.controls = null;
+        /** @type {MaterialUtils} */
         this.materialUtils = new MaterialUtils();
+        /** @type {ShaderUtils} */
         this.shaderUtils = new ShaderUtils();
 
         // Animation state
+        /** @type {string | null} */
         this.animationState = null;
 
         // Bind methods
@@ -36,6 +66,7 @@ export class SimpleLockThreeScene {
         this.handleTextureUpload = this.handleTextureUpload.bind(this);
 
         // Animation configurations
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, active: boolean }} */
         this.recordCoverAnimation = {
             startTime: 0,
             duration: 2000,
@@ -46,6 +77,7 @@ export class SimpleLockThreeScene {
 
         const vinylStartingPositionPoppingOutOfSleeve = { x: 0, y: 20, z: 8 };
 
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, active: boolean }} */
         this.vinylRecordAnimation = {
             startTime: 0,
             duration: 2000,
@@ -54,6 +86,7 @@ export class SimpleLockThreeScene {
             active: false
         };
 
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, startRotation: { x: number, y: number, z: number }, endRotation: { x: number, y: number, z: number }, active: boolean }} */
         this.vinylInteractionAnimation = {
             startTime: 0,
             duration: 2000,
@@ -64,6 +97,7 @@ export class SimpleLockThreeScene {
             active: false
         };
 
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, active: boolean }} */
         this.recordCoverInteractionAnimation = {
             startTime: 0,
             duration: 2000,
@@ -72,6 +106,7 @@ export class SimpleLockThreeScene {
             active: false
         };
 
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, active: boolean }} */
         this.revertRecordCoverInteractionAnimation = {
             startTime: 0,
             duration: 2000,
@@ -80,6 +115,7 @@ export class SimpleLockThreeScene {
             active: false
         };
 
+        /** @type {{ startTime: number, duration: number, startPosition: { x: number, y: number, z: number }, endPosition: { x: number, y: number, z: number }, startRotation: { x: number, y: number, z: number }, endRotation: { x: number, y: number, z: number }, active: boolean }} */
         this.revertVinylInteractionAnimation = {
             startTime: 0,
             duration: 2000,
@@ -91,20 +127,37 @@ export class SimpleLockThreeScene {
         };
 
         // Displacement effects
+        /** @type {DisplacementShaderEffects} */
         this.displacementEffects = new DisplacementShaderEffects();
+        /** @type {string} */
         this.currentDisplacementEffect = this.displacementEffects.effects.wave;
+        /** @type {THREE.Texture | null} */
         this.currentTexture = null;
+        /** @type {boolean} */
+        this.useDisplacementShader = false; // Added missing property
 
         // SIMPLE LOCK MECHANISM - This is the key!
+        /** @type {string | null} */
         this.animationLock = null; // Stores the current animation type
+        /** @type {string[]} */
         this.animationQueue = [];
-        
+
         // Track which sub-animations have been triggered
+        /** @type {Set<string>} */
         this.triggeredSubAnimations = new Set();
+
+        /** @type {RecordModel | null} */
+        this.recordModel = null; // Added missing property
+        /** @type {THREE.Mesh | null} */
+        this.recordCover = null; // Added missing property
+        /** @type {THREE.Group | null} */
+        this.vinylRecord = null; // Added missing property
     }
 
     /**
      * The core lock mechanism - ensures only one animation sequence at a time
+     * @param {string} animationType - Type of animation to request
+     * @returns {boolean} - Whether animation was started or queued
      */
     requestAnimation(animationType) {
         // If we're already running this exact animation, ignore
@@ -138,6 +191,8 @@ export class SimpleLockThreeScene {
 
     /**
      * Check if animation can start based on current state
+     * @param {string} animationType - Type of animation to check
+     * @returns {boolean} - Whether the animation is allowed to start
      */
     canStartAnimation(animationType) {
         switch (animationType) {
@@ -154,10 +209,11 @@ export class SimpleLockThreeScene {
 
     /**
      * Start an animation sequence - this is the ONLY place active flags are set
+     * @param {string} animationType - Type of animation sequence to start
      */
     startAnimationSequence(animationType) {
         console.log(`Starting animation: ${animationType}`);
-        
+
         // Reset all animations first to ensure clean state
         this.resetAllAnimations();
 
@@ -165,12 +221,12 @@ export class SimpleLockThreeScene {
             case 'initial':
                 this.recordCoverAnimation.active = true;
                 break;
-                
+
             case 'vinyl-show':
                 this.recordCoverInteractionAnimation.active = true;
                 // Vinyl animation will be triggered when cover is 50% done
                 break;
-                
+
             case 'vinyl-hide':
                 this.revertRecordCoverInteractionAnimation.active = true;
                 // Vinyl revert will be triggered when cover is 50% done
@@ -184,19 +240,19 @@ export class SimpleLockThreeScene {
     resetAllAnimations() {
         this.recordCoverAnimation.active = false;
         this.recordCoverAnimation.startTime = 0;
-        
+
         this.vinylRecordAnimation.active = false;
         this.vinylRecordAnimation.startTime = 0;
-        
+
         this.vinylInteractionAnimation.active = false;
         this.vinylInteractionAnimation.startTime = 0;
-        
+
         this.recordCoverInteractionAnimation.active = false;
         this.recordCoverInteractionAnimation.startTime = 0;
-        
+
         this.revertRecordCoverInteractionAnimation.active = false;
         this.revertRecordCoverInteractionAnimation.startTime = 0;
-        
+
         this.revertVinylInteractionAnimation.active = false;
         this.revertVinylInteractionAnimation.startTime = 0;
     }
@@ -206,21 +262,23 @@ export class SimpleLockThreeScene {
      */
     completeAnimationSequence() {
         console.log(`Completed animation: ${this.animationLock}`);
-        
+
         // Clear the lock
         this.animationLock = null;
-        
+
         // Process queue after a short delay
         setTimeout(() => {
             if (this.animationQueue.length > 0) {
                 const next = this.animationQueue.shift();
-                this.requestAnimation(next);
+                if (next) this.requestAnimation(next);
             }
         }, 100);
     }
 
     /**
      * Check if all animations in a sequence are complete
+     * @param {string} animationType - Type of animation sequence to check
+     * @returns {boolean} - True if the sequence is complete, false otherwise
      */
     isSequenceComplete(animationType) {
         switch (animationType) {
@@ -235,6 +293,11 @@ export class SimpleLockThreeScene {
         }
     }
 
+    /**
+     * Initializes the Three.js scene, camera, renderer, and controls.
+     * Creates the record models and adds lights. Sets up event listeners.
+     * @param {HTMLElement} container - The DOM element to contain the Three.js renderer.
+     */
     init(container) {
         this.container = container;
         this.width = container.clientWidth;
@@ -248,8 +311,8 @@ export class SimpleLockThreeScene {
 
         // Create models
         this.recordModel = new RecordModel(this.scene);
-        this.recordCover = this.recordModel.createRecordCover();
-        this.vinylRecord = this.recordModel.createVinylRecord();
+        this.recordCover = /** @type {THREE.Mesh} */ (this.recordModel.createRecordCover());
+        this.vinylRecord = /** @type {THREE.Group} */ (this.recordModel.createVinylRecord());
         this.vinylRecord.visible = false;
 
         // Add lights
@@ -259,7 +322,7 @@ export class SimpleLockThreeScene {
         window.addEventListener('resize', () => this.resize(), false);
 
         // Event listeners use our lock system
-        window.addEventListener(customEvents.changeRecordColorInOut, (e) => {
+        window.addEventListener(customEvents.changeRecordColorInOut, (/** @type {*} */ e) => {
             if (this.recordModel) {
                 this.recordModel.changeRecordColor(e.detail.color[0]);
                 this.requestAnimation('vinyl-show');
@@ -270,7 +333,7 @@ export class SimpleLockThreeScene {
             }
         });
 
-        window.addEventListener(customEvents.changeRecordColorOut, (e) => {
+        window.addEventListener(customEvents.changeRecordColorOut, (/** @type {*} */ e) => {
             if (this.recordModel) {
                 this.recordModel.changeRecordColor(e.detail.color);
                 this.requestAnimation('vinyl-show');
@@ -281,7 +344,7 @@ export class SimpleLockThreeScene {
             this.requestAnimation('vinyl-hide');
         });
 
-        window.addEventListener(customEvents.changeRecordColor, (e) => {
+        window.addEventListener(customEvents.changeRecordColor, (/** @type {*} */ e) => {
             if (this.recordModel) {
                 this.recordModel.changeRecordColor(e.detail.color);
             }
@@ -291,6 +354,10 @@ export class SimpleLockThreeScene {
         this.requestAnimation('initial');
     }
 
+    /**
+     * Sets up the Three.js scene, renderer, and controls.
+     * @param {HTMLElement} container - The DOM element to append the renderer's canvas to.
+     */
     setupScene(container) {
         this.camera.position.set(45, 20, 0);
         if (!this.renderer) {
@@ -304,6 +371,9 @@ export class SimpleLockThreeScene {
         this.controls = new SceneControls(this.camera, this.renderer.domElement);
     }
 
+    /**
+     * Adds ambient and directional lights to the scene.
+     */
     addLights() {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         this.scene.add(ambientLight);
@@ -317,6 +387,10 @@ export class SimpleLockThreeScene {
         this.scene.add(directionalLight2);
     }
 
+    /**
+     * The main animation loop. Requests the next frame and updates animations,
+     * shaders, controls, and renders the scene.
+     */
     animate() {
         requestAnimationFrame(this.animate);
 
@@ -333,7 +407,7 @@ export class SimpleLockThreeScene {
         // Update shader if active
         if (this.shaderUtils.isShaderActive() && this.recordCover) {
             this.shaderUtils.updateShader();
-            this.recordCover.material = this.shaderUtils.getMaterial();
+            this.recordCover.material = /** @type {THREE.Material} */ (this.shaderUtils.getMaterial());
         }
 
         if (this.useDisplacementShader && this.displacementEffects) {
@@ -347,10 +421,20 @@ export class SimpleLockThreeScene {
     }
 
     // Keep all existing helper methods
+    /**
+     * Cubic ease-out function.
+     * @param {number} x - The input value (typically between 0 and 1).
+     * @returns {number} - The eased output value.
+     */
     easeOutCubic(x) {
         return 1 - Math.pow(1 - x, 3);
     }
 
+    /**
+     * Calculates the progress of an animation based on elapsed time and duration.
+     * @param {Animation} animation - The animation object with startTime, duration, and active properties.
+     * @returns {number} - The eased animation progress (0 to 1), or -1 if the animation is not active.
+     */
     calculateAnimationProgress(animation) {
         if (!animation?.active) return -1;
 
@@ -370,10 +454,17 @@ export class SimpleLockThreeScene {
         return easedProgress;
     }
 
+    /**
+     * Interpolates the position of a Three.js object.
+     * @param {THREE.Object3D} object - The object to interpolate.
+     * @param {Vector3Like} startPos - The starting position {x, y, z}.
+     * @param {Vector3Like} endPos - The ending position {x, y, z}.
+     * @param {number} progress - The interpolation progress (0 to 1).
+     */
     interpolatePosition(object, startPos, endPos, progress) {
         if (!object || !startPos || !endPos) return;
 
-        const axes = ['x', 'y', 'z'];
+        const axes = /** @type {('x' | 'y' | 'z')[]} */ (['x', 'y', 'z']);
         axes.forEach((axis) => {
             if (startPos[axis] !== undefined && endPos[axis] !== undefined) {
                 object.position[axis] = startPos[axis] + (endPos[axis] - startPos[axis]) * progress;
@@ -381,12 +472,20 @@ export class SimpleLockThreeScene {
         });
     }
 
+    /**
+     * Interpolates the rotation of a Three.js object around the Y axis.
+     * @param {THREE.Object3D} object - The object to interpolate.
+     * @param {Vector3Like} startRot - The starting rotation {y}.
+     * @param {Vector3Like} endRot - The ending rotation {y}.
+     * @param {number} progress - The interpolation progress (0 to 1).
+     */
     interpolateRotation(object, startRot, endRot, progress) {
         if (!object || !startRot || !endRot) return;
 
-        const axes = ['y'];
+        const axes = /** @type {('x' | 'y' | 'z')[]} */ (['y']);
         axes.forEach((axis) => {
             if (startRot[axis] !== undefined && endRot[axis] !== undefined) {
+                // @ts-ignore
                 object.rotation[axis] = startRot[axis] + (endRot[axis] - startRot[axis]) * progress;
             }
         });
@@ -395,23 +494,19 @@ export class SimpleLockThreeScene {
     /**
      * CRITICAL: Modified animation methods that NEVER manipulate active flags directly
      * They only read the flags set by the lock system
+     * Runs the initial record cover and vinyl record animations.
      */
     runInitialRecordAnimation() {
         // NO STATE CHECKS! Just run if active
         const coverProgress = this.calculateAnimationProgress(this.recordCoverAnimation);
 
         if (coverProgress >= 0 && this.recordCover) {
-            this.interpolatePosition(
-                this.recordCover,
-                this.recordCoverAnimation.startPosition,
-                this.recordCoverAnimation.endPosition,
-                coverProgress
-            );
+            this.interpolatePosition(this.recordCover, this.recordCoverAnimation.startPosition, this.recordCoverAnimation.endPosition, coverProgress);
 
             // When cover completes, trigger vinyl if this is the initial sequence
             if (coverProgress === 1 && this.animationLock === 'initial') {
                 if (!this.triggeredSubAnimations.has('vinyl-initial')) {
-                    this.recordModel.vinylRecord.visible = true;
+                    if (this.recordModel?.vinylRecord) this.recordModel.vinylRecord.visible = true;
                     this.vinylRecordAnimation.active = true;
                     this.triggeredSubAnimations.add('vinyl-initial');
                 }
@@ -431,10 +526,13 @@ export class SimpleLockThreeScene {
         }
     }
 
+    /**
+     * Runs the record cover and vinyl record interaction animations (vinyl show).
+     */
     runVinylInteractionAnimation() {
         // NO FORCED STOPS! Let animations complete naturally
         const coverProgress = this.calculateAnimationProgress(this.recordCoverInteractionAnimation);
-        
+
         if (coverProgress >= 0 && this.recordModel?.recordCover) {
             this.interpolatePosition(
                 this.recordModel.recordCover,
@@ -476,10 +574,13 @@ export class SimpleLockThreeScene {
         }
     }
 
+    /**
+     * Runs the record cover and vinyl record revert interaction animations (vinyl hide).
+     */
     runRevertVinylInteractionAnimation() {
         // NO FORCED STOPS!
         const coverProgress = this.calculateAnimationProgress(this.revertRecordCoverInteractionAnimation);
-        
+
         if (coverProgress >= 0 && this.recordModel?.recordCover) {
             this.interpolatePosition(
                 this.recordModel.recordCover,
@@ -487,7 +588,7 @@ export class SimpleLockThreeScene {
                 this.revertRecordCoverInteractionAnimation.endPosition,
                 coverProgress
             );
-            
+
             // Trigger vinyl revert at 50%
             if (coverProgress > 0.5 && this.animationLock === 'vinyl-hide') {
                 if (!this.triggeredSubAnimations.has('vinyl-hide')) {
@@ -522,24 +623,39 @@ export class SimpleLockThreeScene {
     }
 
     // All other methods remain unchanged...
+    /**
+     * Handles the file upload event for a texture.
+     * @param {Event} event - The file input change event.
+     */
     handleTextureUpload(event) {
-        const file = event.target.files[0];
+        const target = /** @type {HTMLInputElement} */ (event.target);
+        if (!target?.files) return;
+        const file = target.files[0];
         if (file && this.recordCover && this.renderer) {
-            this.materialUtils.loadTextureFromFile(file, this.renderer, (material) => {
+            this.materialUtils.loadTextureFromFile(file, this.renderer, (/** @type {*} */ material) => {
                 if (!this.recordCover) return;
                 this.recordCover.material = material;
             });
         }
     }
 
+    /**
+     * Updates the material texture of the record cover from a URL.
+     * @param {string} textureUrl - The URL of the texture image.
+     * @returns {Promise<THREE.Material|undefined>} - A promise that resolves with the updated material, or undefined if the record cover is not found.
+     */
     async updateMaterialTexture(textureUrl) {
         const material = await this.materialUtils.updateMaterialTexture(textureUrl);
         if (!this.recordCover) {
             return;
         }
         this.recordCover.material = material;
+        return material; // Added return for consistency with JSDoc
     }
 
+    /**
+     * Resizes the renderer and camera based on the container's dimensions.
+     */
     resize() {
         if (!this.container || !this.renderer) return;
 
@@ -550,25 +666,41 @@ export class SimpleLockThreeScene {
         this.renderer.setSize(this.width, this.height);
     }
 
+    /**
+     * Toggles the displacement shader effect on the record cover.
+     * Cycles through available effects.
+     * @param {string} [effectType='ripple'] - The type of displacement effect to use initially.
+     * @param {number} [intensity=0.1] - The intensity of the displacement effect.
+     * @returns {boolean} - The new state of the displacement shader (active or inactive).
+     */
     toggleDisplacementShader(effectType = 'ripple', intensity = 0.1) {
-        if (!this.recordCover || !this.recordCover.material) {
+        if (
+            !this.recordCover ||
+            !this.recordCover.material
+            // || !this.recordCover.material.map
+        ) {
             return false;
         }
         this.displacementEffects.oscillatorTime = 0;
-        
+        // @ts-ignore
         if (this.recordCover.material.map) {
+            // @ts-ignore
             this.currentTexture = this.recordCover.material.map;
+        } else {
         }
 
+        // Toggle the effect on/off
         this.useDisplacementShader = !this.useDisplacementShader;
 
         const currentIndex = Object.keys(this.displacementEffects.effects).indexOf(this.currentDisplacementEffect);
         const nextShader = Object.keys(this.displacementEffects.effects)[(currentIndex + 1) % Object.keys(this.displacementEffects.effects).length];
 
-        if (this.useDisplacementShader) {
+        if (this.useDisplacementShader && this.currentTexture) {
+            // Apply the selected displacement effect
             const material = this.displacementEffects.createShader(this.currentTexture, this.currentDisplacementEffect, intensity);
             this.recordCover.material = material;
         } else {
+            // Restore original material
             this.recordCover.material = new THREE.MeshBasicMaterial({
                 map: this.currentTexture,
                 color: 0xffffff
@@ -578,32 +710,48 @@ export class SimpleLockThreeScene {
         return this.useDisplacementShader;
     }
 
+    /**
+     * Changes the active displacement effect if the shader is currently active.
+     * @param {string} effectType - The type of displacement effect to switch to.
+     */
     changeDisplacementEffect(effectType) {
         if (this.useDisplacementShader && this.displacementEffects) {
             const material = this.displacementEffects.changeEffect(effectType);
-            if (this.recordCover) {
+            if (this.recordCover && material) {
                 this.recordCover.material = material;
             }
         }
     }
 
+    /**
+     * Updates the intensity of the active displacement shader.
+     * @param {number} intensity - The new intensity value.
+     */
     updateDisplacementIntensity(intensity) {
         if (this.shaderUtils.isDisplacementShaderActive()) {
             this.shaderUtils.updateDisplacementIntensity(intensity);
         }
     }
 
+    /**
+     * Toggles a generic shader effect on the record cover.
+     */
     toggleShader() {
         if (this.recordCover) {
             const isActive = this.shaderUtils.toggleShader();
-            if (isActive) {
-                this.recordCover.material = this.shaderUtils.getMaterial();
+            const shaderMaterial = this.shaderUtils.getMaterial();
+            if (isActive && shaderMaterial) {
+                this.recordCover.material = shaderMaterial
             } else {
                 this.recordCover.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
             }
         }
     }
 
+    /**
+     * Disposes of Three.js resources (renderer, scene, geometry, materials, textures).
+     * Removes event listeners.
+     */
     dispose() {
         if (!this.renderer) return;
 
@@ -614,10 +762,12 @@ export class SimpleLockThreeScene {
 
         this.renderer.dispose();
         this.scene.traverse((object) => {
-            if (object.geometry) object.geometry.dispose();
-            if (object.material) {
-                if (object.material.map) object.material.map.dispose();
-                object.material.dispose();
+            const mesh = /** @type {THREE.Mesh} */ (object);
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) {
+                const material = /** @type {THREE.MeshBasicMaterial} */ (mesh.material);
+                if (material.map) material.map.dispose();
+                material.dispose();
             }
         });
 
@@ -626,6 +776,7 @@ export class SimpleLockThreeScene {
 
     /**
      * Debug information
+     * @returns {object} - An object containing current animation debug information.
      */
     getDebugInfo() {
         return {

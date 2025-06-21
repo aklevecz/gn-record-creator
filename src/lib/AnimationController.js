@@ -16,6 +16,7 @@ export class AnimationController {
         this.currentAnimation = null;
         
         // Queue for animations waiting to run
+        /** @type {string[]} */
         this.animationQueue = [];
         
         // State machine to track overall animation state
@@ -42,6 +43,7 @@ export class AnimationController {
      * Register an animation with the controller
      * This sets up all the rules and behaviors for a specific animation
      */
+    
     registerAnimation(name, config) {
         this.animations.set(name, {
             name,
