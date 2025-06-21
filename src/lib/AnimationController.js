@@ -1,5 +1,36 @@
 // AnimationController.js
 /**
+ * @typedef {object} AnimationConfig
+ * @property {(deltaTime: number, params: any) => number} [update]
+ * @property {(params: any) => boolean} [canStart]
+ * @property {(params: any) => void} [onComplete]
+ * @property {(params: any) => void} [onStart]
+ * @property {string[]} [blockingAnimations]
+ * @property {number | null} [duration]
+ */
+
+/**
+ * @typedef {object} Animation
+ * @property {string} name
+ * @property {(deltaTime: number, params: any) => number} update
+ * @property {(params: any) => boolean} canStart
+ * @property {(params: any) => void} onComplete
+ * @property {(params: any) => void} onStart
+ * @property {string[]} blockingAnimations
+ * @property {number | null} duration
+ * @property {boolean} isRunning
+ * @property {number} progress
+ * @property {number} startTime
+ * @property {any} params
+ */
+
+/**
+ * @typedef {object} QueuedAnimation
+ * @property {string} name
+ * @property {any} params
+ */
+
+/**
  * AnimationController manages all animations in the scene, preventing overlaps
  * and providing a queue system for smooth transitions between states.
  * 
@@ -13,10 +44,11 @@
 export class AnimationController {
     constructor() {
         // Track the currently running animation
+        /** @type {Animation | null} */
         this.currentAnimation = null;
         
         // Queue for animations waiting to run
-        /** @type {string[]} */
+        /** @type {QueuedAnimation[]} */
         this.animationQueue = [];
         
         // State machine to track overall animation state
@@ -30,6 +62,7 @@ export class AnimationController {
         this.currentState = this.states.IDLE;
         
         // Store all registered animations
+        /** @type {Map<string, Animation>} */
         this.animations = new Map();
         
         // Optional callbacks for state changes
@@ -42,13 +75,14 @@ export class AnimationController {
     /**
      * Register an animation with the controller
      * This sets up all the rules and behaviors for a specific animation
+     * @param {string} name
+     * @param {AnimationConfig} config
      */
-    
     registerAnimation(name, config) {
         this.animations.set(name, {
             name,
             // Function called each frame while animation is active
-            update: config.update || (() => {}),
+            update: config.update || (() => 0),
             // Condition check - must return true for animation to start
             canStart: config.canStart || (() => true),
             // Called when animation completes (progress reaches 1)
@@ -74,6 +108,9 @@ export class AnimationController {
     /**
      * Request to play an animation
      * This is the main entry point for triggering animations
+     * @param {string} animationName
+     * @param {any} [params={}]
+     * @returns {boolean}
      */
     requestAnimation(animationName, params = {}) {
         const animation = this.animations.get(animationName);
@@ -87,7 +124,7 @@ export class AnimationController {
         }
         
         // Check if any blocking animations are currently running
-        const isBlocked = animation.blockingAnimations.some(blockedName => {
+        const isBlocked = animation.blockingAnimations.some((blockedName) => {
             const blocked = this.animations.get(blockedName);
             return blocked && blocked.isRunning;
         });
@@ -113,11 +150,13 @@ export class AnimationController {
     
     /**
      * Add an animation to the queue for later execution
+     * @param {string} animationName
+     * @param {any} params
      */
     queueAnimation(animationName, params) {
         // Prevent duplicate entries in the queue
         const alreadyQueued = this.animationQueue.some(
-            item => item.name === animationName
+            (item) => item.name === animationName
         );
         
         if (!alreadyQueued) {
@@ -130,6 +169,8 @@ export class AnimationController {
     
     /**
      * Start an animation immediately
+     * @param {string} animationName
+     * @param {any} params
      */
     startAnimation(animationName, params) {
         const animation = this.animations.get(animationName);
@@ -156,6 +197,8 @@ export class AnimationController {
     /**
      * Main update function - call this every frame
      * Returns the current animation progress (0-1) or -1 if no animation
+     * @param {number} deltaTime
+     * @returns {number}
      */
     update(deltaTime) {
         if (!this.currentAnimation) {
@@ -182,6 +225,7 @@ export class AnimationController {
     
     /**
      * Handle animation completion
+     * @param {Animation} animation
      */
     completeAnimation(animation) {
         animation.isRunning = false;
@@ -226,7 +270,7 @@ export class AnimationController {
         }
         
         // Check if any blocking animations are running
-        const isBlocked = animation.blockingAnimations.some(blockedName => {
+        const isBlocked = animation.blockingAnimations.some((blockedName) => {
             const blocked = this.animations.get(blockedName);
             return blocked && blocked.isRunning;
         });
@@ -281,6 +325,7 @@ export class AnimationController {
     
     /**
      * Enable or disable debug logging
+     * @param {boolean} enabled
      */
     setDebugMode(enabled) {
         this.debugMode = enabled;
@@ -288,6 +333,8 @@ export class AnimationController {
     
     /**
      * Check if a specific animation is currently running
+     * @param {string} animationName
+     * @returns {boolean}
      */
     isAnimationRunning(animationName) {
         const animation = this.animations.get(animationName);
@@ -297,6 +344,8 @@ export class AnimationController {
     /**
      * Get progress of a specific animation (0-1)
      * Returns -1 if animation is not running
+     * @param {string} animationName
+     * @returns {number}
      */
     getAnimationProgress(animationName) {
         const animation = this.animations.get(animationName);
