@@ -4,6 +4,7 @@
     import Detail from '$lib/components/form/detail.svelte';
     import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
     import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
+    import ProjectCreationModal from '$lib/components/project/project-creation-modal.svelte';
     import db from '$lib/db';
     import details from '$lib/details.svelte';
     import { formFields } from '$lib/monday/formFields';
@@ -17,17 +18,28 @@
     // janky because it has to reset the current details applied to the current project
     // this could be inside or project.svelte
     // CREATE NEW PROJECT AND CHANGE PROJECT FUNCTIONS
-    function createNewProject() {
+    let createProjectModalOpen = $state(false);
+
+    function openCreateProjectModal() {
+        createProjectModalOpen = true;
+    }
+
+    /** @param {string} projectName */
+    function createNewProject(projectName) {
         details.reset();
         const newProjectStore = createProject();
         const newProject = newProjectStore.create({
-            details: { ...details.state },
+            details: {
+                ...details.state
+            },
             textures: []
         });
         projects.registerProject(newProject);
         db.saveProject(newProject);
         projects.activateProject(newProject.id);
-        goto('/')
+        createProjectModalOpen = false;
+        goto('/');
+        details.setValue('title', projectName);
     }
 
     /** @type {TextureObject[]} */
@@ -151,13 +163,14 @@
     onConfirm={executeDeleteImg}
     onCancel={() => (deleteImageModalOpen = false)}
 />
+<ProjectCreationModal isOpen={createProjectModalOpen} onConfirm={createNewProject} onCancel={() => (createProjectModalOpen = false)} />
 
 <div class="mx-auto mb-10 rounded-md p-3 px-6">
     <h1>Project Editor</h1>
     <div class="flex max-w-lg items-center gap-4 md:w-3/4">
         <ChangeProjectDropdown />
 
-        <button class="text-xs md:w-[300px] md:text-base" onclick={createNewProject}>Create Project</button>
+        <button class="text-xs md:w-[300px] md:text-base" onclick={openCreateProjectModal}>Create Project</button>
     </div>
     <div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
         <div class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4">
