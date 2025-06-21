@@ -1,6 +1,5 @@
 <script>
-    import details from "$lib/details.svelte";
-
+    
     let { isOpen, onConfirm, onCancel } = $props();
 
     let projectName = $state('');
@@ -17,21 +16,30 @@
         onCancel();
     }
 
+	/** @param {KeyboardEvent} event */
     function handleKeyDown(event) {
         if (event.key === 'Enter') {
             handleSubmit();
         }
     }
 
+	/** @param {MouseEvent} event */
     function handleBackdropClick(event) {
         if (event.target === event.currentTarget) {
+            handleCancel();
+        }
+    }
+
+    /** @param {KeyboardEvent} event */
+    function handleBackdropKeyDown(event) {
+        if (event.key === 'Escape') {
             handleCancel();
         }
     }
 </script>
 
 {#if isOpen}
-    <div class="modal-backdrop" onclick={handleBackdropClick}>
+    <div class="modal-backdrop" onclick={handleBackdropClick} onkeydown={handleBackdropKeyDown} role="button" tabindex="0">
         <div class="modal">
             <div class="modal-header">
                 <h2>Create New Project</h2>
@@ -44,7 +52,6 @@
                     placeholder="Project name"
                     class="project-name-input"
                     onkeydown={handleKeyDown}
-                    autofocus
                 />
             </div>
             <div class="modal-footer">
