@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import uploadApi from '$lib/api/upload';
     import Detail from '$lib/components/form/detail.svelte';
-    import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
     import ConfirmationModal from '$lib/components/project/confirmation-modal.svelte';
     import ProjectCreationModal from '$lib/components/project/project-creation-modal.svelte';
     import db from '$lib/db';
@@ -45,6 +44,7 @@
     /** @type {TextureObject[]} */
     let textureObjects = $state([]);
     $effect(() => {
+        console.log(``)
         // NOT HOW THIS SHOULD BE CHECKED EXACTLY
         if (
             project.texturesLoaded
@@ -111,6 +111,7 @@
 
     let deleteImageModalOpen = $state(false);
     let imageToDeleteId = $state('');
+    let titleEditMode = $state(false);
     /** @param {string} id*/
     function confirmDeleteImg(id) {
         imageToDeleteId = id;
@@ -167,41 +168,85 @@
 
 <div class="mx-auto mb-10 rounded-md p-3 px-6">
     <h1>Project Editor</h1>
-    <div class="flex max-w-lg items-center gap-4 md:w-3/4">
-        <ChangeProjectDropdown />
-
-        <button class="text-xs md:w-[300px] md:text-base" onclick={openCreateProjectModal}>Create Project</button>
+    
+    <div class="create-project-section">
+        <div class="create-project-content">
+            <h2 class="create-project-title">Start a New Project</h2>
+            <p class="create-project-description">Create a new project and organize multiple record ideas at once</p>
+            <button class="create-project-btn" onclick={openCreateProjectModal}>
+                <span class="create-icon">+</span>
+                Create New Project
+            </button>
+        </div>
     </div>
-    <div class="flex min-h-[80vh] flex-col gap-4 md:flex-row md:pt-4">
-        <div class="project-container text- mb-4 flex w-full flex-col gap-1 border-white md:min-w-[200px] md:flex-[0_1_20%] md:border-r-1 md:pt-4">
-            <h1>Project Info</h1>
-            <!-- <div class="text-xl">{project.state.name}</div> -->
-            <div class="mb-2 pr-4">
-                <Detail label="Title" key="title" description="" type="text" required={false} />
+    <div class="flex min-h-[80vh] flex-col gap-6 md:flex-row md:pt-6">
+        <div class="project-info-sidebar flex w-full flex-col gap-4 md:min-w-[250px] md:flex-[0_1_25%] md:border-r md:border-white/20 md:pr-6">
+            <div class="project-info-section">
+                <h2 class="section-header">Current Project</h2>
+                
+                <div class="project-title-section">
+                    {#if titleEditMode}
+                        <Detail label="Title" key="title" description="" type="text" required={false} />
+                        <div class="title-edit-controls">
+                            <button class="title-save-btn" onclick={() => titleEditMode = false}>Save</button>
+                            <button class="title-cancel-btn" onclick={() => titleEditMode = false}>Cancel</button>
+                        </div>
+                    {:else}
+                        <div class="title-display">
+                            <div class="title-text">
+                                {project.state.details?.title?.value || 'Untitled Project'}
+                            </div>
+                            <button class="title-edit-btn" onclick={() => titleEditMode = true}>Edit</button>
+                        </div>
+                    {/if}
+                </div>
+                
+                <div class="project-metadata">
+                    <div class="metadata-grid">
+                        {#if project.state.details?.artist.value}
+                            <div class="metadata-item">
+                                <div class="metadata-label">Artist</div>
+                                <div class="metadata-value">{project.state.details.artist.value}</div>
+                            </div>
+                        {/if}
+                        {#if project.state.details?.label.value}
+                            <div class="metadata-item">
+                                <div class="metadata-label">Label</div>
+                                <div class="metadata-value">{project.state.details.label.value}</div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
             </div>
-            <div class="project-info-line">{project.state.details?.artist.value}</div>
-            <div class="project-info-line">{project.state.details?.label.value}</div>
-            <div class="project-info-line">{project.state.details?.record_color.value}</div>
-            <div class="flex flex-row justify-between md:flex-col">
-                <!-- {JSON.stringify(project.state.details)} -->
-                <img
-                    src={formFields.record_color.options?.find((o) => o.text === project.state.details?.record_color.value)?.img ||
-                        '/records/cosmic-black.png'}
-                    alt=""
-                    class="my-2 w-40"
-                />
-                {#if project.activeTextureUrl}<img
-                        class="w-40 py-4 pr-4"
-                        src={project.activeTextureUrl || '/records/red-alert.png'}
-                        alt="current texture"
-                    />{/if}
+
+            <div class="project-preview-section">
+                <div class="preview-images">
+                    <div class="record-preview">
+                        <img
+                            src={formFields.record_color.options?.find((o) => o.text === project.state.details?.record_color.value)?.img ||
+                                '/records/cosmic-black.png'}
+                            alt="Record color preview"
+                            class="record-image"
+                        />
+                    </div>
+                    {#if project.activeTextureUrl}
+                        <div class="texture-preview">
+                            <img
+                                class="texture-image"
+                                src={project.activeTextureUrl || '/records/red-alert.png'}
+                                alt="Current cover art"
+                            />
+                        </div>
+                    {/if}
+                </div>
             </div>
-            <div class="mt-4 flex gap-3 md:flex-col">
-                <button class="project-edit-buttons delete" onclick={confirmDeleteProject}>Delete Project</button>
+
+            <div class="project-actions">
+                <button class="delete-project-btn" onclick={confirmDeleteProject}>Delete Project</button>
             </div>
         </div>
 
-        <div class="gallery-container md:flex-[1_0_70%] md:p-4">
+        <div class="gallery-container md:flex-[1_0_70%]">
             <h1>Gallery</h1>
             <div class="imgs">
                 {#each textureObjects as { url, id, seed, fileName, arrayBuffer, fileType }}
@@ -213,12 +258,12 @@
                     >
                         <img src={url} alt="" class="history-img" />
                         <div class="history-file-name">{fileName}</div>
-                        <div>
+                        <div class="mt-2 h-full flex items-end">
                             <button
                                 class:is_active={isActive}
                                 disabled={isActive}
                                 onclick={() => activateTexture(arrayBuffer, fileType, id)}
-                                class="little-button">{isActive ? 'Cover Art' : 'Make Cover Art'}</button
+                                class="little-button">{isActive ? 'Cover Art' : 'Activate'}</button
                             >
                             <button class="little-button delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
                         </div>
@@ -245,14 +290,107 @@
 <style lang="postcss">
     @reference "tailwindcss/theme";
 
-    .project-edit-buttons {
-        @apply mr-auto text-base;
+    /* Create Project Section */
+    .create-project-section {
+        @apply mb-8 border border-white/20 rounded-lg p-6;
     }
-    button.delete {
-        @apply text-xs text-red-500;
+    
+    .create-project-content {
+        @apply text-center;
     }
+    
+    .create-project-title {
+        @apply text-xl font-semibold mb-2;
+    }
+    
+    .create-project-description {
+        @apply text-sm opacity-75 mb-4;
+    }
+    
+    .create-project-btn {
+        @apply inline-flex items-center gap-2 px-6 py-3 text-base font-medium border border-white/30 rounded-md hover:bg-white/10 transition-colors;
+    }
+    
+    .create-icon {
+        @apply text-lg font-bold;
+    }
+    
+    /* Sidebar Styles */
+    .section-header {
+        @apply text-lg font-semibold mb-4 pb-2 border-b border-white/10;
+    }
+    
+    .project-title-section {
+        @apply mb-6;
+    }
+    
+    .title-display {
+        @apply flex items-center justify-between p-3 border border-white/10 rounded-md;
+    }
+    
+    .title-text {
+        @apply text-base font-medium;
+    }
+    
+    .title-edit-btn {
+        @apply px-2 py-1 text-xs font-medium border border-white/20 rounded hover:bg-white/10 transition-colors;
+    }
+    
+    .title-edit-controls {
+        @apply flex gap-2 mt-2;
+    }
+    
+    .title-save-btn {
+        @apply px-3 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 transition-colors;
+    }
+    
+    .title-cancel-btn {
+        @apply px-3 py-1 text-xs font-medium border border-white/20 rounded hover:bg-white/10 transition-colors;
+    }
+    
+    .project-metadata {
+        @apply mb-6;
+    }
+    
+    .metadata-grid {
+        @apply space-y-4;
+    }
+    
+    .metadata-item {
+        @apply border-l-2 border-white/20 pl-3;
+    }
+    
+    .metadata-label {
+        @apply text-xs font-medium uppercase tracking-wide opacity-60 mb-1;
+    }
+    
+    .metadata-value {
+        @apply text-sm font-medium;
+    }
+    
+    .preview-header {
+        @apply text-sm font-medium mb-3 pb-2 border-b border-white/10 opacity-75;
+    }
+    
+    .preview-images {
+        @apply flex flex-col gap-3;
+    }
+    
+    .record-preview, .texture-preview {
+        @apply flex justify-center;
+    }
+    
+    .record-image, .texture-image {
+        @apply w-32 h-32 object-cover rounded-md;
+    }
+    
+    .delete-project-btn {
+        @apply w-full px-4 py-2 text-sm text-red-400 border border-red-400/30 rounded-md hover:bg-red-400/10 transition-colors;
+    }
+    
+    /* Gallery Styles */
     h1 {
-        @apply mb-1 text-xl font-bold;
+        @apply mb-4 text-xl font-bold;
     }
     .imgs {
         @apply mb-4 flex flex-wrap gap-2;

@@ -110,6 +110,7 @@
             // await project.checkTextures()
             cachedKeys.setProjectTexture(projectId, fileHash);
             await project.setActiveTexture(fileHash);
+            await project.checkTextures();
         } catch (/** @type {*} */ error) {
             errorMessage = `Error processing image: ${error.message}`;
             console.log('Error cropping image:', error);

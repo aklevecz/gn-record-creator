@@ -138,8 +138,8 @@
                     <div class="history-img">
                         <img src={url} alt="" />
                         <div class="flex gap-2">
-                        <button class="history-img-button" onclick={() => showImgOnCover({ url, id: cachedImg.id })}>Make Cover Art </button>
-                        <button class="history-img-button" onclick={() => console.log("share on social media")}>Share</button>
+                        <!-- <button class="history-img-button" onclick={() => project.setActiveTexture(cachedImg.id)}>Make Cover Art </button> -->
+                        <button class="history-img-button" onclick={() => alert("coming soon")}>Share</button>
                         </div>
                     </div>
                 {/each}
