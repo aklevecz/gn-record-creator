@@ -6,6 +6,7 @@ const mondayClientApi = () => {
 	return {
 		/** @param {{id: string, mondayId: string, responses: Record<string, string | string[]> }} data */
 		async create({ id, mondayId, responses }) {
+			console.log(`Data being sent to Monday with id:${id} and mondayId:${mondayId} with responses ${JSON.stringify(responses)}`);
 			const res = await fetch(endpoints.create, {
 				method: 'POST',
 				headers: {

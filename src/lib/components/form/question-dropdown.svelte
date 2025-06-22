@@ -35,7 +35,7 @@
         class="mt-2 w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg"
     >
         {#each options as option}
-            <option value={option.text}>{option.text}</option>
+            <option value={option.value}>{option.text}</option>
         {/each}
     </select>
 </div>
