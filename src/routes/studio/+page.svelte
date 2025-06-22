@@ -4,6 +4,7 @@
     import RecordDesigner from '$lib/components/designer/record-designer.svelte';
     import Groovy from '$lib/components/toasts/groovy.svelte';
     import generate from '$lib/generate.svelte';
+    import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import ThreeScene from '$lib/ThreeScene';
     import { onDestroy, onMount } from 'svelte';
@@ -25,9 +26,17 @@
         resizeThree();
     });
 
+    $effect(() => {
+        if (projects.initialized) {
+            generate.refreshAllGeneratedImgs();
+        }
+    });
+
     onMount(() => {
-        // is there a reason not to do this? maybe there was a generate.init before?
-        generate.refreshAllGeneratedImgs()
+        // setTimeout(() => {
+        //     // is there a reason not to do this? maybe there was a generate.init before?
+        //     generate.refreshAllGeneratedImgs();
+        // },1000);
         if (browser) window.addEventListener('resize', resizeThree);
     });
 
@@ -67,7 +76,7 @@
     <!-- END TRIP OUT BUTTON -->
 
     <!-- RECORD MODEL -->
-    {#if projects.state.initialized}<div class="three-wrapper" class:minimized={isMinimized}>
+    {#if projects.initialized}<div class="three-wrapper" class:minimized={isMinimized}>
             <RecordDesigner {threeScene} />
         </div>{/if}
     <!-- END RECORD MODEL  -->

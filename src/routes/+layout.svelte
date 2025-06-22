@@ -88,7 +88,7 @@
     // the logic stops it from an infinite loop, but should probably abstract this and fetch on project init and then when it is changed explicitly
     let lastProjectId = '';
     $effect(() => {
-        if (!projects.state.initialized) return;
+        if (!projects.initialized) return;
         const projectId = projects.activeProject?.id;
         if (!projectId) {
             console.log('No active project');

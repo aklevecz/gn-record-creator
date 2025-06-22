@@ -44,6 +44,52 @@
         buttonView = view;
     }
 
+    /** @param {string} fileName @param {ArrayBuffer} imageArrayBuffer */
+    async function shareImage(fileName, imageArrayBuffer) {
+        // Check if Web Share API is supported
+        if (!navigator.share) {
+            // Fallback for browsers without Web Share API
+            alert('Sharing not supported on this browser');
+            return;
+        }
+
+        try {
+            // Create a File object from the array buffer
+            const imageFile = new File([imageArrayBuffer], fileName + '.jpeg', {
+                type: 'image/jpeg'
+            });
+
+            const title = 'Check out my good neighbor album cover!'
+            const text = 'Check out my good neighbor album cover!'
+
+            // Check if file sharing is supported
+            // if (navigator.canShare && !navigator.canShare({ files: [imageFile] })) {
+            //     // Fallback to URL sharing if file sharing isn't supported
+            //     const imageUrl = URL.createObjectURL(new Blob([imageArrayBuffer], { type: 'image/jpeg' }));
+            //     await navigator.share({
+            //         title,
+            //         text,
+            //         url: window.location.href
+            //     });
+            //     URL.revokeObjectURL(imageUrl);
+            //     return;
+            // }
+
+            // Share the file
+            await navigator.share({
+                title,
+                text,
+                files: [imageFile]
+            });
+
+        } catch (/** @type {*} */ error) {
+            if (error.name !== 'AbortError') {
+                console.error('Error sharing:', error);
+                alert('Could not share the image');
+            }
+        }
+    }
+
     // Can probably clean some of this up to use the active texture logic
     async function onGenerate() {
         threeScene.toggleShader();
@@ -139,7 +185,7 @@
                         <img src={url} alt="" />
                         <div class="flex gap-2">
                         <!-- <button class="history-img-button" onclick={() => project.setActiveTexture(cachedImg.id)}>Make Cover Art </button> -->
-                        <button class="history-img-button" onclick={() => alert("coming soon")}>Share</button>
+                        <button class="history-img-button" onclick={() => shareImage(cachedImg.fileName, cachedImg.arrayBuffer)}>Share</button>
                         </div>
                     </div>
                 {/each}

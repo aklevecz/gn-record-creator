@@ -16,7 +16,7 @@
     /** @type {null | HTMLElement}*/
     let container = $state(null);
     onMount(async () => {
-        if (projects.state.initialized === false) {
+        if (projects.initialized === false) {
             alert('PROJECT IS NOT INITIALIZED');
         }
         init();

@@ -8,11 +8,13 @@
     import AddressInput from '$lib/components/input/address-input.svelte';
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
     import Modal from '$lib/components/ui/modal.svelte';
+    import Scroller2D from '$lib/components/game/Scroller2D.svelte';
     import details from '$lib/details.svelte';
     import { formFields, hiddenFields } from '$lib/monday/formFields';
     import project from '$lib/project.svelte';
     import projects from '$lib/projects.svelte';
     import { Spring } from 'svelte/motion';
+    import * as Sentry from '@sentry/sveltekit';
 
     /** @type {string[]} */
     let missingKeys = $state([]);
@@ -29,18 +31,24 @@
             return;
         }
         const detailResponses = details.remapDetailsAndStringify();
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
         // SHOULD THERE BE SOME STATUS TO INDICATE THAT THEY SUBMITTED THE FORM
         await surveyApi.create({
             id: project.state.id,
             mondayId: project.state.mondayId,
             responses: { ...detailResponses, submitted: 'Submitted' }
         });
-        await mondayClientApi.create({
-            id: project.state.id,
-            mondayId: project.state.mondayId,
-            responses: { ...detailResponses, submitted: 'Submitted' }
-        });
+        try {
+            await mondayClientApi.create({
+                id: project.state.id,
+                mondayId: project.state.mondayId,
+                responses: { ...detailResponses, submitted: 'Submitted' }
+            });
+        } catch (e) {
+            console.log(e);
+            Sentry.captureException(e);
+            // silent
+        }
         submitting = false;
         goto(`/submission/${project.state.id}`);
     }
@@ -114,7 +122,7 @@
 
     <!-- THIS COULD ALSO BE THE SIDEPANEL OR END OF SURVEY -->
     <!-- FLOATING THREEJS RECORD VISUAL -->
-    {#if projects.state.initialized}<ThreeHomepage />{/if}
+    {#if projects.initialized}<ThreeHomepage />{/if}
     <!-- END FLOATING THREEJS RECORD VISUAL -->
 
     <!-- SUBMIT SURVEY -->
@@ -132,6 +140,9 @@
         </button>
     </div>
     <!-- END SUBMIT SURVEY -->
+    
+
+    
     <!-- <CalculatorFooter /> -->
 </div>
 

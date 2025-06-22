@@ -41,7 +41,7 @@ export class RecordModel {
     this.vinylRecord = new THREE.Group();
 
     // Record disc - main black part
-    const recordGeometry = new THREE.CylinderGeometry(8.9, 8.9, 0.08, 64);
+    const recordGeometry = new THREE.CylinderGeometry(8.9, 8.9, 0.15, 64);
     const recordMaterial = new THREE.MeshStandardMaterial({
       color: 0xfff,
       roughness: 0.5,
@@ -51,7 +51,7 @@ export class RecordModel {
     this.vinylRecord.add(this.record);
 
     // Label in the center
-    const labelGeometry = new THREE.CylinderGeometry(2, 2, 0.09, 64);
+    const labelGeometry = new THREE.CylinderGeometry(2, 2, 0.16, 64);
     const labelMaterial = new THREE.MeshStandardMaterial({
       color: 0xeeeeee,
       roughness: 0.8,
@@ -62,7 +62,7 @@ export class RecordModel {
     this.vinylRecord.add(label);
 
     // Center hole
-    const holeGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 32);
+    const holeGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.17, 32);
     const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const hole = new THREE.Mesh(holeGeometry, holeMaterial);
     this.vinylRecord.add(hole);
@@ -85,22 +85,54 @@ export class RecordModel {
   addGrooves(recordGroup) {
     const startRadius = 2.2;
     const endRadius = 5.8;
-    const numGrooves = 80;
+    const numGrooves = 40; // Fewer, wider grooves for more visibility
     const spacing = (endRadius - startRadius) / numGrooves;
 
     for (let i = 0; i < numGrooves; i++) {
       const radius = startRadius + i * spacing;
-      const grooveGeometry = new THREE.RingGeometry(radius, radius + 0.02, 64);
-      const grooveMaterial = new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.3
+      
+      // Create actual groove indentations using torus geometry
+      const grooveGeometry = new THREE.TorusGeometry(radius, 0.008, 4, 32);
+      const grooveMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        roughness: 0.9,
+        metalness: 0.1
       });
-      const groove = new THREE.Mesh(grooveGeometry, grooveMaterial);
-      groove.rotation.x = Math.PI / 2;
-      groove.position.y = 0.041;
-      recordGroup.add(groove);
+      
+      // Top side groove
+      const grooveTop = new THREE.Mesh(grooveGeometry, grooveMaterial);
+      grooveTop.rotation.x = Math.PI / 2;
+      grooveTop.position.y = -0.02; // Indent into the record surface
+      recordGroup.add(grooveTop);
+      
+      // Bottom side groove
+      const grooveBottom = new THREE.Mesh(grooveGeometry, grooveMaterial);
+      grooveBottom.rotation.x = Math.PI / 2;
+      grooveBottom.position.y = 0.02; // Indent into the other side
+      recordGroup.add(grooveBottom);
+      
+      // Add highlight rings to enhance visibility on both sides
+      if (i % 3 === 0) {
+        const highlightGeometry = new THREE.RingGeometry(radius - 0.01, radius + 0.01, 32);
+        const highlightMaterial = new THREE.MeshBasicMaterial({
+          color: 0x333333,
+          transparent: true,
+          opacity: 0.6,
+          side: THREE.DoubleSide
+        });
+        
+        // Top highlight
+        const highlightTop = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        highlightTop.rotation.x = Math.PI / 2;
+        highlightTop.position.y = 0.042;
+        recordGroup.add(highlightTop);
+        
+        // Bottom highlight
+        const highlightBottom = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        highlightBottom.rotation.x = Math.PI / 2;
+        highlightBottom.position.y = -0.042;
+        recordGroup.add(highlightBottom);
+      }
     }
   }
 
