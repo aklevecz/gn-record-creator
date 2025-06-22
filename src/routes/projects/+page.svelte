@@ -263,7 +263,7 @@
                                 class:is_active={isActive}
                                 disabled={isActive}
                                 onclick={() => activateTexture(arrayBuffer, fileType, id)}
-                                class="little-button">{isActive ? 'Cover Art' : 'Activate'}</button
+                                class="little-button">{isActive ? 'Cover Art' : 'Make Cover'}</button
                             >
                             <button class="little-button delete-button" onclick={() => confirmDeleteImg(id)}>Delete</button>
                         </div>
@@ -396,7 +396,7 @@
         @apply mb-4 flex flex-wrap gap-2;
     }
     .history-img-container {
-        @apply flex-[0_0_47%] rounded-md p-2 md:flex-[0_0_23%];
+        @apply flex-[0_0_47%] rounded-md p-4 md:flex-[0_0_23%];
     }
     .history-file-name {
         word-break: break-word;

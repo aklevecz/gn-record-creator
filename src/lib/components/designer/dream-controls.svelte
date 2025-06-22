@@ -125,7 +125,7 @@
             </div>
         {/if}
         {#if buttonView === 'history'}
-            <div class="px-10 mb-2">Oh hey look at your dreams</div>
+            {#if generate.state.cachedImgs.length > 0}<div class="px-10 mb-2">Oh hey look at your dreams</div>{/if}
             {#if generate.state.cachedImgs.length === 0}
                 <div>No dreams yet. What are you waiting for?</div>
                 <img src="/characters/hifive-color.svg" class="h-20 invert md:h-auto" alt="Infatuation" />
