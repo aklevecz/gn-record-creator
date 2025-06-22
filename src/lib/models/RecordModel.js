@@ -7,6 +7,16 @@ export class RecordModel {
     this.vinylRecord = null;
     this.record = null;
     this.recordCover = null;
+    
+    // Color animation properties
+    this.colorAnimation = {
+      active: false,
+      startTime: 0,
+      duration: 800,
+      startColor: new THREE.Color(),
+      endColor: new THREE.Color(),
+      currentColor: new THREE.Color()
+    };
   }
 
   /**
@@ -95,12 +105,49 @@ export class RecordModel {
   }
 
   /**
-   * Changes the color of the vinyl record
-   * @param {string|number} color - The color to set
+   * Changes the color of the vinyl record with smooth animation
+   * @param {string|number} color - The color to animate to
    */
   changeRecordColor(color) {
     if (this.record) {
-      this.record.material.color = new THREE.Color(color);
+      const newColor = new THREE.Color(color);
+      
+      // Store current color as start color
+      this.colorAnimation.startColor.copy(this.record.material.color);
+      this.colorAnimation.endColor.copy(newColor);
+      this.colorAnimation.currentColor.copy(this.colorAnimation.startColor);
+      
+      // Start animation
+      this.colorAnimation.active = true;
+      this.colorAnimation.startTime = Date.now();
+    }
+  }
+
+  /**
+   * Updates the color animation - should be called from the main animation loop
+   */
+  updateColorAnimation() {
+    if (!this.colorAnimation.active || !this.record) return;
+
+    const elapsed = Date.now() - this.colorAnimation.startTime;
+    const progress = Math.min(elapsed / this.colorAnimation.duration, 1);
+    
+    // Ease out cubic for smooth animation
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    
+    // Interpolate between start and end colors
+    this.colorAnimation.currentColor.lerpColors(
+      this.colorAnimation.startColor,
+      this.colorAnimation.endColor,
+      easedProgress
+    );
+    
+    // Apply the interpolated color
+    this.record.material.color.copy(this.colorAnimation.currentColor);
+    
+    // End animation when complete
+    if (progress >= 1) {
+      this.colorAnimation.active = false;
     }
   }
 }

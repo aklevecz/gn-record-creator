@@ -18,13 +18,12 @@
     let missingKeys = $state([]);
     let submitting = $state(false);
     let showMissingFieldsModal = $state(false);
-    
+
     async function submitInfo() {
         submitting = true;
         const { isValid, missingFields } = details.validateFormFinished();
         if (!isValid) {
             missingKeys = missingFields;
-            console.log(missingFields)
             submitting = false;
             showMissingFieldsModal = true;
             return;
@@ -89,7 +88,13 @@
                     maxSelections={detail.maxSelections ?? 1}
                 />
             {:else if type === 'dropdown'}
-                <QuestionDropdown {key} label={question.label} options={question.options} required={detail.required} description={detail.description} />
+                <QuestionDropdown
+                    {key}
+                    label={question.label}
+                    options={question.options}
+                    required={detail.required}
+                    description={detail.description}
+                />
             {:else if type === 'address'}
                 <AddressInput {key} label={detail.label} description={detail.description} required={detail.required} />
             {:else}
@@ -132,12 +137,7 @@
 
 <!-- <Groovy text={`Hello ${details.state.contact_first_name.value}!`} bottomPercent={spring.current} /> -->
 
-<Modal 
-    bind:isOpen={showMissingFieldsModal} 
-    onclose={() => {}}
-    title="Missing Required Fields" 
-    size="md"
->
+<Modal bind:isOpen={showMissingFieldsModal} onclose={() => {}} title="Missing Required Fields" size="md">
     <div class="missing-fields-content">
         <p class="mb-4">Please complete the following required fields before submitting:</p>
         <ul class="missing-fields-list">
@@ -148,14 +148,9 @@
             {/each}
         </ul>
     </div>
-    
+
     <div slot="footer">
-        <button 
-            class="modal-button modal-button-primary" 
-            onclick={() => showMissingFieldsModal = false}
-        >
-            OK, I'll complete these fields
-        </button>
+        <button class="modal-button modal-button-primary" onclick={() => (showMissingFieldsModal = false)}> OK, I'll complete these fields </button>
     </div>
 </Modal>
 
@@ -180,7 +175,7 @@
             filter: hue-rotate(360deg);
         }
     }
-/* 
+    /* 
     .missing-fields-content {
         @apply text-gray-700;
     } */

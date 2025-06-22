@@ -398,6 +398,11 @@ export class SimpleLockThreeScene {
         this.runInitialRecordAnimation();
         this.runVinylInteractionAnimation();
         this.runRevertVinylInteractionAnimation();
+        
+        // Update color animation
+        if (this.recordModel) {
+            this.recordModel.updateColorAnimation();
+        }
 
         // Check if current animation sequence is complete
         if (this.animationLock && this.isSequenceComplete(this.animationLock)) {
