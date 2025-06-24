@@ -162,7 +162,6 @@ export class SimpleLockThreeScene {
     requestAnimation(animationType) {
         // If we're already running this exact animation, ignore
         if (this.animationLock === animationType) {
-            console.log(`Animation ${animationType} already running`);
             return false;
         }
 
@@ -170,7 +169,6 @@ export class SimpleLockThreeScene {
         if (this.animationLock !== null) {
             // Avoid duplicate entries in queue
             if (!this.animationQueue.includes(animationType)) {
-                console.log(`Queueing ${animationType} (currently running: ${this.animationLock})`);
                 this.animationQueue.push(animationType);
             }
             return false;
@@ -178,7 +176,6 @@ export class SimpleLockThreeScene {
 
         // Check if animation is allowed based on state
         if (!this.canStartAnimation(animationType)) {
-            console.log(`Animation ${animationType} not allowed in current state`);
             return false;
         }
 
@@ -212,7 +209,6 @@ export class SimpleLockThreeScene {
      * @param {string} animationType - Type of animation sequence to start
      */
     startAnimationSequence(animationType) {
-        console.log(`Starting animation: ${animationType}`);
 
         // Reset all animations first to ensure clean state
         this.resetAllAnimations();

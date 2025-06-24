@@ -65,7 +65,7 @@ export async function POST({ platform, request }) {
             logging.info(`Updating entry ${data.id}`);
             console.log(`Updating entry ${data.id}`);
             mondayResponse = await mondayServer.updateItem(mondayId, data.id, responses);
-            console.log(JSON.stringify(mondayResponse));
+            console.log(`Monday Response ${JSON.stringify(mondayResponse)}`);
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);

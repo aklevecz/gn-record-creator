@@ -407,7 +407,7 @@ export const formFields = {
             { value: 'Google search', text: 'Google search', index: 1 },
             { value: 'Repeat', text: 'Repeat', index: 2 },
             { value: 'Personal connection', text: 'Personal connection', index: 3 },
-            { value: 'Social Media', text: 'Social media', index: 4 },
+            { value: 'Social Media', text: 'Social Media', index: 4 },
             { value: 'Event', text: 'Event', index: 5 },
             { value: 'Blog/article', text: 'Blog or article', index: 6 },
             { value: 'Other', text: 'Other', index: 7 }
@@ -444,8 +444,8 @@ export const formFields = {
         required: false,
         defaultValue: '',
         options: [
-            { value: 'submitted', text: 'Submitted', index: 0 },
-            { value: 'autosaved', text: 'Autosaved', index: 1 }
+            { value: 'Submitted', text: 'Submitted', index: 0 },
+            { value: 'Autosaved', text: 'Autosaved', index: 1 }
         ]
     },
 

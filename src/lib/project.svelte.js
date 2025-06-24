@@ -243,7 +243,7 @@ const createProject = () => {
                         acc[key] = toSnakeCase(String(details[key].value));
                     } else {
                         acc[key] = '';
-                        console.warn(`Missing value for pricing key: ${key}`);
+                        // console.warn(`Missing value for pricing key: ${key}`);
                     }
                     return acc;
                 },

@@ -70,6 +70,7 @@
                 return null;
             }
             // weak update if remote has newer data some how i dunno
+            console.log("Updating details from remote:", remoteSurveyData);
             for (const entry of Object.entries(details.state)) {
                 const [key, value] = entry;
                 const remoteValue = remoteSurveyData[key];

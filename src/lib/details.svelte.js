@@ -87,7 +87,6 @@ const createDetails = () => {
          * @returns {Record<string, string|string[]>}
          */
         remapDetailsAndStringify(stringifyArrays = true) {
-            console.log(details)
             const responses = Object.entries(details).reduce((/** @type {Record<string, string|string[]>} */ acc, [key, obj]) => {
                 if (stringifyArrays && Array.isArray(obj.value)) {
                     acc[key] = obj.value.join(',');

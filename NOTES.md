@@ -1,11 +1,6 @@
 Monday sync? If data exists in monday but not locally then fill it in? Might be a weird edge case ultimately
  - There might be a better way to share project across devices, but this also feels like overkill
 
-Metalwork
-- no maybe
-- no no
-
-
 email interaction
 
 in projects
@@ -14,23 +9,8 @@ in projects
 engage for newsletter if they are playing around - some share cta
 
 
-make record bigger
-make record from the side
+CHECK IF MONDAY ID ACTUALLY EXISTS
 
-33 first
-
-1 or 2 for stamper
-
-NO METAL WORK
-
-Lacquer - Mastering
-cutting by gn
-supplied lacquer
-
-Ordering  packaging
-
-no - I need advice
-
-
-IF MONDAY ID DOESNT EXIST
-- FEEDBACK
+The project details updates are confusing and/or overlapping
+ - It seems pretty good for persisting data, but it is difficult to untangle discrepancies
+ - I'm going to try and solve by component level detail checking, i.e. someting changes in the questions and the user responses are stale

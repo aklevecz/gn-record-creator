@@ -140,7 +140,7 @@
                     </div>
                 </div>
 
-                <div class="submission-section">
+                <!-- <div class="submission-section">
                     <h3>Contact Information</h3>
                     <div class="section-content">
                         {@render submissionField({
@@ -150,7 +150,7 @@
                         {@render submissionField({ label: 'Contact Email', value: submission.contact_email })}
                         {@render submissionField({ label: 'Phone', value: submission.phone })}
                     </div>
-                </div>
+                </div> -->
 
                 <div class="submission-section">
                     <h3>Release Details</h3>

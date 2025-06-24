@@ -9,6 +9,7 @@ import surveyApi from '$lib/api/survey';
 import mondayClientApi from '$lib/api/monday';
 import { DATA_VERSION } from '$lib';
 import monday from '$lib/api/monday';
+import { formFields } from './monday/formFields';
 
 /** @type {{initialized: boolean, activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -54,7 +55,7 @@ const createProjects = () => {
                         this.reset();
                     }
 
-                    // This wouldn't solve differences in details
+                    // Oh this compares the top level of the project state model to the cached projects
                     if (Object.keys(defaultProjectState).every((key) => cachedProject[key])) {
                         console.log(`Project ${cachedProject.id} has all expected keys`);
                     } else {
@@ -62,6 +63,7 @@ const createProjects = () => {
                         console.log(`Project ${cachedProject.id} does not have all expected keys`);
                         cachedProject = { ...defaultProjectState, ...cachedProject };
                     }
+
                     if (forceUpdate) {
                         db.saveProject(cachedProject);
                     }
@@ -85,7 +87,19 @@ const createProjects = () => {
                 db.saveProject(defaultProject);
                 this.registerProject(defaultProject);
             }
-            defaultProject.details && details.set(defaultProject.details);
+
+            // Remote survey gets in the way
+            // for (const [key, entry] of Object.entries(defaultProject.details)) {
+            //     // TODO: Figure out how to check arrays efficently, in this case only for colors
+            //     if (formFields[key].options && (entry.value && typeof entry.value === 'string')) {
+            //         const possibleValues = formFields[key].options.map((option) => option.value);
+            //         if (!possibleValues.includes(entry.value)) {
+            //             console.log(`Invalid value for ${key}: ${entry.value}`);
+            //             defaultProject.details[key].value = ''
+            //         }
+            //     }
+            // }
+            // defaultProject.details && details.set(defaultProject.details);
             this.activateProject(defaultProject.id);
             projects.initialized = true;
         },
@@ -129,8 +143,8 @@ const createProjects = () => {
                     //         collectedData.mondayId = mondayId;
                     //         project.state.mondayId = mondayId;
                     //     }
-                        // REDUDANCY IN CASE MONDAY FAILS
-                        surveyApi.create(collectedData);
+                    // REDUDANCY IN CASE MONDAY FAILS
+                    surveyApi.create(collectedData);
                     // });
                 } catch (e) {
                     console.error(e);

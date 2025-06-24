@@ -143,7 +143,6 @@ const mondayServerApi = () => {
                 // idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
                 idValues[formFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
 
-                console.log(idValues);
                 const valueStrings = JSON.stringify(JSON.stringify(idValues));
                 console.log(`board id: ${boardId}, item id: ${id}, column values: ${valueStrings}`);
                 let query = /* GraphQL */ `mutation { change_multiple_column_values (item_id: ${id}, board_id: ${boardId}, column_values: ${valueStrings}) { id } }`;

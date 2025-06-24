@@ -28,6 +28,7 @@ npx wrangler d1 execute DB --remote --command "CREATE TABLE IF NOT EXISTS gn_req
   status TEXT,
   session TEXT,
   monday_id TEXT,
+  form_id TEXT,
   submitted TEXT,
   create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
