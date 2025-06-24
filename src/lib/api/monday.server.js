@@ -98,26 +98,27 @@ const mondayServerApi = () => {
 
             return mondayFetch(query);
         },
-        /** @param {string} id @param {Record<string, string>} values */
-        createItem: async (id, values, boardId = NEW_LEADS_BOARD, groupId = intakeFormGroupTitleToId['Intake Form']) => {
+        /** @param {string} itemName @param {string} formId @param {Record<string, string>} values */
+        createItem: async (itemName, formId, values, boardId = NEW_LEADS_BOARD, groupId = intakeFormGroupTitleToId['Intake Form']) => {
             try {
                 /** @type {Record<string, any>} */
                 let idValues = idToValues(values);
-                console.log(`Create item: ${id} with values: ${JSON.stringify(idValues)}`);
+                console.log(`Create item: ${itemName} with values: ${JSON.stringify(idValues)}`);
                 // Add Status: New -- MAY NEED TO CHECK IF THIS SHOULD BE SUBMITTED IN THE EVENT THAT THEY SOMEHOW DONT UPDATE MONDAY UNTIL SUBMITTING THE FORM?
                 idValues[formFields.status.id] = { index: formFields.status.options?.find((option) => option.value === 'new')?.index };
                 // idValues[intakeFormFields.status.id] = { index: intakeFormFields.status.options.new };
                 // Add Create Date
                 idValues[formFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
+                idValues[formFields.form_id.id] = formId
                 // idValues[intakeFormFields.create_date.id] = { date: new Date().toISOString().split('T')[0] };
                 // Add Source: Google Search for testing -- This is part of the survey now
                 // idValues[intakeFormFields.source.id] = { index: intakeFormFields.source.options.google_search };
 
                 const valuesStrings = JSON.stringify(JSON.stringify(idValues));
-                console.log(`board id: ${boardId}, group id: ${groupId}, item name: ${id}, column values: ${valuesStrings}`);
+                console.log(`board id: ${boardId}, group id: ${groupId}, item name: ${itemName}, column values: ${valuesStrings}`);
                 const query = /* GraphQL */ `
                     mutation {
-                        create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${id}", column_values: ${valuesStrings}) {
+                        create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${itemName}", column_values: ${valuesStrings}) {
                             id
                         }
                     }
@@ -128,8 +129,8 @@ const mondayServerApi = () => {
                 console.log(e);
             }
         },
-        /** @param {string} id @param {Record<string, string>} values */
-        updateItem: async (id, values, boardId = NEW_LEADS_BOARD) => {
+        /** @param {string} id @param {string} formId @param {Record<string, string>} values */
+        updateItem: async (id, formId, values, boardId = NEW_LEADS_BOARD) => {
             try {
                 /** @type {Record<string, any>} */
                 const idValues = idToValues(values);
@@ -138,6 +139,7 @@ const mondayServerApi = () => {
                 const lastName = values.contact_last_name || 'No last name';
 
                 idValues.name = firstName + ' ' + lastName;
+                idValues[formFields.form_id.id] = formId
                 // idValues[intakeFormFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
                 idValues[formFields.updated_at.id] = { date: new Date().toISOString().split('T')[0] };
 

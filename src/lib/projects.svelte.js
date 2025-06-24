@@ -123,15 +123,15 @@ const createProjects = () => {
                 let mondayId = project.state.mondayId;
                 let collectedData = { id: project.state.id, mondayId, responses: { ...detailResponses } };
                 try {
-                    mondayClientApi.create(collectedData).then((res) => {
-                        if (res.mondayId) {
-                            mondayId = res.mondayId;
-                            collectedData.mondayId = mondayId;
-                            project.state.mondayId = mondayId;
-                        }
+                    // mondayClientApi.create(collectedData).then((res) => {
+                    //     if (res.mondayId) {
+                    //         mondayId = res.mondayId;
+                    //         collectedData.mondayId = mondayId;
+                    //         project.state.mondayId = mondayId;
+                    //     }
                         // REDUDANCY IN CASE MONDAY FAILS
                         surveyApi.create(collectedData);
-                    });
+                    // });
                 } catch (e) {
                     console.error(e);
                     // REDUNDANCY IN CASE MONDAY FAILS

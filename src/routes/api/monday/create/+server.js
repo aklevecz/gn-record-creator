@@ -28,7 +28,10 @@ export async function POST({ platform, request }) {
     try {
         const data = await request.json();
         // const title = data.responses.title;
-        const mondayName = data.responses.contact_first_name || 'No first name' + ' ' + data.responses.contact_last_name || 'No last name';
+        const firstName = data.responses.contact_first_name || 'No first name';
+        const lastName = data.responses.contact_last_name || 'No last name';
+        // const mondayName = data.responses.contact_first_name || 'No first name' + ' ' + data.responses.contact_last_name || 'No last name';
+        const mondayName = `${firstName} ${lastName}`;
         const responses = cleanEmptyValues(data.responses);
         let mondayId = data.mondayId;
         if (!mondayName) {
@@ -61,13 +64,13 @@ export async function POST({ platform, request }) {
         if (mondayId) {
             logging.info(`Updating entry ${data.id}`);
             console.log(`Updating entry ${data.id}`);
-            mondayResponse = await mondayServer.updateItem(mondayId, responses);
+            mondayResponse = await mondayServer.updateItem(mondayId, data.id, responses);
             console.log(JSON.stringify(mondayResponse));
             return json({ mondayId: mondayResponse.data.change_multiple_column_values.id });
         }
         logging.info(`Creating new entry ${data.id}`);
         console.log(`Creating new entry ${data.id}`);
-        mondayResponse = await mondayServer.createItem(mondayName, responses);
+        mondayResponse = await mondayServer.createItem(mondayName, data.id, responses);
         return json({ mondayId: mondayResponse.data.create_item.id });
     } catch (e) {
         logging.error(`Error updating entry mondayResponse:${JSON.stringify(mondayResponse)} Error:${e}`);

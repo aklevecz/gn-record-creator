@@ -120,7 +120,7 @@
     <a class="w-[150px] md:w-[250px]" href="/"><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a>
     <nav class="md:flex-1">
         <ul class="flex justify-center gap-4">
-            <li><a class="icon-link hidden md:block" href="/">home</a></li>
+            <li><a class="icon-link hidden md:block" href="/">order form</a></li>
             <li><a class="icon-link" href="/projects">projects</a></li>
             <li><a class="icon-link" href="/studio">dream</a></li>
             <!-- <div class="flex-1"></div> -->

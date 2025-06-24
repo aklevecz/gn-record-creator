@@ -295,7 +295,7 @@ export const formFields = {
         options: [
             { value: 'Yes', text: 'Yes, Good Neighbor cuts the master lacquers', index: 1 },
             { value: 'No', text: 'No, we have our own lacquer cutting arranged', index: 2 },
-            { value: 'Not sure', text: "Unsure, please advise on lacquer options", index: 3 }
+            { value: 'Not sure', text: 'Unsure, please advise on lacquer options', index: 3 }
         ]
     },
 
@@ -359,22 +359,22 @@ export const formFields = {
     },
 
     packaging_sleeve: {
-        id:'color_mks373jg',
+        id: 'color_mks373jg',
         mondayId: 'color_mks373jg',
         key: 'packaging_sleeve',
         title: 'Packaging Sleeve',
         label: 'Packaging: What type of inner-sleeve would you like?',
         description: 'Please note, we recommend poly-lined to protext the records from abrasion over the course of its lifecycle',
-        type: "dropdown",
+        type: 'dropdown',
         mondayType: 'status',
         required: false,
         defaultValue: '',
         options: [
-            {value: 'Plain white, Poly-Lined', text: 'Plain white, Poly-Lined', index: 0},
-            {value: "Plain black, Poly-Lined", text: "Plain black, Poly-Lined", index: 1},
-            {value: "Printed (1-Color)(not poly-lined)", text: "Printed (1-Color)(not poly-lined)", index: 2},
-            {value: "Printed (4-Color)(not poly-lined)", text: "Printed (4-Color)(not poly-lined)", index: 3},
-            {value: "Not sure", text: "Not sure. Let's set up a call", index: 4}
+            { value: 'Plain white, Poly-Lined', text: 'Plain white, Poly-Lined', index: 0 },
+            { value: 'Plain black, Poly-Lined', text: 'Plain black, Poly-Lined', index: 1 },
+            { value: 'Printed (1-Color)(not poly-lined)', text: 'Printed (1-Color)(not poly-lined)', index: 2 },
+            { value: 'Printed (4-Color)(not poly-lined)', text: 'Printed (4-Color)(not poly-lined)', index: 3 },
+            { value: 'Not sure', text: "Not sure. Let's set up a call", index: 4 }
         ]
     },
 
@@ -411,17 +411,7 @@ export const formFields = {
             { value: 'Event', text: 'Event', index: 5 },
             { value: 'Blog/article', text: 'Blog or article', index: 6 },
             { value: 'Other', text: 'Other', index: 7 }
-        ],
-        remap: {
-            Referral: 'Referral',
-            'Google search': 'Google search',
-            Repeat: 'Repeat',
-            'Personal connection': 'Personal connection',
-            'Social media': 'Social media',
-            Event: 'Event',
-            'Blog or article': 'Blog/article',
-            Other: 'Other'
-        }
+        ]
     },
 
     // DB/MONDAY ONLY FIELDS
@@ -483,6 +473,19 @@ export const formFields = {
         mondayType: 'date',
         required: false,
         defaultValue: ''
+    },
+
+    form_id: {
+        id: 'text_mks7f1bc',
+        mondayId: 'text_mks7f1bc',
+        key: 'form_id',
+        title: 'Form ID',
+        label: 'Form ID',
+        description: '',
+        type: 'text',
+        mondayType: 'text',
+        required: false,
+        defaultValue: ''
     }
 
     // Special name field for Monday
@@ -500,7 +503,7 @@ export const formFields = {
     // }
 };
 
-const hiddenFields = [formFields.status.key, formFields.submitted.key, formFields.create_date.key, formFields.updated_at.key];
+const hiddenFields = [formFields.status.key, formFields.submitted.key, formFields.create_date.key, formFields.updated_at.key, formFields.form_id.key];
 
 export { hiddenFields };
 
