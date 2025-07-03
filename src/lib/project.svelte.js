@@ -32,22 +32,19 @@ export const defaultProjectState = {
         record_color: 0,
         total_units: 0,
         estimatedCarbonSavings: 0
-    }
+    },
+    hasSubmitted: false
 };
-
 
 // TODO: MOVE CALCULATOR FUNCTIONS SOMEWHERE ELSE
 
 /** @typedef {keyof Omit<Pricing, 'estimatedCost'>} PricingKey */
 
 /** @type {PricingKey[]} */
-const pricingKeys = /** @type {PricingKey[]} */ (
-    Object.keys(defaultProjectState.pricing).filter((key) => key !== 'estimatedCost')
-);
+const pricingKeys = /** @type {PricingKey[]} */ (Object.keys(defaultProjectState.pricing).filter((key) => key !== 'estimatedCost'));
 
 // /** @typedef {keyof Omit<typeof defaultProjectState.carbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
 /** @typedef {keyof Omit<CarbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
-
 
 /** @type {CarbonSavingsKey[]} */
 const carbonSavingsKeys = /** @type {CarbonSavingsKey[]} */ (
@@ -237,18 +234,15 @@ const createProject = () => {
         },
         /** @param {Details} details */
         updatePricing(details) {
-            const pricingObjects = pricingKeys.reduce(
-                (/** @type {Record<string, string>} */ acc, key) => {
-                    if (details && details[key] && typeof details[key].value !== 'undefined') {
-                        acc[key] = toSnakeCase(String(details[key].value));
-                    } else {
-                        acc[key] = '';
-                        // console.warn(`Missing value for pricing key: ${key}`);
-                    }
-                    return acc;
-                },
-                {}
-            );
+            const pricingObjects = pricingKeys.reduce((/** @type {Record<string, string>} */ acc, key) => {
+                if (details && details[key] && typeof details[key].value !== 'undefined') {
+                    acc[key] = toSnakeCase(String(details[key].value));
+                } else {
+                    acc[key] = '';
+                    // console.warn(`Missing value for pricing key: ${key}`);
+                }
+                return acc;
+            }, {});
 
             let estimatedCost = 0;
 
@@ -292,9 +286,7 @@ const createProject = () => {
                 }
 
                 if (isNaN(itemCost)) {
-                    console.warn(
-                        `Calculated NaN for pricing key: ${String(pricingKey)}. Setting to 0.`
-                    );
+                    console.warn(`Calculated NaN for pricing key: ${String(pricingKey)}. Setting to 0.`);
                     itemCost = 0;
                 }
 
@@ -315,21 +307,18 @@ const createProject = () => {
                 return;
             }
 
-            const savingsObjects = carbonSavingsKeys.reduce(
-                (/** @type {Record<string, string>} */ acc, key) => {
-                    // Check if the key exists in details and has a value property
-                    if (details[key] && typeof details[key].value !== 'undefined') {
-                        // Convert value to snake_case string for categorical matching
-                        // For non-categorical, ensure it's a string for consistent processing initially
-                        acc[key] = toSnakeCase(String(details[key].value));
-                    } else {
-                        acc[key] = ''; // Assign empty string if key or value is missing
-                        console.warn(`Missing value for carbon savings key: ${key} in details`);
-                    }
-                    return acc;
-                },
-                {}
-            );
+            const savingsObjects = carbonSavingsKeys.reduce((/** @type {Record<string, string>} */ acc, key) => {
+                // Check if the key exists in details and has a value property
+                if (details[key] && typeof details[key].value !== 'undefined') {
+                    // Convert value to snake_case string for categorical matching
+                    // For non-categorical, ensure it's a string for consistent processing initially
+                    acc[key] = toSnakeCase(String(details[key].value));
+                } else {
+                    acc[key] = ''; // Assign empty string if key or value is missing
+                    console.warn(`Missing value for carbon savings key: ${key} in details`);
+                }
+                return acc;
+            }, {});
 
             let estimatedCarbonSavings = 0;
 
@@ -377,9 +366,7 @@ const createProject = () => {
 
                 // Ensure itemSavings is a number, default to 0 if NaN
                 if (isNaN(itemSavings)) {
-                    console.warn(
-                        `Calculated NaN for carbon savings key: ${String(savingsKey)}. Setting to 0.`
-                    );
+                    console.warn(`Calculated NaN for carbon savings key: ${String(savingsKey)}. Setting to 0.`);
                     itemSavings = 0;
                 }
 
@@ -413,14 +400,10 @@ const createProject = () => {
             const textures = project.textures;
             // just in case fetched from the r2
             const remoteTexturesPaths = await r2Api.getAllUploadsByProjectId(project.id);
-            remoteTextureIds = remoteTexturesPaths
-                .map((path) => path.split('/').pop())
-                .filter((path) => path !== undefined);
+            remoteTextureIds = remoteTexturesPaths.map((path) => path.split('/').pop()).filter((path) => path !== undefined);
 
             // Compare textures to remoteTextureIds
-            const remoteOnlyTextures = remoteTextureIds.filter(
-                (textureId) => !textures.map((t) => t.fileHash).includes(textureId)
-            );
+            const remoteOnlyTextures = remoteTextureIds.filter((textureId) => !textures.map((t) => t.fileHash).includes(textureId));
             texturesLoaded = true;
             // Do something with remoteOnlyTextures...
         },

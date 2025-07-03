@@ -68,6 +68,7 @@
  * @property {Texture[]} textures
  * @property {Pricing} pricing
  * @property {any} carbonSavings // Define the type more specifically if possible
+ * @property {boolean} hasSubmitted
  */
 
 /**
