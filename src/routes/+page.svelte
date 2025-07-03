@@ -33,22 +33,25 @@
         const detailResponses = details.remapDetailsAndStringify();
         // await new Promise((resolve) => setTimeout(resolve, 1000));
         // SHOULD THERE BE SOME STATUS TO INDICATE THAT THEY SUBMITTED THE FORM
-        await surveyApi.create({
-            id: project.state.id,
-            mondayId: project.state.mondayId,
-            responses: { ...detailResponses, submitted: 'Submitted' }
-        });
+        let mondayId = project.state.mondayId;
         try {
-            await mondayClientApi.create({
+            const mondayRes = await mondayClientApi.create({
                 id: project.state.id,
                 mondayId: project.state.mondayId,
                 responses: { ...detailResponses, submitted: 'Submitted' }
             });
+            mondayId = mondayRes.mondayId;
         } catch (e) {
             console.log(e);
             Sentry.captureException(e);
             // silent
         }
+        await surveyApi.create({
+            id: project.state.id,
+            mondayId,,
+            responses: { ...detailResponses, submitted: 'Submitted' }
+        });
+
         submitting = false;
         goto(`/submission/${project.state.id}`);
     }
@@ -140,9 +143,7 @@
         </button>
     </div>
     <!-- END SUBMIT SURVEY -->
-    
 
-    
     <!-- <CalculatorFooter /> -->
 </div>
 
