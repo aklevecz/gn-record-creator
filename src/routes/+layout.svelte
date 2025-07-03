@@ -11,6 +11,7 @@
     import network from '$lib/network.svelte';
     import posthog from 'posthog-js'
     import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
+    import project from '$lib/project.svelte';
 
     let { children } = $props();
 
@@ -101,7 +102,10 @@
             return;
         }
         projects.checkProjectSubmittedStatus(projectId).then((res) => {
-            console.log(`Project submitted status: ${JSON.stringify(res)}`);
+            console.log(`Project submitted status: ${res}`);
+            if (res.data?.currentStatus === 'Submitted') {
+                project.state.hasSubmitted = true;
+            }
         })
         fetchRemoteSurvey(projectId);
         lastProjectId = projectId;

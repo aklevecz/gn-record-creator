@@ -23,6 +23,8 @@
     let submitting = $state(false);
     let showMissingFieldsModal = $state(false);
 
+    let hasSubmitted = $derived(project.state.hasSubmitted);
+
     async function submitInfo() {
         submitting = true;
         const { isValid, missingFields } = details.validateFormFinished();
@@ -45,6 +47,7 @@
             mondayId = mondayRes.mondayId;
             project.state.mondayId = mondayId;
             projects.updateProject(serializeDeep(project.state));
+            project.state.hasSubmitted = true;
         } catch (e) {
             console.log(e);
             Sentry.captureException(e);
@@ -78,7 +81,6 @@
             spring.set(offScreenSpring);
         }
     });
-    let hasSubmitted = $derived(project.state.hasSubmitted);
 </script>
 
 <div class="survey-page">
