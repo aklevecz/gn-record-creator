@@ -207,27 +207,11 @@ const mondayServerApi = () => {
                     };
                 }
 
-                // Parse the value to get the index
-                let currentIndex = null;
-                let currentStatus = 'Unknown';
+                // Use the same approach as admin panel: prioritize text over value
+                const currentStatus = submittedColumn.text || submittedColumn.value || 'Unknown';
                 
-                if (submittedColumn.value) {
-                    try {
-                        const parsedValue = JSON.parse(submittedColumn.value);
-                        currentIndex = parsedValue.index;
-                    } catch (e) {
-                        console.log('Error parsing submitted column value:', e);
-                    }
-                }
-
-                // Find the option that matches the current index
-                const currentOption = formFields.submitted.options.find(option => option.index === currentIndex);
-                if (currentOption) {
-                    currentStatus = currentOption.value;
-                }
-
-                // Check if status is "Submitted" (index 0)
-                const isSubmitted = currentIndex === 0;
+                // Check if status is "Submitted" by comparing the text directly
+                const isSubmitted = currentStatus === 'Submitted';
 
                 return {
                     success: true,
