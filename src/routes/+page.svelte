@@ -48,7 +48,7 @@
         }
         await surveyApi.create({
             id: project.state.id,
-            mondayId,,
+            mondayId,
             responses: { ...detailResponses, submitted: 'Submitted' }
         });
 
