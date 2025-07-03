@@ -5,7 +5,7 @@ export const recordColors = {
     oceanFloor: 'Ocean floor (dark blue)',
     skyBlue: 'Sky blue',
     salsaVerde: 'Salsa verde (green)',
-    limoncello: 'Limocello (yellow)',
+    limoncello: 'Limoncello (yellow)',
     habanero: 'Habanero (orange)',
     redAlert: 'Red alert',
     hibiscus: 'Hibiscus (pink)',
@@ -230,6 +230,24 @@ export const formFields = {
         ]
     },
 
+    time_per_side: {
+        id: "color_mksgcjz9",
+        mondayId: "color_mksgcjz9",
+        key: "time_per_side",
+        title: "Time Per Side (A/B/C/D etc.)",
+        label: "Time Per Side (A/B/C/D etc.)",
+        description: "Please indicate how long each side of a record should be",
+        type: "dropdown",
+        mondayType: "status",
+        required: true,
+        defaultValue: "",
+        options: [
+            {value:"10 min (per side)", text:"10 min (per side)", index:0},
+            {value:"Between 10-18 min (per side)", text:"Between 10-18 min (per side)", index:1},
+            {value:"More than/but not not longer than 18-22 min (per side)", text:"More than/but not not longer than 18-22 min (per side)", index:2},
+        ]
+    },
+
     record_color: {
         id: 'dropdown_mkqedrj6',
         mondayId: 'dropdown_mkqedrj6',
@@ -353,8 +371,8 @@ export const formFields = {
             { value: 'Single pocket', text: 'Single pocket', index: 0 },
             { value: 'Gatefold', text: 'Gatefold', index: 1 },
             { value: 'Single pocket w/ wide spine (2LP)', text: 'Single pocket w/ wide spine (2LP)', index: 3 },
-            { value: 'No', text: "No Packaging Required - we'll supply it to you ourselves", index: 2 },
-            { value: 'Not sure', text: "No sure. Let's set up a call", index: 4 }
+            // { value: 'No', text: "No Packaging Required - we'll supply it to you ourselves", index: 2 },
+            { value: 'Not sure', text: "Not sure. Let's set up a call", index: 4 }
         ]
     },
 
@@ -405,7 +423,7 @@ export const formFields = {
         options: [
             { value: 'Referral', text: 'Referral', index: 0 },
             { value: 'Google search', text: 'Google search', index: 1 },
-            { value: 'Repeat', text: 'Repeat', index: 2 },
+            { value: 'Repeat', text: 'Repeat Customer', index: 2 },
             { value: 'Personal connection', text: 'Personal connection', index: 3 },
             { value: 'Social Media', text: 'Social Media', index: 4 },
             { value: 'Event', text: 'Event', index: 5 },

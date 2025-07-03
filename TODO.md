@@ -13,3 +13,17 @@ looking at activity in locations
 
 - Consider AR component for visualizing the Record
 - Calendar integration into Monday, but I still dont have much access
+
+
+-=-------
+Repeat customer or something
+
+projects
+once it has been submitted
+it should be locked
+
+limonecello
+
+reset the artwork when new project is created
+
+create new project would be a primary button

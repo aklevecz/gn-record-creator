@@ -5,7 +5,7 @@
 
 /** @type {NetworkState} */
 const defaultNetworkState = {
-    isOnline: navigator.onLine
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true
 };
 
 let FORCE_OFFLINE = false;

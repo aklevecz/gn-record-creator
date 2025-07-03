@@ -1,5 +1,5 @@
-npx wrangler d1 execute DB --remote --command "DROP TABLE gn_request_form;"
-npx wrangler d1 execute DB --remote --command "CREATE TABLE IF NOT EXISTS gn_request_form (
+npx wrangler d1 execute DB --local --command "DROP TABLE gn_request_form;"
+npx wrangler d1 execute DB --local --command "CREATE TABLE IF NOT EXISTS gn_request_form (
   id TEXT PRIMARY KEY,
   title TEXT,
   contact_first_name TEXT,
@@ -16,6 +16,7 @@ npx wrangler d1 execute DB --remote --command "CREATE TABLE IF NOT EXISTS gn_req
   total_units TEXT,
   records_per_set TEXT,
   record_format TEXT,
+  time_per_side TEXT,
   record_color TEXT,
   opacity TEXT,
   lacquers TEXT,
@@ -35,7 +36,7 @@ npx wrangler d1 execute DB --remote --command "CREATE TABLE IF NOT EXISTS gn_req
 );"
 
 
-npx wrangler d1 execute DB --remote --command "ALTER TABLE gn_request_form ADD COLUMN opacity TEXT"
+npx wrangler d1 execute DB --local --command "ALTER TABLE gn_request_form ADD COLUMN opacity TEXT"
 
 npx wrangler d1 execute DB --local --command "SELECT * FROM gn_request_form"
 npx wrangler d1 execute DB --local --command "SELECT monday_id FROM gn_request_form"

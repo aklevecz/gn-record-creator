@@ -5,13 +5,13 @@
     import projects from '$lib/projects.svelte';
     import { onDestroy, onMount } from 'svelte';
 
-    let {
-        width = '100%',
-        height = '100%',
-        threeScene,
-    } = $props();
+    let { width = '100%', height = '100%', threeScene } = $props();
 
     // let threeScene = new ThreeScene();
+    function updateTextureWithRandomCharacter() {
+        const randomCharacterAsset = allCharacterAssets[Math.floor(Math.random() * allCharacterAssets.length)];
+        threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
+    }
 
     /** @type {null | HTMLElement}*/
     let container = $state(null);
@@ -24,11 +24,7 @@
             if (container && browser) {
                 threeScene.init(container);
                 threeScene.animate();
-                function updateTextureWithRandomCharacter() {
-                    const randomCharacterAsset =
-                        allCharacterAssets[Math.floor(Math.random() * allCharacterAssets.length)];
-                    threeScene.updateMaterialTexture(`/characters/${randomCharacterAsset}.png`);
-                }
+
                 updateTextureWithRandomCharacter();
             }
         }
@@ -41,6 +37,8 @@
             setTimeout(() => {
                 threeScene.updateMaterialTexture(project.activeTextureUrl);
             }, 50);
+        } else {
+            updateTextureWithRandomCharacter();
         }
     });
 
@@ -50,7 +48,6 @@
         }
     });
 </script>
-
 <div bind:this={container} style="width: {width}; height: {height};" class="three-container"></div>
 
 <style>

@@ -1,15 +1,12 @@
 import { dev } from '$app/environment';
+import { DATA_VERSION } from '$lib';
+import surveyApi from '$lib/api/survey';
 import { FIVE_SECONDS, ONE_SECOND_MS, THIRTY_SECONDS_MS } from './constants';
 import db from './db';
 import details, { defaultDetailState } from './details.svelte';
 import project, { defaultProjectState } from './project.svelte';
 import { cachedKeys } from './storage';
 import { debounce } from './utils';
-import surveyApi from '$lib/api/survey';
-import mondayClientApi from '$lib/api/monday';
-import { DATA_VERSION } from '$lib';
-import monday from '$lib/api/monday';
-import { formFields } from './monday/formFields';
 
 /** @type {{initialized: boolean, activeProject: string, projects: Project[], cachedTextures: any}} */
 const defaultProjectsState = {
@@ -174,6 +171,8 @@ const createProjects = () => {
             const existingActiveTextureId = cachedKeys.getProjectTexture(projectId);
             if (existingActiveTextureId) {
                 project.setActiveTexture(existingActiveTextureId);
+            } else {
+                project.resetActiveTexture()
             }
 
             // I think this checks all textures so it is less dependent on the active one, which is always referencable in storage or remote

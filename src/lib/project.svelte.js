@@ -447,6 +447,12 @@ const createProject = () => {
             activeTextureId = textureId;
             this.generateActiveTexture();
         },
+        async resetActiveTexture() {
+            // cachedKeys.setProjectTexture(project.id, '');
+            activeTextureId = '';
+            activeTextureUrl = '';
+            // this.generateActiveTexture();
+        },
         async generateActiveTexture() {
             // in theory this could just run whenever activeTextureId changes
             URL.revokeObjectURL(activeTextureUrl);
