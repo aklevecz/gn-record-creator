@@ -15,6 +15,8 @@
     import projects from '$lib/projects.svelte';
     import { Spring } from 'svelte/motion';
     import * as Sentry from '@sentry/sveltekit';
+    import db from '$lib/db';
+    import { serializeDeep } from '$lib/utils';
 
     /** @type {string[]} */
     let missingKeys = $state([]);
@@ -41,6 +43,9 @@
                 responses: { ...detailResponses, submitted: 'Submitted' }
             });
             mondayId = mondayRes.mondayId;
+            project.state.mondayId = mondayId;
+            db.saveProject(serializeDeep(project))
+            
         } catch (e) {
             console.log(e);
             Sentry.captureException(e);
