@@ -55,7 +55,8 @@
                         ...project.carbon_savings
                     },
                     textures: [],
-                    details
+                    details,
+                    hasSubmitted: false
                 });
             }
         });

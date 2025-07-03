@@ -44,8 +44,7 @@
             });
             mondayId = mondayRes.mondayId;
             project.state.mondayId = mondayId;
-            projects.updateProject(serializeDeep(project.state))
-            
+            projects.updateProject(serializeDeep(project.state));
         } catch (e) {
             console.log(e);
             Sentry.captureException(e);
@@ -79,6 +78,7 @@
             spring.set(offScreenSpring);
         }
     });
+    let hasSubmitted = $derived(project.state.hasSubmitted);
 </script>
 
 <div class="survey-page">
@@ -86,11 +86,11 @@
     <div class="survey-page-cta text-xs">
         Please fill out the following information so we can set up your project in our system, verify production schedule and get you quotes.
     </div>
-
+    {#if hasSubmitted}<div class="text-[var(--green)]">You have already submitted this project!</div>{/if}
     <!-- COULD BE ITS OWN COMPONTENT CALLED LIKE SURVEYSOMETHING -->
     <!-- BEGIN SURVEY -->
     <!-- TODO: DIFFERENCE BETWEEN QUESTION AND DETAIL IS CONFUSING -->
-    <div class="survey-questions">
+    <div class="survey-questions" style={hasSubmitted ? 'pointer-events:none;opacity: .25;' : ''}>
         {#each Object.entries(details.state).filter(([key, detail]) => !hiddenFields.includes(key)) as [key, detail]}
             {@const type = detail.type}
             {@const question = formFields[key]}
@@ -135,10 +135,8 @@
 
     <!-- SUBMIT SURVEY -->
     <div class="survey-submit my-10">
-        <div class="survey-submit-cta mb-2 p-4">
-            Press submit if you have finished filling out all of the required info. You will be able to edit things later.
-        </div>
-        <button onclick={submitInfo} class="mx-auto block text-xl">
+        {#if !hasSubmitted}<div class="survey-submit-cta mb-2 p-4">Press submit if you have finished filling out all of the required info.</div>{/if}
+        <button disabled={hasSubmitted} onclick={submitInfo} class="mx-auto block text-xl">
             {#if submitting}
                 <img class="mx-auto" class:isSubmitting={submitting} src="/characters/juggle-color.svg" alt="juggle graphic" />
                 Submitting

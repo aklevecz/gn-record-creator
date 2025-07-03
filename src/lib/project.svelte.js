@@ -202,7 +202,8 @@ const createProject = () => {
                 textures: project.textures,
                 createdAt: project.createdAt,
                 pricing: project.pricing,
-                carbonSavings: project.carbonSavings // Include in returned object
+                carbonSavings: project.carbonSavings, // Include in returned object
+                hasSubmitted: project.hasSubmitted
             };
         },
         /** @param {{name: string, details: Details, survey: Survey}} props */
