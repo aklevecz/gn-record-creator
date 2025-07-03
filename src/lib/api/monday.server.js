@@ -178,6 +178,73 @@ const mondayServerApi = () => {
             const query = /* GraphQL */ `query { boards(ids: [${boardId}]) { columns { id title type settings_str } } }`;
 
             return mondayFetch(query);
+        },
+        /**
+         * Check if a Monday item has submitted status
+         * @param {string | number} mondayId - The Monday item ID
+         * @returns {Promise<{success: boolean, data?: {isSubmitted: boolean, currentStatus: string, mondayId: string, lastChecked: string}, error?: string}>}
+         */
+        getSubmittedStatus: async (mondayId) => {
+            try {
+                const response = await mondayFetch(
+                    /* GraphQL */ `query { items(ids: [${mondayId}]) { id name column_values { column { id title type } id type value text } } }`
+                );
+
+                if (!response.data?.items?.length) {
+                    return {
+                        success: false,
+                        error: 'Item not found'
+                    };
+                }
+
+                const item = response.data.items[0];
+                const submittedColumn = item.column_values.find(cv => cv.column.id === formFields.submitted.mondayId);
+
+                if (!submittedColumn) {
+                    return {
+                        success: false,
+                        error: 'Submitted column not found'
+                    };
+                }
+
+                // Parse the value to get the index
+                let currentIndex = null;
+                let currentStatus = 'Unknown';
+                
+                if (submittedColumn.value) {
+                    try {
+                        const parsedValue = JSON.parse(submittedColumn.value);
+                        currentIndex = parsedValue.index;
+                    } catch (e) {
+                        console.log('Error parsing submitted column value:', e);
+                    }
+                }
+
+                // Find the option that matches the current index
+                const currentOption = formFields.submitted.options.find(option => option.index === currentIndex);
+                if (currentOption) {
+                    currentStatus = currentOption.value;
+                }
+
+                // Check if status is "Submitted" (index 0)
+                const isSubmitted = currentIndex === 0;
+
+                return {
+                    success: true,
+                    data: {
+                        isSubmitted,
+                        currentStatus,
+                        mondayId: mondayId.toString(),
+                        lastChecked: new Date().toISOString()
+                    }
+                };
+            } catch (error) {
+                console.log('Error checking submitted status:', error);
+                return {
+                    success: false,
+                    error: 'API error'
+                };
+            }
         }
     };
 };

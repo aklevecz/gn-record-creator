@@ -1,6 +1,7 @@
 import { dev } from '$app/environment';
 import { DATA_VERSION } from '$lib';
 import surveyApi from '$lib/api/survey';
+import mondayApi from '$lib/api/monday';
 import { FIVE_SECONDS, ONE_SECOND_MS, THIRTY_SECONDS_MS } from './constants';
 import db from './db';
 import details, { defaultDetailState } from './details.svelte';
@@ -181,6 +182,44 @@ const createProjects = () => {
         reset() {
             projects.projects = [];
             projects.activeProject = 'new project';
+        },
+        /**
+         * Check if a project has submitted status in Monday.com
+         * @param {string} projectId - The local project ID
+         * @returns {Promise<{success: boolean, data?: {isSubmitted: boolean, currentStatus: string, mondayId: string, lastChecked: string}, error?: string}>}
+         */
+        async checkProjectSubmittedStatus(projectId) {
+            const project = projects.projects.find(p => p.id === projectId);
+            
+            if (!project) {
+                return {
+                    success: false,
+                    error: 'Project not found'
+                };
+            }
+
+            if (!project.mondayId) {
+                return {
+                    success: false,
+                    error: 'Project does not have a Monday ID'
+                };
+            }
+
+            return await mondayApi.checkSubmittedStatus(project.mondayId);
+        },
+        /**
+         * Check if the currently active project has submitted status in Monday.com
+         * @returns {Promise<{success: boolean, data?: {isSubmitted: boolean, currentStatus: string, mondayId: string, lastChecked: string}, error?: string}>}
+         */
+        async checkActiveProjectSubmittedStatus() {
+            if (!projects.activeProject) {
+                return {
+                    success: false,
+                    error: 'No active project'
+                };
+            }
+
+            return await this.checkProjectSubmittedStatus(projects.activeProject);
         }
     };
 };

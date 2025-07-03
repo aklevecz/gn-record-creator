@@ -1,6 +1,7 @@
 const mondayClientApi = () => {
 	const endpoints = {
-		create: '/api/monday/create'
+		create: '/api/monday/create',
+		status: '/api/monday/status'
 	};
 
 	return {
@@ -21,6 +22,39 @@ const mondayClientApi = () => {
                 throw Error(`${data.code}: ${data.message}`);
             }
             return data;
+		},
+		/**
+		 * Check if a Monday item has submitted status
+		 * @param {string | number} mondayId - The Monday item ID
+		 * @returns {Promise<{success: boolean, data?: {isSubmitted: boolean, currentStatus: string, mondayId: string, lastChecked: string}, error?: string}>}
+		 */
+		async checkSubmittedStatus(mondayId) {
+			try {
+				const res = await fetch(`${endpoints.status}?mondayId=${encodeURIComponent(mondayId)}`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+
+				const data = await res.json();
+				
+				if (!res.ok) {
+					console.log(`Error checking submitted status for Monday ID: ${mondayId}`);
+					return {
+						success: false,
+						error: data.error || 'API error'
+					};
+				}
+
+				return data;
+			} catch (error) {
+				console.log('Network error checking submitted status:', error);
+				return {
+					success: false,
+					error: 'Network error'
+				};
+			}
 		}
 	};
 };

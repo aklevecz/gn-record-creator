@@ -99,6 +99,9 @@
             console.log('Project id did not change');
             return;
         }
+        projects.checkProjectSubmittedStatus(projectId).then((res) => {
+            console.log(`Project submitted status: ${JSON.stringify(res)}`);
+        })
         fetchRemoteSurvey(projectId);
         lastProjectId = projectId;
     });
