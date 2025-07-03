@@ -44,7 +44,7 @@
             });
             mondayId = mondayRes.mondayId;
             project.state.mondayId = mondayId;
-            db.saveProject(serializeDeep(project))
+            db.saveProject(serializeDeep(project.state))
             
         } catch (e) {
             console.log(e);
