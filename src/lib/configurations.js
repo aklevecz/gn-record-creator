@@ -53,6 +53,7 @@ export default {
 		promptWord: 'bao',
 		model: 'black-forest-labs/flux-1.1-pro-ultra',
 		// replicateId: public_dev,
+		safety_tolerance: 6,
 		modelParams: {}
 	},
 	'aklevecz/flux-raptor-lora': {
