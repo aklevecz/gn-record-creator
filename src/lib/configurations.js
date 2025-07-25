@@ -48,6 +48,13 @@ export default {
 		replicateId: public_schnell,
 		modelParams: {}
 	},
+	'black-forest-labs/flux-1.1-pro-ultra': {
+		triggerWord: 'a french bulldog',
+		promptWord: 'bao',
+		model: 'black-forest-labs/flux-1.1-pro-ultra',
+		// replicateId: public_dev,
+		modelParams: {}
+	},
 	'aklevecz/flux-raptor-lora': {
 		triggerWord: 'velociraptor',
 		promptWord: 'raptor',

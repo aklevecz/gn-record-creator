@@ -94,7 +94,8 @@
     async function onGenerate() {
         threeScene.toggleShader();
 
-        const model = 'black-forest-labs/flux-schnell';
+        // const model = 'black-forest-labs/flux-schnell';
+        const model = 'black-forest-labs/flux-1.1-pro-ultra';
         try {
             let data = await generate.createGeneration(prompt, model);
             if (!data?.id) {

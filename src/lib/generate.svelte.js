@@ -82,6 +82,7 @@ const createGenerateStore = () => {
             generate.generating = true;
             interval = setInterval(async () => {
                 const data = await generateApi.checkGeneration(id);
+                console.log('Polling generation status:', data);
                 const str = data.logs;
                 const seed = str.match(/Using seed: (\d+)/)?.[1];
                 const prompt = str.match(/Prompt: (.*?)(?=txt2img)/s)?.[1];
@@ -116,12 +117,18 @@ const createGenerateStore = () => {
                     generate.generating = false;
                     generate.outputs = data.output;
                     // history.add(data.output[0]);
-                    const imgUrl = data.output[0];
+                    let imgUrl = data.output[0];
+
+                    // For flux ultra or new api structure
+                    if (typeof data.output === 'string') {
+                        imgUrl = data.output;
+                    }
 
                     const promptSeed = `${prompt?.replace(/[^a-zA-Z0-9]/g, '_')}_${seed}`;
                     // overkill?
                     // const id = `${projects.activeProject?.id}-${promptSeed}`;
                     const id = promptSeed;
+                    console.log('Image URL:', imgUrl);
                     fetchImageAsBlob(imgUrl).then(async function (blob) {
                         const projectId = projects.activeProject?.id || 'missing-project-id';
                         const imgSeed = seed || 'missing-seed';

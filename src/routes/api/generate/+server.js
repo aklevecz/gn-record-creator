@@ -51,18 +51,22 @@ const headers = {
  * @returns {Promise<ReplicateResponse | undefined>} - The prediction result
  */
 const makeReplicateRequestPublic = async (prompt, configuration) => {
-	const url = 'https://api.replicate.com/v1/predictions';
+	let baseUrl = 'https://api.replicate.com/v1';
+	let url = `${baseUrl}/predictions`;
+
+	// For flux ultra or new api structure
+	if (configuration.model.includes('ultra')) {
+		url = `${baseUrl}/models/${configuration.model}/predictions`;
+	}
 	const headers = {
 		Authorization: `Bearer ${REPLICATE_API_TOKEN}`,
 		'Content-Type': 'application/json'
 	};
+			// hf_lora: configuration.model
+	const input = { prompt: prompt, ...configuration.modelParams };
 	const body = JSON.stringify({
 		version: configuration.replicateId,
-		input: {
-			prompt,
-			...configuration.modelParams
-			// hf_lora: configuration.model
-		}
+		input
 	});
 
 	// try {
@@ -87,10 +91,11 @@ const makeReplicateRequestPublic = async (prompt, configuration) => {
 export async function POST({ platform, request }) {
 	/** @type {*} */
 	const ctx = platform?.context;
-	const logging = logger(ctx);
+	// const logging = logger(ctx);
 	const { prompt, model } = await request.json();
 	try {
 		const configuration = configurations[model];
+		console.log(`Configuration for model ${model}:`, configuration);
 		const data = await makeReplicateRequestPublic(prompt, configuration);
 		logging.info(`Successful image gen call ${JSON.stringify(data)}`);
 		return json(data);

@@ -17,6 +17,7 @@ let generateApi = () => {
 		 */
 		generate: async (prompt, model) => {
 			let configuration = configurations[model];
+			console.log(`Configuration for model ${model}:`, configuration);
 			// try {
 			let res = await fetch(endpoints.generate, {
 				method: 'POST',
