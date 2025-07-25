@@ -91,7 +91,7 @@ const makeReplicateRequestPublic = async (prompt, configuration) => {
 export async function POST({ platform, request }) {
 	/** @type {*} */
 	const ctx = platform?.context;
-	// const logging = logger(ctx);
+	const logging = logger(ctx);
 	const { prompt, model } = await request.json();
 	try {
 		const configuration = configurations[model];
