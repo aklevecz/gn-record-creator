@@ -82,7 +82,17 @@
         }
     });
 </script>
-
+<svelte:head>
+<title>Record Setup Form - Good Neighbor Record Creator</title>
+<meta name="description" content="Howdy! Ready to make some records? Fill out our friendly setup form to get your vinyl pressing project started with Good Neighbor." />
+<meta property="og:title" content="Record Setup Form - Good Neighbor Record Creator" />
+<meta property="og:description" content="Howdy! Ready to make some records? Fill out our friendly setup form to get your vinyl pressing project started with Good Neighbor." />
+<meta property="og:image" content="/records/purple-haze.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Record Setup Form - Good Neighbor Record Creator" />
+<meta name="twitter:description" content="Howdy! Ready to make some records? Fill out our friendly setup form to get your vinyl pressing project started with Good Neighbor." />
+<meta name="twitter:image" content="/records/purple-haze.png" />
+</svelte:head>
 <div class="survey-page">
     <h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
     <div class="survey-page-cta text-xs">
