@@ -41,6 +41,18 @@
     }, {});
 </script>
 
+<svelte:head>
+    <title>Admin Dashboard - Good Neighbor Record Creator</title>
+    <meta name="description" content="Administrative dashboard for managing form fields, database, and Monday.com integration for the Good Neighbor Record Creator application." />
+    <meta property="og:title" content="Admin Dashboard - Good Neighbor Record Creator" />
+    <meta property="og:description" content="Administrative dashboard for managing form fields, database, and Monday.com integration for the Good Neighbor Record Creator application." />
+    <meta property="og:image" content="/characters/carry-blackwhite.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Admin Dashboard - Good Neighbor Record Creator" />
+    <meta name="twitter:description" content="Administrative dashboard for managing form fields, database, and Monday.com integration for the Good Neighbor Record Creator application." />
+    <meta name="twitter:image" content="/characters/carry-blackwhite.png" />
+</svelte:head>
+
 <div class="admin-home">
     <div class="header">
         <h1>Admin Dashboard</h1>

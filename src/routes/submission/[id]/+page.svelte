@@ -65,6 +65,18 @@
     });
 </script>
 
+<svelte:head>
+    <title>Submission Confirmation - Good Neighbor Record Creator</title>
+    <meta name="description" content="Thank you for your vinyl record submission! Your project details have been received and you'll hear from your good neighbor soon." />
+    <meta property="og:title" content="Submission Confirmation - Good Neighbor Record Creator" />
+    <meta property="og:description" content="Thank you for your vinyl record submission! Your project details have been received and you'll hear from your good neighbor soon." />
+    <meta property="og:image" content="/characters/carry-blackwhite.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Submission Confirmation - Good Neighbor Record Creator" />
+    <meta name="twitter:description" content="Thank you for your vinyl record submission! Your project details have been received and you'll hear from your good neighbor soon." />
+    <meta name="twitter:image" content="/characters/carry-blackwhite.png" />
+</svelte:head>
+
 {#if !submission}
     <div class="not-found">
         <div class="not-found-content">

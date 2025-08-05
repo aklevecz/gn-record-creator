@@ -146,6 +146,18 @@
     }
 </script>
 
+<svelte:head>
+    <title>Project Editor - Good Neighbor Record Creator</title>
+    <meta name="description" content="Manage your vinyl record projects, organize cover art, and track your production details. Create multiple record ideas and switch between them easily." />
+    <meta property="og:title" content="Project Editor - Good Neighbor Record Creator" />
+    <meta property="og:description" content="Manage your vinyl record projects, organize cover art, and track your production details. Create multiple record ideas and switch between them easily." />
+    <meta property="og:image" content="/characters/carry-blackwhite.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Project Editor - Good Neighbor Record Creator" />
+    <meta name="twitter:description" content="Manage your vinyl record projects, organize cover art, and track your production details. Create multiple record ideas and switch between them easily." />
+    <meta name="twitter:image" content="/characters/carry-blackwhite.png" />
+</svelte:head>
+
 <ConfirmationModal
     isOpen={deleteProjectModalOpen}
     title="Delete Project"

@@ -63,6 +63,18 @@
     let trippingOut = $state(false);
 </script>
 
+<svelte:head>
+    <title>Design Studio - Good Neighbor Record Creator</title>
+    <meta name="description" content="Design your custom vinyl record with our interactive 3D studio. Upload artwork, visualize your record in real-time, and bring your musical vision to life." />
+    <meta property="og:title" content="Design Studio - Good Neighbor Record Creator" />
+    <meta property="og:description" content="Design your custom vinyl record with our interactive 3D studio. Upload artwork, visualize your record in real-time, and bring your musical vision to life." />
+    <meta property="og:image" content="/characters/carry-blackwhite.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Design Studio - Good Neighbor Record Creator" />
+    <meta name="twitter:description" content="Design your custom vinyl record with our interactive 3D studio. Upload artwork, visualize your record in real-time, and bring your musical vision to life." />
+    <meta name="twitter:image" content="/characters/carry-blackwhite.png" />
+</svelte:head>
+
 <div class="studio-container">
     <!-- TRIP OUT BUTTON -->
     {#if !generate.state.generating}<button
