@@ -109,6 +109,20 @@ export const idToValues = (values) => {
 function parseUserPhoneInput(input, defaultCountry = 'US') {
     if (!input) return null;
 
+    // Check if input is in "COUNTRY-NUMBER" format from our phone input component
+    const countryNumberMatch = input.match(/^([A-Z]{2})-(.+)$/);
+    if (countryNumberMatch) {
+        const [, country, number] = countryNumberMatch;
+        // Strip any leading 0s from the number part (trunk prefix should not be included with country code)
+        const cleanedNumber = number.replace(/^0+/, '');
+        // Try parsing with the extracted country code
+        const phoneNumber = parsePhoneNumberFromString(cleanedNumber, /** @type {import('libphonenumber-js').CountryCode} */ (country));
+        if (phoneNumber && phoneNumber.isValid()) {
+            return phoneNumber;
+        }
+        // If that didn't work, fall through to other methods
+    }
+
     // Clean the input
     const cleaned = input
         .toString()

@@ -74,16 +74,20 @@
     function handleInput(e) {
         phone = e.target.value;
         if (validatePhone()) {
-            details.setValue('phone', `${selectedCountry}-${phone}`);
+            // Strip leading 0 from phone number (trunk prefix not needed with country code)
+            const cleanedPhone = phone.replace(/^0+/, '');
+            details.setValue('phone', `${selectedCountry}-${cleanedPhone}`);
         }
     }
-    
+
 
     /** @param {*} e*/
     function handleCountryChange(e) {
         selectedCountry = e.target.value;
         if (phone.trim() && validatePhone()) {
-            details.setValue('phone', `${selectedCountry}-${phone}`);
+            // Strip leading 0 from phone number (trunk prefix not needed with country code)
+            const cleanedPhone = phone.replace(/^0+/, '');
+            details.setValue('phone', `${selectedCountry}-${cleanedPhone}`);
         }
     }
 </script>
