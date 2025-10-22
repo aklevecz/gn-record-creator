@@ -406,6 +406,15 @@
                                                     )
                                                 ) {
                                                     status = 'Resubmitting to Monday.com...';
+                                                    // Filter out D1-specific fields that aren't form fields
+                                                    const dbOnlyFields = ['id', 'session', 'create_date', 'updated_at', 'monday_id'];
+                                                    const responses = Object.keys(entry)
+                                                        .filter(key => !dbOnlyFields.includes(key))
+                                                        .reduce((obj, key) => {
+                                                            obj[key] = entry[key];
+                                                            return obj;
+                                                        }, {});
+
                                                     fetch('/api/monday/create', {
                                                         method: 'POST',
                                                         headers: {
@@ -414,7 +423,7 @@
                                                         body: JSON.stringify({
                                                             id: entry.id,
                                                             mondayId: entry.monday_id || '',
-                                                            responses: entry
+                                                            responses: responses
                                                         })
                                                     })
                                                         .then((res) => res.json())
