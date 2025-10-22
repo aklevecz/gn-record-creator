@@ -36,10 +36,16 @@ const mondayServerApi = () => {
         });
         if (!res.ok) {
             const error = await res.text();
-            console.log(`Monday: Error: ${JSON.stringify(error)}`);
-            throw new Error('Monday: Error');
+            console.error(`Monday API HTTP Error (${res.status}):`, error);
+            throw new Error(`Monday API Error: ${res.status}`);
         }
         const data = await res.json();
+
+        // Check for GraphQL errors in the response
+        if (data.errors && data.errors.length > 0) {
+            console.error('Monday GraphQL Errors:', JSON.stringify(data.errors, null, 2));
+        }
+
         return data;
     }
 
