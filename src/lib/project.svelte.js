@@ -1,6 +1,6 @@
 import db from './db';
 import projects from './projects.svelte';
-import { serializeDeep, toSnakeCase } from './utils';
+import { serializeDeep, toSnakeCase, generateUUID } from './utils';
 import r2Api from '$lib/api/r2';
 import { cachedKeys } from './storage';
 import { DATA_VERSION } from '$lib';
@@ -167,7 +167,7 @@ const createProject = () => {
          * @returns {Project}
          */
         create({ name, details, textures }) {
-            const id = crypto.randomUUID();
+            const id = generateUUID();
             project.id = id;
             project.name = name || id;
             project.details = details;

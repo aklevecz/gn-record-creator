@@ -11,16 +11,29 @@ const dbSurvey = (db) => {
 			const keys = Object.keys(responses);
 			const values = Object.values(responses);
 
-			const updatePairs = keys.map((key) => `${key} = ?`).join(',');
+			// Build update pairs, protecting certain fields from being overwritten
+			const updatePairs = keys
+				.map((key) => {
+					if (key === 'submitted') {
+						// Only update submitted if it's not already "Submitted"
+						return `${key} = CASE WHEN ${tableName}.submitted = 'Submitted' THEN ${tableName}.submitted ELSE ? END`;
+					}
+					if (key === 'monday_id') {
+						// Only update monday_id if current value is empty/null
+						return `${key} = CASE WHEN (${tableName}.monday_id IS NULL OR ${tableName}.monday_id = '') THEN ? ELSE ${tableName}.monday_id END`;
+					}
+					return `${key} = ?`;
+				})
+				.join(',');
 
 			const insertColumns = ['id', ...keys].join(',');
 			const insertPlaceholders = ['?', ...keys.map(() => '?')].join(',');
 
 			await db
 				.prepare(
-					`INSERT INTO ${tableName} (${insertColumns}) 
+					`INSERT INTO ${tableName} (${insertColumns})
 						 VALUES (${insertPlaceholders})
-						 ON CONFLICT(id) DO UPDATE SET 
+						 ON CONFLICT(id) DO UPDATE SET
 						 ${updatePairs}`
 				)
 				// Needs to destructure values twice for the insert statement and then the update statement

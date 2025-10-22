@@ -360,6 +360,7 @@
                         <th>Packaging</th>
                         <th>Notes</th>
                         <th>Status</th>
+                        <th>Submitted</th>
                         <th>Session</th>
                         <th>Actions</th>
                     </tr>
@@ -391,37 +392,84 @@
                             <td>{entry.packaging || 'N/A'}</td>
                             <td>{entry.notes || 'N/A'}</td>
                             <td>{entry.status || 'N/A'}</td>
+                            <td style="font-weight: {entry.submitted === 'Submitted' ? 'bold' : 'normal'}; color: {entry.submitted === 'Submitted' ? 'green' : 'gray'}">{entry.submitted || 'N/A'}</td>
                             <td>{entry.session || 'N/A'}</td>
                             <td>
-                                <button
-                                    class="delete-entry-button"
-                                    onclick={() => {
-                                        if (
-                                            confirm(
-                                                `Are you sure you want to delete survey ${entry.id}?`
-                                            )
-                                        ) {
-                                            fetch(`/api/survey/${entry.id}`, {
-                                                method: 'DELETE',
-                                                headers: { Authorization: auth }
-                                            })
-                                                .then((res) => {
-                                                    if (res.ok) {
-                                                        allEntries = allEntries.filter(
-                                                            (e) => e.id !== entry.id
-                                                        );
-                                                        status = `Survey ${entry.id} deleted.`;
-                                                    } else {
-                                                        status = `Error deleting survey ${entry.id}. Status: ${res.status}`;
-                                                    }
+                                <div style="display: flex; gap: 0.5rem;">
+                                    {#if !entry.monday_id || entry.monday_id === ''}
+                                        <button
+                                            class="resubmit-button"
+                                            onclick={() => {
+                                                if (
+                                                    confirm(
+                                                        `Resubmit "${entry.contact_first_name} ${entry.contact_last_name}" to Monday.com?`
+                                                    )
+                                                ) {
+                                                    status = 'Resubmitting to Monday.com...';
+                                                    fetch('/api/monday/create', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify({
+                                                            id: entry.id,
+                                                            mondayId: entry.monday_id || '',
+                                                            responses: entry
+                                                        })
+                                                    })
+                                                        .then((res) => res.json())
+                                                        .then((data) => {
+                                                            if (data.mondayId) {
+                                                                // Update the entry in the UI
+                                                                const index = allEntries.findIndex(
+                                                                    (e) => e.id === entry.id
+                                                                );
+                                                                if (index !== -1) {
+                                                                    allEntries[index].monday_id = data.mondayId;
+                                                                }
+                                                                status = `Successfully resubmitted! Monday ID: ${data.mondayId}`;
+                                                            } else {
+                                                                status = `Error: No Monday ID returned`;
+                                                            }
+                                                        })
+                                                        .catch((err) => {
+                                                            console.error('Error resubmitting:', err);
+                                                            status = `Error resubmitting: ${err.message}`;
+                                                        });
+                                                }
+                                            }}>Resubmit to Monday</button
+                                        >
+                                    {/if}
+                                    <button
+                                        class="delete-entry-button"
+                                        onclick={() => {
+                                            if (
+                                                confirm(
+                                                    `Are you sure you want to delete survey ${entry.id}?`
+                                                )
+                                            ) {
+                                                fetch(`/api/survey/${entry.id}`, {
+                                                    method: 'DELETE',
+                                                    headers: { Authorization: auth }
                                                 })
-                                                .catch((err) => {
-                                                    console.error('Error deleting survey:', err);
-                                                    status = `Error deleting survey ${entry.id}: ${err.message}`;
-                                                });
-                                        }
-                                    }}>Delete</button
-                                >
+                                                    .then((res) => {
+                                                        if (res.ok) {
+                                                            allEntries = allEntries.filter(
+                                                                (e) => e.id !== entry.id
+                                                            );
+                                                            status = `Survey ${entry.id} deleted.`;
+                                                        } else {
+                                                            status = `Error deleting survey ${entry.id}. Status: ${res.status}`;
+                                                        }
+                                                    })
+                                                    .catch((err) => {
+                                                        console.error('Error deleting survey:', err);
+                                                        status = `Error deleting survey ${entry.id}: ${err.message}`;
+                                                    });
+                                            }
+                                        }}>Delete</button
+                                    >
+                                </div>
                             </td>
                         </tr>
                     {/each}
@@ -573,6 +621,22 @@
 
     .delete-entry-button:hover {
         background: #c82333;
+    }
+
+    .resubmit-button {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .resubmit-button:hover {
+        background: #218838;
     }
 
     .local-storage-entries {

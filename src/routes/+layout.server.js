@@ -1,3 +1,5 @@
+import { generateUUID } from '$lib/utils';
+
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ cookies }) {
 	const session = cookies.get('session');
@@ -10,7 +12,7 @@ export async function load({ cookies }) {
 			sameSite: 'strict',
 			maxAge: 60 * 60 * 24 * 30 // 30 days
 		};
-		cookies.set('session', crypto.randomUUID(), options);
+		cookies.set('session', generateUUID(), options);
 	}
 	return {session};
 }

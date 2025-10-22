@@ -296,6 +296,33 @@ export const fileHashExists = async (hash, projectId) => {
 	}
 };
 
+/**
+ * Generate a UUID that works in both browser and server environments
+ * @returns {string} A UUID v4 string
+ */
+export function generateUUID() {
+	// Try native crypto.randomUUID first (modern browsers + Workers with nodejs_compat)
+	if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+		return crypto.randomUUID();
+	}
+
+	// Fallback for older browsers or environments without randomUUID
+	// Uses crypto.getRandomValues which has wider support
+	if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+		return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, /** @param {string} c */ (c) => {
+			const numC = Number(c);
+			return (numC ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (numC / 4)))).toString(16);
+		});
+	}
+
+	// Final fallback using Math.random (less secure, but works everywhere)
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		const r = Math.random() * 16 | 0;
+		const v = c === 'x' ? r : (r & 0x3 | 0x8);
+		return v.toString(16);
+	});
+}
+
 /** @param {ArrayBuffer} buffer */
 export function arrayBufferToBase64(buffer) {
 	const bytes = new Uint8Array(buffer);
@@ -306,7 +333,7 @@ export function arrayBufferToBase64(buffer) {
 	}
 	return btoa(binary);
   }
-  
+
   /** @param {string} base64 */
   export function base64ToArrayBuffer(base64) {
 	const binary = atob(base64);

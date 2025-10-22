@@ -60,8 +60,8 @@ export async function POST({ platform, request }) {
         //     }
         // }
         // END NOT DOING ANYTHING
-        // If Monday entry exists
-        if (mondayId) {
+        // If Monday entry exists (check for truthy value AND non-empty string)
+        if (mondayId && mondayId.trim() !== '') {
             logging.info(`Updating entry ${data.id}`);
             console.log(`Updating entry ${data.id}`);
             mondayResponse = await mondayServer.updateItem(mondayId, data.id, responses);

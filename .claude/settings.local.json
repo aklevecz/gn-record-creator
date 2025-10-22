@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(npx wrangler d1 execute:*)"
     ],
     "deny": []
   }

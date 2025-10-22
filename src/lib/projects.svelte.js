@@ -131,6 +131,12 @@ const createProjects = () => {
         },
         debouncedSaveRemote: debounce(
             () => {
+                // Don't auto-save if form has been submitted
+                if (project.state.hasSubmitted) {
+                    console.log('Form already submitted, skipping auto-save');
+                    return;
+                }
+
                 const detailResponses = details.remapDetailsAndStringify();
                 let mondayId = project.state.mondayId;
                 let collectedData = { id: project.state.id, mondayId, responses: { ...detailResponses } };
