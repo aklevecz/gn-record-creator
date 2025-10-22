@@ -126,7 +126,8 @@ const mondayServerApi = () => {
 
                 return mondayFetch(query);
             } catch (e) {
-                console.log(e);
+                console.error('Error in createItem:', e);
+                throw e;
             }
         },
         /** @param {string} id @param {string} formId @param {Record<string, string>} values */
