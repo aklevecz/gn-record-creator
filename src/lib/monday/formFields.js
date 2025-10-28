@@ -382,7 +382,7 @@ export const formFields = {
         key: 'packaging_sleeve',
         title: 'Packaging Sleeve',
         label: 'Packaging: What type of inner-sleeve would you like?',
-        description: 'Please note, we recommend poly-lined to protext the records from abrasion over the course of its lifecycle',
+        description: 'Please note, we recommend poly-lined to protect the records from abrasion over the course of its lifecycle',
         type: 'dropdown',
         mondayType: 'status',
         required: false,
