@@ -111,6 +111,10 @@ const createDetails = () => {
                     isValid = false;
                     missingFields.push(key);
                 }
+                if (obj.type === 'email' && obj.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(obj.value))) {
+                    isValid = false;
+                    missingFields.push(key);
+                }
             });
             return { isValid, missingFields };
         },
