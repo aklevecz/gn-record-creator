@@ -1,5 +1,6 @@
 // Updated details.svelte.js
 import { formFields } from './monday/formFields';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import project from './project.svelte';
 
 /**
@@ -114,6 +115,14 @@ const createDetails = () => {
                 if (obj.type === 'email' && obj.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(obj.value))) {
                     isValid = false;
                     missingFields.push(key);
+                }
+                if (obj.type === 'tel' && obj.value && typeof obj.value === 'string') {
+                    const [country, number] = obj.value.split('-');
+                    const parsed = parsePhoneNumberFromString(number || '', /** @type {import('libphonenumber-js').CountryCode} */ (country));
+                    if (!parsed || !parsed.isValid()) {
+                        isValid = false;
+                        missingFields.push(key);
+                    }
                 }
             });
             return { isValid, missingFields };
