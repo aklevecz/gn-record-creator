@@ -8,37 +8,41 @@
     }
 </script>
 
-<div class="relative mb-0 inline-block w-full py-2">
+<div class="project-dropdown">
     <select
         name="change-project-dropdown"
-        class="focus:shadow-outline block w-full appearance-none rounded border border-gray-300 bg-[var(--primary-color)] px-4 py-2 pr-8 leading-tight shadow hover:border-gray-500 focus:outline-none"
         bind:value={projects.state.activeProject}
         onchange={onChangeProject}
     >
         <option value="" disabled>Select a project</option>
         {#each projects.state.projects as project}
             <option value={project.id}>{project.name}</option>
-
-            <!-- <option value={project.name}>{project.name}</option> -->
         {/each}
     </select>
-    <div
-        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--secondary-color)]"
-    >
-        <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-        </svg>
-    </div>
+    <svg class="caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+    </svg>
 </div>
 
-<!-- <div>
-	<input bind:value={projectName} class="border-1 border-white" />
-	<button class="text-xs" onclick={createProject}>Create Project</button>
-</div> -->
-
-<style lang="postcss">
-    @reference "tailwindcss/theme";
+<style>
+    .project-dropdown {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
     select {
-        @apply text-base;
+        width: 100%;
+        appearance: none;
+        padding-right: 36px;
+    }
+    .caret {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        fill: var(--gn-ink);
+        pointer-events: none;
     }
 </style>

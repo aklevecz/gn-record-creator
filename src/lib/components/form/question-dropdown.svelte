@@ -55,35 +55,44 @@
     <button class="mt-4" onclick={() => (showError = false)}>Ok</button>
     </div>
 </Modal>
-<div class:hidden class="flex flex-col">
-    <label for={key} class="mb-0"
-        >{label}{#if required}*{/if}</label
-    >
-    <div class="mb-2 text-xs opacity-50">{description}</div>
-    <select
-        id={key}
-        name={key}
-        onchange={onChange}
-        bind:value={details.state[key].value}
-        class="mt-2 w-full max-w-[300px] rounded-xs border-1 border-white px-2 py-1 text-lg"
-    >
+<div class:hidden class="dropdown-field">
+    <label for={key}>
+        {label}{#if required}*{/if}
+    </label>
+    {#if description}<div class="description">{description}</div>{/if}
+    <select id={key} name={key} onchange={onChange} bind:value={details.state[key].value}>
         {#each options as option}
             <option value={option.value}>{option.text}</option>
         {/each}
     </select>
 </div>
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
+<style>
+    .dropdown-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
     label {
-        @apply font-semibold;
+        font-family: var(--gn-font-sans);
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.024em;
+        color: var(--gn-ink);
+    }
+    .description {
+        font-size: 12px;
+        color: var(--gn-fg-2);
+        margin-bottom: 4px;
     }
     select {
-        @apply w-full max-w-[300px] appearance-none rounded-xs border-1 border-white bg-no-repeat px-2 py-1 text-lg;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-        background-position: right 0.5rem center;
-        background-size: 1em 1em;
-        padding-right: 2.5rem;
+        max-width: 320px;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23141412'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        padding-right: 36px;
     }
     .hidden {
         display: none;

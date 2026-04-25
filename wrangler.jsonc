@@ -25,7 +25,13 @@
 			"bucket_name": "goodneighbor",
 			"preview_bucket_name": "goodneighbor"
 		}
-	]
+	],
+	// Public env vars surfaced to the SvelteKit server runtime via $env/static/private.
+	// Secrets (CARBON_SVC_API_KEY, MONDAY_API_TOKEN, etc.) live in the Pages dashboard
+	// or are set via:  wrangler pages secret put <NAME> --project-name <pages-project>
+	"vars": {
+		"CARBON_SVC_URL": "https://carbon-svc.good-neighbor.workers.dev"
+	}
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

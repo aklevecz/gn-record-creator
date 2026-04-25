@@ -26,18 +26,31 @@
     >
 </div>
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
+<style>
     .tooltip-container {
-        @apply  rounded-md mb-2 bg-[var(--secondary-color)] p-2 text-[var(--primary-color)] block w-fit;
+        display: block;
+        width: fit-content;
+        background: var(--gn-ink);
+        color: var(--gn-paper);
+        padding: 10px 14px;
+        border-radius: var(--gn-r-sm);
+        margin-bottom: 8px;
+        font-size: 13px;
+        line-height: 1.4;
     }
     button {
-        @apply text-xs;
+        font-size: 12px;
+        padding: 6px 14px;
+        background: transparent;
+        color: var(--gn-fg-2);
+        text-decoration: underline;
+    }
+    button:hover:not(:disabled) {
+        background: transparent;
+        color: var(--gn-ink);
     }
     a {
-        @apply text-[var(--accent-color)] underline;
+        color: var(--gn-lilac);
+        text-decoration: underline;
     }
-    /* .hidden {
-        @apply hidden;
-    } */
 </style>

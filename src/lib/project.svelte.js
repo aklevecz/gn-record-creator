@@ -4,6 +4,7 @@ import { serializeDeep, toSnakeCase, generateUUID } from './utils';
 import r2Api from '$lib/api/r2';
 import { cachedKeys } from './storage';
 import { DATA_VERSION } from '$lib';
+import { mapDetailsToCarbonInputs, shouldEstimate } from './carbon/mapDetailsToInputs';
 
 /** @type {Project} */
 export const defaultProjectState = {
@@ -26,11 +27,18 @@ export const defaultProjectState = {
         estimatedCost: 0
     },
     carbonSavings: {
-        // Keys based on src/lib/survey-data-model/index.js
-        packaging: 0,
-        shipping_address: 0, // Placeholder for distance/region calculation
-        record_color: 0,
-        total_units: 0,
+        // Real cradle-to-gate emissions from carbon-svc.
+        // See CARBON_CALC.md in the gn-record-creator repo for the model.
+        emittedKg: 0,             // total kg CO₂e for the order
+        savedKg: 0,               // total kg CO₂e saved vs. global industry baseline
+        savedPct: 0,              // savedKg / baselineKg
+        baselineKg: 0,            // global-baseline equivalent for the same order
+        perRecordKg: 0,           // emitted per record
+        factorsVersion: '',       // pinned factors version, for traceability
+        loading: false,
+        error: '',
+        // Legacy keys retained so older serialised projects keep deserialising.
+        // They are no longer populated.
         estimatedCarbonSavings: 0
     },
     hasSubmitted: false
@@ -43,13 +51,45 @@ export const defaultProjectState = {
 /** @type {PricingKey[]} */
 const pricingKeys = /** @type {PricingKey[]} */ (Object.keys(defaultProjectState.pricing).filter((key) => key !== 'estimatedCost'));
 
-// /** @typedef {keyof Omit<typeof defaultProjectState.carbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
-/** @typedef {keyof Omit<CarbonSavings, 'estimatedCarbonSavings'>} CarbonSavingsKey */
+/** Carbon estimation comes from the standalone carbon-svc Worker via /api/carbon/estimate.
+ *  Debounced so we don't fire on every keystroke. AbortController cancels prior in-flight
+ *  requests when the form changes again before the previous response lands. */
+const CARBON_DEBOUNCE_MS = 300;
+/** @type {ReturnType<typeof setTimeout> | null} */
+let carbonDebounceTimer = null;
+/** @type {AbortController | null} */
+let carbonAbortCtrl = null;
+/** Where Good Neighbor records are pressed today. Will become "north_america" once
+ *  the NA plant comes online; expose this via a project-level field at that point. */
+const CARBON_REGION = 'europe';
 
-/** @type {CarbonSavingsKey[]} */
-const carbonSavingsKeys = /** @type {CarbonSavingsKey[]} */ (
-    Object.keys(defaultProjectState.carbonSavings).filter((key) => key !== 'estimatedCarbonSavings')
-);
+/** @returns {CarbonSavings} */
+function freshCarbonSavings() {
+    return {
+        emittedKg: 0,
+        savedKg: 0,
+        savedPct: 0,
+        baselineKg: 0,
+        perRecordKg: 0,
+        factorsVersion: '',
+        loading: false,
+        error: '',
+        estimatedCarbonSavings: 0
+    };
+}
+
+/** Mutate in place — preserves the Svelte 5 $state proxy on existing carbonSavings.
+ *  @param {CarbonSavings} cs */
+function resetCarbonSavings(cs) {
+    cs.emittedKg = 0;
+    cs.savedKg = 0;
+    cs.savedPct = 0;
+    cs.baselineKg = 0;
+    cs.perRecordKg = 0;
+    cs.factorsVersion = '';
+    cs.loading = false;
+    cs.error = '';
+}
 
 /** @type {Record<PricingKey, any>} pricingGuide */
 const pricingGuide = {
@@ -95,36 +135,6 @@ const pricingGuide = {
     }
 };
 
-/** @type {Record<CarbonSavingsKey, any>} carbonSavingsGuide */
-// Placeholder guide - update with actual calculation logic and values
-const carbonSavingsGuide = {
-    packaging: {
-        type: 'categorical',
-        single_pocket: 5, // Example savings points
-        gatefold: 3,
-        single_pocket_with_wide_spine_2lp: 4, // Ensure snake_case matches toSnakeCase(value)
-        no_packaging_required: 10 // Most savings
-    },
-    shipping_address: {
-        // This needs real logic, e.g., distance calculation or zone mapping.
-        // Placeholder: Assign points based on address string length (highly inaccurate example)
-        type: 'scale',
-        value: -0.01 // Example: Longer address string = slightly less savings (bad proxy for distance)
-    },
-    record_color: {
-        type: 'categorical',
-        cosmic_black: 2, // Example: Black vinyl might have different impact
-        glassy_ice: 1, // Example: Clear vinyl
-        default: 0 // Savings for other colors
-        // Add other specific colors if they have different impacts
-    },
-    total_units: {
-        type: 'scale',
-        // Example: Savings might decrease slightly per unit due to scale, or increase if using bulk eco-materials
-        value: 0.005 // Example: Small saving per unit
-    }
-};
-
 // We now have textures and cachedTextures which is kind of confusing
 const createProject = () => {
     let project = $state({ ...defaultProjectState });
@@ -160,6 +170,12 @@ const createProject = () => {
         },
         /** @param {Project} newState */
         set(newState) {
+            // Older projects loaded from IDB may lack the carbonSavings fields
+            // we added when integrating carbon-svc. Backfill them so the UI
+            // doesn't read undefined and so subsequent mutations are reactive.
+            if (newState && (!newState.carbonSavings || typeof newState.carbonSavings.savedKg !== 'number')) {
+                newState.carbonSavings = freshCarbonSavings();
+            }
             project = newState;
         },
         /**
@@ -184,14 +200,7 @@ const createProject = () => {
                 packaging: 0,
                 estimatedCost: 0
             };
-            project.carbonSavings = {
-                // Initialize with new keys
-                packaging: 0,
-                shipping_address: 0,
-                record_color: 0,
-                total_units: 0,
-                estimatedCarbonSavings: 0
-            };
+            project.carbonSavings = freshCarbonSavings();
 
             return {
                 id: project.id,
@@ -224,6 +233,7 @@ const createProject = () => {
         },
         /** @param {Details} details */
         updateDetails(details) {
+            console.log('[carbon-debug] updateDetails called');
             project.details = details;
 
             // update pricing -- doesn't need to pass details in? but maybe safer
@@ -299,83 +309,61 @@ const createProject = () => {
         },
         /** @param {Details} details */
         updateCarbonSavings(details) {
-            // Ensure details object exists
+            console.log('[carbon-debug] updateCarbonSavings entered');
             if (!details) {
-                console.warn('Cannot update carbon savings: details object is missing.');
-                // Optionally reset savings to 0 or handle as appropriate
-                carbonSavingsKeys.forEach((key) => (project.carbonSavings[key] = 0));
-                project.carbonSavings.estimatedCarbonSavings = 0;
+                console.log('[carbon-debug] no details — reset and bail');
+                resetCarbonSavings(project.carbonSavings);
                 return;
             }
 
-            const savingsObjects = carbonSavingsKeys.reduce((/** @type {Record<string, string>} */ acc, key) => {
-                // Check if the key exists in details and has a value property
-                if (details[key] && typeof details[key].value !== 'undefined') {
-                    // Convert value to snake_case string for categorical matching
-                    // For non-categorical, ensure it's a string for consistent processing initially
-                    acc[key] = toSnakeCase(String(details[key].value));
-                } else {
-                    acc[key] = ''; // Assign empty string if key or value is missing
-                    console.warn(`Missing value for carbon savings key: ${key} in details`);
-                }
-                return acc;
-            }, {});
+            const inputs = mapDetailsToCarbonInputs(details, { region: CARBON_REGION });
+            console.log('[carbon-debug] mapped inputs', inputs);
+            if (!shouldEstimate(inputs, details)) {
+                console.log('[carbon-debug] shouldEstimate=false — reset and bail');
+                resetCarbonSavings(project.carbonSavings);
+                return;
+            }
 
-            let estimatedCarbonSavings = 0;
-
-            carbonSavingsKeys.forEach((savingsKey) => {
-                const guide = carbonSavingsGuide[savingsKey];
-                // Use the snake_cased string value fetched earlier
-                const valueStr = savingsObjects[savingsKey];
-                let itemSavings = 0;
-
-                // Skip calculation if guide or value is missing for this key
-                if (!guide || valueStr === '') {
-                    project.carbonSavings[savingsKey] = 0;
-                    return;
-                }
-
+            if (carbonDebounceTimer) clearTimeout(carbonDebounceTimer);
+            console.log('[carbon-debug] scheduling fetch in', CARBON_DEBOUNCE_MS, 'ms');
+            carbonDebounceTimer = setTimeout(async () => {
+                console.log('[carbon-debug] debounce fired — about to fetch');
+                if (carbonAbortCtrl) carbonAbortCtrl.abort();
+                carbonAbortCtrl = new AbortController();
+                project.carbonSavings.loading = true;
+                project.carbonSavings.error = '';
                 try {
-                    if (guide.type === 'scale') {
-                        // For scale, parse the original (non-snake-cased) value if possible
-                        const originalValue = details[savingsKey]?.value;
-                        const valueNum = parseFloat(String(originalValue)); // Use parseFloat for potential decimals
-                        if (!isNaN(valueNum) && typeof guide.value === 'number') {
-                            // Apply scale calculation (adjust logic as needed, e.g., for address)
-                            if (savingsKey === 'shipping_address') {
-                                // Replace with actual distance/zone logic
-                                itemSavings = String(originalValue).length * guide.value; // Bad placeholder logic
-                            } else {
-                                itemSavings = valueNum * guide.value;
-                            }
-                        }
-                    } else if (guide.type === 'categorical') {
-                        // Use the snake_cased valueStr for lookup
-                        const savingsValue = guide[valueStr];
-                        if (typeof savingsValue === 'number') {
-                            itemSavings = savingsValue;
-                        } else if (typeof guide.default === 'number') {
-                            // Fallback to default if specific category value not found
-                            itemSavings = guide.default;
-                        }
+                    const res = await fetch('/api/carbon/estimate', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify(inputs),
+                        signal: carbonAbortCtrl.signal
+                    });
+                    console.log('[carbon-debug] fetch returned', res.status);
+                    if (!res.ok) {
+                        const text = await res.text().catch(() => '');
+                        throw new Error(`carbon estimate failed: ${res.status} ${text}`);
                     }
-                    // Add other types like 'address' if more complex logic is needed
-                } catch (error) {
-                    console.error(`Error calculating carbon savings for key ${savingsKey}:`, error);
-                    itemSavings = 0;
+                    const data = await res.json();
+                    console.log('[carbon-debug] response data', data);
+                    project.carbonSavings.emittedKg = data.total_kg ?? 0;
+                    project.carbonSavings.savedKg = data.saved_total_kg ?? 0;
+                    project.carbonSavings.savedPct = data.saved_pct ?? 0;
+                    project.carbonSavings.baselineKg = data.baseline_total_kg ?? 0;
+                    project.carbonSavings.perRecordKg = data.per_record_kg ?? 0;
+                    project.carbonSavings.factorsVersion = data.factors_version ?? '';
+                    project.carbonSavings.loading = false;
+                    project.carbonSavings.error = '';
+                } catch (err) {
+                    if (err instanceof DOMException && err.name === 'AbortError') {
+                        console.log('[carbon-debug] fetch aborted');
+                        return;
+                    }
+                    console.error('[carbon-debug] carbon estimate error', err);
+                    project.carbonSavings.loading = false;
+                    project.carbonSavings.error = err instanceof Error ? err.message : String(err);
                 }
-
-                // Ensure itemSavings is a number, default to 0 if NaN
-                if (isNaN(itemSavings)) {
-                    console.warn(`Calculated NaN for carbon savings key: ${String(savingsKey)}. Setting to 0.`);
-                    itemSavings = 0;
-                }
-
-                project.carbonSavings[savingsKey] = itemSavings;
-                estimatedCarbonSavings += itemSavings;
-            });
-
-            project.carbonSavings.estimatedCarbonSavings = estimatedCarbonSavings;
+            }, CARBON_DEBOUNCE_MS);
         },
         /** @param {Texture} texture */
         addTexture(texture) {

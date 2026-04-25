@@ -299,130 +299,169 @@
 	</div> -->
 </div>
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
-
-    /* Create Project Section */
+<style>
     .create-project-section {
-        @apply mb-8 border border-white/20 rounded-lg p-6;
+        margin-bottom: 32px;
+        border: 1px solid var(--gn-n-150);
+        border-radius: var(--gn-r-xl);
+        padding: 28px;
+        background: var(--gn-paper-warm);
     }
-    
     .create-project-content {
-        @apply text-center;
+        text-align: center;
     }
-    
     .create-project-title {
-        @apply text-xl font-semibold mb-2;
+        font-family: var(--gn-font-display);
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
     }
-    
     .create-project-description {
-        @apply text-sm opacity-75 mb-4;
+        color: var(--gn-fg-2);
+        margin-bottom: 18px;
     }
-    
     .create-project-btn {
-        @apply inline-flex items-center gap-2 px-6 py-3 text-base font-medium border border-white/30 rounded-md hover:bg-white/10 transition-colors;
+        background: var(--gn-sunshine);
+        color: var(--gn-ink);
     }
-    
+    .create-project-btn:hover:not(:disabled) {
+        background: var(--gn-sunshine-2);
+    }
     .create-icon {
-        @apply text-lg font-bold;
+        font-weight: 700;
     }
-    
-    /* Sidebar Styles */
+
     .section-header {
-        @apply text-lg font-semibold mb-4 pb-2 border-b border-white/10;
+        font-family: var(--gn-font-display);
+        font-size: 22px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--gn-n-150);
     }
-    
     .project-title-section {
-        @apply mb-6;
+        margin-bottom: 24px;
     }
-    
     .title-display {
-        @apply flex items-center justify-between p-3 border border-white/10 rounded-md;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid var(--gn-n-150);
+        border-radius: var(--gn-r-sm);
     }
-    
     .title-text {
-        @apply text-base font-medium;
+        font-weight: 700;
     }
-    
-    .title-edit-btn {
-        @apply px-2 py-1 text-xs font-medium border border-white/20 rounded hover:bg-white/10 transition-colors;
-    }
-    
-    .title-edit-controls {
-        @apply flex gap-2 mt-2;
-    }
-    
-    .title-save-btn {
-        @apply px-3 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 transition-colors;
-    }
-    
+    .title-edit-btn,
     .title-cancel-btn {
-        @apply px-3 py-1 text-xs font-medium border border-white/20 rounded hover:bg-white/10 transition-colors;
+        padding: 6px 14px;
+        font-size: 12px;
+        background: var(--gn-paper);
+        color: var(--gn-ink);
+        box-shadow: inset 0 0 0 1px var(--gn-ink);
     }
-    
+    .title-edit-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .title-save-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+        background: var(--gn-vinyl-green);
+        color: var(--gn-paper);
+    }
     .project-metadata {
-        @apply mb-6;
+        margin-bottom: 24px;
     }
-    
     .metadata-grid {
-        @apply space-y-4;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
-    
     .metadata-item {
-        @apply border-l-2 border-white/20 pl-3;
+        border-left: 2px solid var(--gn-n-300);
+        padding-left: 12px;
     }
-    
     .metadata-label {
-        @apply text-xs font-medium uppercase tracking-wide opacity-60 mb-1;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gn-fg-3);
+        margin-bottom: 4px;
     }
-    
     .metadata-value {
-        @apply text-sm font-medium;
+        font-weight: 700;
     }
-    
-    .preview-header {
-        @apply text-sm font-medium mb-3 pb-2 border-b border-white/10 opacity-75;
-    }
-    
     .preview-images {
-        @apply flex flex-col gap-3;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
-    
-    .record-preview, .texture-preview {
-        @apply flex justify-center;
+    .record-preview,
+    .texture-preview {
+        display: flex;
+        justify-content: center;
     }
-    
-    .record-image, .texture-image {
-        @apply w-32 h-32 object-cover rounded-md;
+    .record-image,
+    .texture-image {
+        width: 128px;
+        height: 128px;
+        object-fit: cover;
+        border-radius: var(--gn-r-sm);
     }
-    
     .delete-project-btn {
-        @apply w-full px-4 py-2 text-sm text-red-400 border border-red-400/30 rounded-md hover:bg-red-400/10 transition-colors;
+        width: 100%;
+        font-size: 13px;
+        padding: 10px 16px;
+        background: var(--gn-paper);
+        color: var(--gn-vinyl-red);
+        box-shadow: inset 0 0 0 1px var(--gn-vinyl-red);
     }
-    
-    /* Gallery Styles */
+    .delete-project-btn:hover:not(:disabled) {
+        background: var(--gn-vinyl-red);
+        color: var(--gn-paper);
+    }
+
     h1 {
-        @apply mb-4 text-xl font-bold;
+        margin: 0 0 16px;
     }
     .imgs {
-        @apply mb-4 flex flex-wrap gap-2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
     }
     .history-img-container {
-        @apply flex-[0_0_47%] rounded-md p-4 md:flex-[0_0_23%];
+        flex: 0 0 47%;
+        border-radius: var(--gn-r-md);
+        padding: 14px;
+    }
+    @media (min-width: 768px) {
+        .history-img-container {
+            flex: 0 0 23%;
+        }
     }
     .history-file-name {
         word-break: break-word;
-        @apply my-1 text-xs;
-    }
-    .imgs img {
+        margin: 6px 0;
+        font-size: 12px;
     }
     .little-button {
-        @apply mx-auto mt-auto px-2 py-1 text-xs;
+        margin: auto auto 0;
+        padding: 6px 14px;
+        font-size: 12px;
     }
     .delete-button {
-        @apply bg-red-500 text-[var(--secondary-color)];
+        background: var(--gn-vinyl-red);
+        color: var(--gn-paper);
     }
     .is_active {
-        @apply opacity-30;
+        opacity: 0.4;
     }
 </style>

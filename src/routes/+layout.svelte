@@ -125,33 +125,93 @@
     <meta name="og:description" content="good neighbor record creator" />
     <meta name="og:image" content="/records/purple-haze.png" />
 </svelte:head>
-<header class="flex items-center gap-4">
-    <a class="w-[150px] md:w-[250px]" href="/"><img class="m-1 pl-2 invert" src="/logos/gn-logo.svg" alt="good neighbor logo" /></a>
-    <nav class="md:flex-1">
-        <ul class="flex justify-center gap-4">
-            <li><a class="icon-link hidden md:block" href="/">order form</a></li>
+<header class="gn-header">
+    <a class="logo" href="/">
+        <img src="/logos/gn-logo.svg" alt="good neighbor logo" />
+    </a>
+    <nav>
+        <ul>
+            <li><a class="icon-link" href="/">order form</a></li>
             <li><a class="icon-link" href="/projects">projects</a></li>
             <li><a class="icon-link" href="/studio">dream</a></li>
-            <!-- <div class="flex-1"></div> -->
-            <!-- <li class="opacity-0"><a href="/test">Test</a></li> -->
         </ul>
     </nav>
-    <div class="max-w-sm flex-[1_1_100px] md:pr-2">
+    <div class="project-picker">
         <ChangeProjectDropdown />
     </div>
 </header>
 
 {@render children()}
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
+<style>
+    .gn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 20px;
+        background: var(--gn-paper);
+        border-bottom: 1px solid var(--gn-n-150);
+    }
+    .logo {
+        display: inline-flex;
+        flex-shrink: 0;
+        width: 150px;
+    }
+    .logo img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    nav {
+        flex: 1;
+    }
+    nav ul {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
     .icon-link {
-        transition: color 0.2s ease-in-out;
-        /* filter: saturate(100%) contrast(150%) brightness(250%) blur(0px) hue-rotate(45deg); */
-        /* text-decoration: underline; */
-        @apply text-xs font-semibold md:text-lg;
+        font-family: var(--gn-font-sans);
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: -0.024em;
+        color: var(--gn-ink);
+        padding: 8px 16px;
+        border-radius: var(--gn-r-full);
+        text-decoration: none;
+        transition:
+            background var(--gn-dur-2) var(--gn-ease),
+            color var(--gn-dur-2) var(--gn-ease);
     }
     .icon-link:hover {
-        color: var(--accent-color);
+        background: var(--gn-ink);
+        color: var(--gn-paper);
+    }
+    .project-picker {
+        flex: 0 1 240px;
+    }
+    @media (min-width: 768px) {
+        .logo {
+            width: 220px;
+        }
+        .icon-link {
+            font-size: 16px;
+            padding: 10px 22px;
+        }
+    }
+    @media (max-width: 540px) {
+        .gn-header {
+            padding: 10px 12px;
+            gap: 8px;
+        }
+        .logo {
+            width: 110px;
+        }
+        nav ul li:first-child {
+            display: none;
+        }
     }
 </style>

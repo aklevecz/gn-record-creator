@@ -62,42 +62,68 @@
     </div>
 {/if}
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
-
+<style>
     .modal-backdrop {
-        @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(20, 20, 18, 0.55);
+        backdrop-filter: blur(4px);
+        padding: 16px;
     }
-
     .modal {
-        @apply mx-4 w-full max-w-sm rounded-md bg-white p-4 text-black;
+        background: var(--gn-paper);
+        color: var(--gn-ink);
+        border-radius: var(--gn-r-xl);
+        padding: 28px;
+        width: 100%;
+        max-width: 440px;
+        box-shadow:
+            0 12px 27px rgba(0, 0, 0, 0.2),
+            0 49px 49px rgba(0, 0, 0, 0.17);
+        font-family: var(--gn-font-sans);
     }
-
     .modal-header {
-        @apply mb-2;
+        margin-bottom: 12px;
     }
-
     .modal-header h2 {
-        @apply text-lg font-bold;
+        font-family: var(--gn-font-display);
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin: 0;
     }
-
     .modal-body {
-        @apply mb-4;
+        margin-bottom: 20px;
     }
-
+    .modal-body p {
+        color: var(--gn-fg-2);
+        margin: 0 0 12px;
+    }
     .project-name-input {
-        @apply w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[var(--purple)] focus:ring-1 focus:ring-[var(--purple)] focus:outline-none;
+        width: 100%;
     }
-
     .modal-footer {
-        @apply flex justify-end gap-2;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
     }
-
     .cancel-button {
-        @apply rounded-md bg-gray-200 px-4 py-2 text-sm hover:bg-gray-300;
+        background: var(--gn-paper);
+        color: var(--gn-ink);
+        box-shadow: inset 0 0 0 1px var(--gn-ink);
     }
-
+    .cancel-button:hover:not(:disabled) {
+        background: var(--gn-n-150);
+    }
     .confirm-button {
-        @apply rounded-md bg-[var(--purple)] px-4 py-2 text-sm text-white hover:bg-[var(--green)] disabled:cursor-not-allowed disabled:bg-gray-400;
+        background: var(--gn-sunshine);
+        color: var(--gn-ink);
+    }
+    .confirm-button:hover:not(:disabled) {
+        background: var(--gn-sunshine-2);
     }
 </style>

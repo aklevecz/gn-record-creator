@@ -138,11 +138,8 @@
 </script>
 
 <div class="address-input-container">
-    <!-- {#if label}
-        <label for="address-input-{key}" class="address-label">{label}</label>
-    {/if} -->
-    <label for={key} class="mb-0">{label}{#if required}*{/if}</label>
-    <div class="mb-2 text-xs opacity-50">{description}</div>
+    <label for={key}>{label}{#if required}*{/if}</label>
+    {#if description}<div class="description">{description}</div>{/if}
     <div class="input-wrapper">
         <input
             type="text"
@@ -179,45 +176,88 @@
     {/if}
 </div>
 
-<style lang="postcss">
-    /* Assuming TailwindCSS is configured via postcss */
-    @reference "tailwindcss/theme";
-
+<style>
     .address-input-container {
-        @apply mb-0 w-full;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
     }
-
-    /* .address-label {
-        @apply mb-1 block text-sm font-medium text-gray-700;
-    } */
-
+    label {
+        font-family: var(--gn-font-sans);
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.024em;
+        color: var(--gn-ink);
+    }
+    .description {
+        font-size: 12px;
+        color: var(--gn-fg-2);
+        margin-bottom: 4px;
+    }
     .input-wrapper {
-        @apply relative;
+        position: relative;
+        max-width: 320px;
     }
-
     input[type='text'] {
-        @apply block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm;
+        width: 100%;
     }
-
-    /* Add padding to the right if loading spinner is visible */
     input.loading {
-        @apply pr-10;
+        padding-right: 38px;
     }
-
     .spinner {
-        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3;
+        position: absolute;
+        inset: 0 12px 0 auto;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
     }
     .spinner::after {
-        /* Simple CSS spinner */
         content: '';
-        @apply block h-4 w-4 animate-spin rounded-full border-2 border-gray-200 border-t-indigo-600;
+        display: block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--gn-n-300);
+        border-top-color: var(--gn-ink);
+        animation: spin 0.8s linear infinite;
     }
-
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    .suggestions-list {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 6px;
+        background: var(--gn-paper);
+        border: 1px solid var(--gn-ink);
+        border-radius: var(--gn-r-sm);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        max-height: 240px;
+        overflow-y: auto;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 10;
+    }
     .suggestions-list li {
-        @apply relative cursor-pointer py-2 pr-9 pl-3 text-white select-none hover:bg-indigo-600 hover:text-white;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        color: var(--gn-ink);
+        user-select: none;
     }
-
+    .suggestions-list li:hover {
+        background: var(--gn-ink);
+        color: var(--gn-paper);
+    }
     .error {
-        @apply mt-1 text-sm text-red-600;
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--gn-vinyl-red);
     }
 </style>

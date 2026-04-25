@@ -44,12 +44,17 @@
  */
 
 /**
+ * Cradle-to-gate emissions estimate from carbon-svc.
  * @typedef CarbonSavings
- * @property {number} record_color
- * @property {number} total_units
- * @property {number} packaging
- * @property {number} shipping_address
- * @property {number} estimatedCarbonSavings
+ * @property {number} emittedKg          total kg CO₂e for the order
+ * @property {number} savedKg            kg CO₂e saved vs. global industry baseline
+ * @property {number} savedPct           savedKg / baselineKg, 0–1
+ * @property {number} baselineKg         baseline-equivalent emissions
+ * @property {number} perRecordKg        emitted per record
+ * @property {string} factorsVersion     e.g. "2025-phase1"
+ * @property {boolean} loading
+ * @property {string} error
+ * @property {number} [estimatedCarbonSavings]  legacy, no longer populated
  */
 
 /**

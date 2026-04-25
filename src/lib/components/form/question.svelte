@@ -131,24 +131,71 @@
     </div>
 </div>
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
+<style>
     .question-container {
-        @apply mt-4 flex flex-col gap-2 md:max-w-[46vw];
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
     .label {
-        @apply text-lg font-semibold;
+        font-family: var(--gn-font-sans);
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.024em;
+        color: var(--gn-ink);
     }
     .question-buttons-container {
-        @apply flex flex-wrap gap-2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     button {
-        @apply w-[150px] rounded-md text-base font-bold capitalize select-none;
+        background: var(--gn-paper);
+        color: var(--gn-ink);
+        box-shadow: inset 0 0 0 1px var(--gn-ink);
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: capitalize;
+        padding: 10px 18px;
+        border-radius: var(--gn-r-full);
+        user-select: none;
+        min-width: 140px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+    button:hover:not(:disabled) {
+        background: var(--gn-n-100);
     }
     button.isSelected {
-        @apply bg-[var(--accent-color)];
+        background: var(--gn-ink);
+        color: var(--gn-paper);
+        box-shadow: none;
+    }
+    button.isSelected:hover {
+        background: #000;
+    }
+    /* Image swatches: drop the ring + chip styling so the vinyl reads on its own. */
+    button:has(img) {
+        background: transparent;
+        box-shadow: none;
+        padding: 6px;
+        border-radius: var(--gn-r-sm);
+        min-width: 0;
+    }
+    button:has(img):hover:not(:disabled) {
+        background: var(--gn-n-100);
+    }
+    button.isSelected:has(img) {
+        background: var(--gn-n-150);
+        color: var(--gn-ink);
+        box-shadow: inset 0 0 0 2px var(--gn-ink);
     }
     img {
-        @apply mb-1 w-full;
+        width: 100%;
+        max-width: 110px;
+        display: block;
+        border-radius: var(--gn-r-sm);
     }
 </style>

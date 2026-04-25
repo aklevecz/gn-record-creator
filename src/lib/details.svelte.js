@@ -56,9 +56,10 @@ const createDetails = () => {
          * @param {string|string[]} value 
          */
         setValue(key, value) {
+            console.log('[carbon-debug] setValue', key, value);
             // Handle special fields (like your record color change)
             this.handleSpecialFields(key, value);
-            
+
             details[key].value = value;
             project.updateDetails(details);
         },

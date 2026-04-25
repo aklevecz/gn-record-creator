@@ -9,6 +9,7 @@
     import ThreeHomepage from '$lib/components/three/three-homepage.svelte';
     import Modal from '$lib/components/ui/modal.svelte';
     import Scroller2D from '$lib/components/game/Scroller2D.svelte';
+    import CalculatorFooter from '$lib/components/info/calculator-footer.svelte';
     import details from '$lib/details.svelte';
     import { formFields, hiddenFields } from '$lib/monday/formFields';
     import project from '$lib/project.svelte';
@@ -94,11 +95,16 @@
 <meta name="twitter:image" content="/characters/carry-blackwhite.png" />
 </svelte:head>
 <div class="survey-page">
-    <h1 class="survey-page-header text-2xl font-bold">Record Setup Form</h1>
-    <div class="survey-page-cta text-xs">
-        Please fill out the following information so we can set up your project in our system, verify production schedule and get you quotes.
-    </div>
-    {#if hasSubmitted}<div class="text-[var(--green)]">You have already submitted this project!</div>{/if}
+    <header class="survey-header">
+        <span class="gn-pill">Setup form</span>
+        <h1 class="survey-title">Make a record</h1>
+        <p class="gn-lead survey-subtitle">
+            Tell us about your project. We'll use this to set you up in our system, confirm your production schedule, and quote you.
+        </p>
+    </header>
+    {#if hasSubmitted}
+        <div class="submitted-banner">You have already submitted this project.</div>
+    {/if}
     <!-- COULD BE ITS OWN COMPONTENT CALLED LIKE SURVEYSOMETHING -->
     <!-- BEGIN SURVEY -->
     <!-- TODO: DIFFERENCE BETWEEN QUESTION AND DETAIL IS CONFUSING -->
@@ -129,7 +135,7 @@
                 <Detail label={detail.label} {key} description={detail.description} type={detail.type} required={detail.required} />
             {/if}
             {#if missingKeys.includes(key)}
-                <div class="mt-[-10px] text-xs text-[var(--red)]">
+                <div class="missing-field-inline">
                     {detail.label} is required
                 </div>
             {/if}
@@ -146,11 +152,13 @@
     <!-- END FLOATING THREEJS RECORD VISUAL -->
 
     <!-- SUBMIT SURVEY -->
-    <div class="survey-submit my-10">
-        {#if !hasSubmitted}<div class="survey-submit-cta mb-2 p-4">Press submit if you have finished filling out all of the required info.</div>{/if}
-        <button disabled={hasSubmitted} onclick={submitInfo} class="mx-auto block text-xl">
+    <div class="survey-submit">
+        {#if !hasSubmitted}
+            <p class="survey-submit-cta">Once everything is filled out, hit submit and we'll take it from there.</p>
+        {/if}
+        <button disabled={hasSubmitted} onclick={submitInfo} class="gn-btn--hero submit-btn">
             {#if submitting}
-                <img class="mx-auto" class:isSubmitting={submitting} src="/characters/juggle-color.svg" alt="juggle graphic" />
+                <img class="submit-glyph" class:isSubmitting={submitting} src="/characters/juggle-color.svg" alt="" />
                 Submitting
             {:else}
                 Submit
@@ -159,7 +167,7 @@
     </div>
     <!-- END SUBMIT SURVEY -->
 
-    <!-- <CalculatorFooter /> -->
+    <CalculatorFooter />
 </div>
 
 <!-- <Groovy text={`Hello ${details.state.contact_first_name.value}!`} bottomPercent={spring.current} /> -->
@@ -181,18 +189,78 @@
     </div>
 </Modal>
 
-<style lang="postcss">
-    @reference "tailwindcss/theme";
-
+<style>
     .survey-page {
-        @apply mx-auto mb-20 max-w-[570px] rounded-md p-0 px-6 md:mx-0;
+        max-width: 560px;
+        margin: 0 0 200px;
+        padding: 32px 24px 48px 40px;
     }
-
+    @media (min-width: 768px) {
+        .survey-page {
+            padding-left: 64px;
+        }
+    }
+    .survey-header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+    .survey-title {
+        font-family: var(--gn-font-display);
+        font-size: clamp(32px, 4.5vw, 48px);
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+    .survey-subtitle {
+        color: var(--gn-fg-2);
+        max-width: 520px;
+    }
+    .submitted-banner {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 18px;
+        border-radius: var(--gn-r-full);
+        background: var(--gn-vinyl-green);
+        color: var(--gn-paper);
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
     .survey-questions {
-        @apply mt-4 flex flex-col gap-4;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
     }
-    img.isSubmitting {
-        animation: hue-rotate 1s infinite;
+    .missing-field-inline {
+        margin-top: -8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gn-vinyl-red);
+    }
+    .survey-submit {
+        margin: 56px 0;
+        text-align: center;
+    }
+    .survey-submit-cta {
+        color: var(--gn-fg-2);
+        margin-bottom: 16px;
+    }
+    .submit-btn {
+        margin: 0 auto;
+        background: var(--gn-sunshine);
+        color: var(--gn-ink);
+    }
+    .submit-btn:hover:not(:disabled) {
+        background: var(--gn-sunshine-2);
+    }
+    .submit-glyph {
+        width: 28px;
+        height: 28px;
+    }
+    .isSubmitting {
+        animation: hue-rotate 1s linear infinite;
     }
     @keyframes hue-rotate {
         from {
@@ -202,28 +270,19 @@
             filter: hue-rotate(360deg);
         }
     }
-    /* 
-    .missing-fields-content {
-        @apply text-gray-700;
-    } */
-
     .missing-fields-list {
-        @apply list-none space-y-2 pl-0;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
-
     .missing-field-item {
-        @apply flex items-center rounded px-0 py-2;
+        padding: 6px 0;
     }
-
     .field-name {
-        @apply font-medium text-[var(--red)];
+        font-weight: 700;
+        color: var(--gn-vinyl-red);
     }
-
-    /* .modal-button {
-        @apply px-4 py-2 border rounded font-medium transition-colors duration-200;
-    }
-
-    .modal-button-primary {
-        @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700;
-    } */
 </style>
