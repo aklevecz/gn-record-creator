@@ -15,16 +15,20 @@
     let textColor = $state('var(--gn-paper)');
     let breezePhase = $state(0);
 
+    // ~2000kg saved (≈ 6000 record pressing run) is the point where the viz
+    // looks "fully grown." Below that, visuals scale roughly linearly so a
+    // small order doesn't cosplay as a forest.
+    const SATURATION_KG = 2000;
+
     $effect(() => {
-        const kgLog = savedKg > 0 ? Math.log10(savedKg + 1) : 0;
-        const t = Math.min(1, kgLog / Math.log10(201));
+        const t = Math.min(1, Math.max(0, savedKg / SATURATION_KG));
 
-        sproutScale.target = 0.55 + t * 0.55;
-        haloAlpha.target = 0.3 + t * 0.6;
-        dispersion.target = 0.18 + t * 0.82;
+        sproutScale.target = 0.35 + t * 0.75;
+        haloAlpha.target = 0.08 + t * 0.82;
+        dispersion.target = 0.04 + t * 0.96;
 
-        if (t < 0.3) textColor = 'var(--gn-paper)';
-        else if (t < 0.7) textColor = 'var(--gn-sunshine)';
+        if (t < 0.35) textColor = 'var(--gn-paper)';
+        else if (t < 0.75) textColor = 'var(--gn-sunshine)';
         else textColor = 'var(--gn-vinyl-green)';
     });
 

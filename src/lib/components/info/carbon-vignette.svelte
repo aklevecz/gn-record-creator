@@ -6,7 +6,9 @@
 
     const savedKg = $derived(project.state.carbonSavings?.savedKg ?? 0);
 
-    const intensity = new Tween(0.4, { duration: 900, easing: cubicOut });
+    const intensity = new Tween(0.1, { duration: 900, easing: cubicOut });
+
+    const SATURATION_KG = 2000;
 
     /** @type {HTMLCanvasElement | undefined} */
     let canvas;
@@ -29,9 +31,8 @@
     const POLLEN_COLORS = ['#fef9c3', '#ecfccb', '#f0fdf4', '#fff7d6'];
 
     $effect(() => {
-        const kgLog = savedKg > 0 ? Math.log10(savedKg + 1) : 0;
-        const t = Math.min(1, kgLog / Math.log10(201));
-        intensity.target = 0.45 + t * 0.5;
+        const t = Math.min(1, Math.max(0, savedKg / SATURATION_KG));
+        intensity.target = 0.12 + t * 0.78;
     });
 
     function resize() {
@@ -142,10 +143,9 @@
         const dt = lastT ? Math.min(64, now - lastT) : 16;
         lastT = now;
 
-        const kgLog = savedKg > 0 ? Math.log10(savedKg + 1) : 0;
-        const t = Math.min(1, kgLog / Math.log10(201));
-        const targetCount = Math.floor(25 + t * 75);
-        const spawnRate = 0.018 + t * 0.05;
+        const t = Math.min(1, Math.max(0, savedKg / SATURATION_KG));
+        const targetCount = Math.floor(6 + t * 94);
+        const spawnRate = 0.005 + t * 0.065;
 
         spawnAcc += dt * spawnRate;
         while (spawnAcc >= 1) {
@@ -182,8 +182,11 @@
     onMount(() => {
         resize();
         window.addEventListener('resize', resize);
-        // pre-seed so the viewport doesn't start empty
-        for (let i = 0; i < 30; i++) {
+        // pre-seed proportional to current savings so a tiny order doesn't
+        // start with a forest already in the air
+        const t0 = Math.min(1, Math.max(0, savedKg / SATURATION_KG));
+        const seedCount = Math.floor(4 + t0 * 36);
+        for (let i = 0; i < seedCount; i++) {
             spawn();
             const p = particles[particles.length - 1];
             p.y = Math.random() * h;
