@@ -22,7 +22,7 @@ export async function POST({ request, fetch: svelteFetch }) {
     const baseline = {
         ...customer,
         region: 'global',
-        material: customer.material === 'PET' ? 'PET' : 'PVC',
+        material: 'PVC',
         recycled_pct: 0,
         electricity_source: 'grid',
         heat_source: customer.process === 'injection_moulded' ? 'none' : 'natural_gas'

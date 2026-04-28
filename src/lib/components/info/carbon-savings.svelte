@@ -16,10 +16,6 @@
     let textColor = $state('var(--gn-paper)');
 
     $effect(() => {
-        // savedPct is nearly constant (Europe vs global grid factor only).
-        // Drive the visual from savedKg on a log scale so it actually responds
-        // to order size — the only thing users can change that moves the needle.
-        // log10(201) ≈ 2.3 means ~200 kg saved = fully dispersed cloud.
         const kgLog = savedKg > 0 ? Math.log10(savedKg + 1) : 0;
         const t = Math.min(1, kgLog / Math.log10(201));
 

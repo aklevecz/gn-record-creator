@@ -41,7 +41,7 @@ export function mapDetailsToCarbonInputs(details, opts = {}) {
         quantity: Math.max(quantity, 1),
         weight_g,
         process: 'pressed',
-        material: 'PVC',
+        material: 'PET',
         recycled_pct: 0,
         region,
         electricity_source: 'grid',
