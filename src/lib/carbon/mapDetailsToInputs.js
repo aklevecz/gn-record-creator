@@ -40,12 +40,12 @@ export function mapDetailsToCarbonInputs(details, opts = {}) {
     return {
         quantity: Math.max(quantity, 1),
         weight_g,
-        process: 'pressed',
+        process: 'injection_moulded',
         material: 'PET',
         recycled_pct: 0,
         region,
-        electricity_source: 'grid',
-        heat_source: 'natural_gas',
+        electricity_source: 'renewable_100',
+        heat_source: 'none',
         packaging: {
             sleeve: hasInnerSleeve(details?.packaging_sleeve?.value),
             outer: hasOuterJacket(details?.packaging?.value),
