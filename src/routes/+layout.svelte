@@ -2,6 +2,7 @@
     import { browser } from '$app/environment';
     import projectsApi from '$lib/api/projects';
     import surveyApi from '$lib/api/survey';
+    import CarbonVignette from '$lib/components/info/carbon-vignette.svelte';
     import ChangeProjectDropdown from '$lib/components/project/change-project-dropdown.svelte';
     import details, { unmapDetails } from '$lib/details.svelte';
     import idb from '$lib/idb';
@@ -142,6 +143,8 @@
 </header>
 
 {@render children()}
+
+<CarbonVignette />
 
 <style>
     .gn-header {
