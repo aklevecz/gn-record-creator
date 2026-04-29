@@ -125,7 +125,7 @@
             <button class:isSelected={details.state[key].value.includes(option.text)} onclick={() => handleAnswer(option)}>
                 {#if option.img}
                     <img src={option.img} alt={option.text} />
-                {/if}{option.text.replace('-', ' ')}</button
+                {/if}<span class="opt-label">{option.text.replace('-', ' ')}</span></button
             >
         {/each}
     </div>
@@ -150,9 +150,11 @@
         gap: 10px;
     }
     /* Image-swatch questions: center the row so the orphan
-       buttons in the last row don't drift left on mobile. */
+       buttons in the last row don't drift left on mobile,
+       and give rows extra vertical breathing room. */
     .question-buttons-container:has(img) {
         justify-content: center;
+        row-gap: 18px;
     }
     button {
         background: var(--gn-paper);
@@ -206,5 +208,17 @@
         display: block;
         border-radius: var(--gn-r-sm);
         object-fit: contain;
+    }
+    /* Constrain swatch labels to the button width so long names
+       like "Ocean Floor (Dark Blue)" wrap below the disc instead
+       of overflowing into the neighbouring swatch. */
+    button:has(img) .opt-label {
+        display: block;
+        width: 100%;
+        font-size: 13px;
+        line-height: 1.2;
+        text-align: center;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 </style>
