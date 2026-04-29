@@ -149,11 +149,11 @@
         flex-wrap: wrap;
         gap: 10px;
     }
-    /* Image-swatch questions: center the row so the orphan
-       buttons in the last row don't drift left on mobile,
-       and give rows extra vertical breathing room. */
+    /* Image-swatch questions: align rows to the left on desktop,
+       give rows extra vertical breathing room. Mobile overrides
+       below switch this to a 2-column grid. */
     .question-buttons-container:has(img) {
-        justify-content: center;
+        justify-content: flex-start;
         row-gap: 18px;
     }
     button {
@@ -220,5 +220,29 @@
         text-align: center;
         overflow-wrap: break-word;
         hyphens: auto;
+    }
+    /* On mobile, the fixed 122px swatches were getting crammed into
+       the center of the viewport with whitespace gutters on each side.
+       Switch to a 2-column grid that fills the available width and
+       lets the images breathe. */
+    @media (max-width: 540px) {
+        .question-buttons-container:has(img) {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px 14px;
+            justify-content: stretch;
+            padding: 0 4px;
+        }
+        button:has(img) {
+            width: 100%;
+            padding: 10px;
+        }
+        button:has(img) img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            max-width: 180px;
+            margin: 0 auto;
+        }
     }
 </style>
