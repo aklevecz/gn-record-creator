@@ -149,6 +149,11 @@
         flex-wrap: wrap;
         gap: 10px;
     }
+    /* Image-swatch questions: center the row so the orphan
+       buttons in the last row don't drift left on mobile. */
+    .question-buttons-container:has(img) {
+        justify-content: center;
+    }
     button {
         background: var(--gn-paper);
         color: var(--gn-ink);
@@ -176,13 +181,16 @@
     button.isSelected:hover {
         background: #000;
     }
-    /* Image swatches: drop the ring + chip styling so the vinyl reads on its own. */
+    /* Image swatches: drop the ring + chip styling so the vinyl reads on its own.
+       Fix the width so every swatch occupies the same footprint regardless of
+       label length — keeps images aligned across rows on mobile. */
     button:has(img) {
         background: transparent;
         box-shadow: none;
         padding: 6px;
         border-radius: var(--gn-r-sm);
         min-width: 0;
+        width: 122px;
     }
     button:has(img):hover:not(:disabled) {
         background: var(--gn-n-100);
@@ -193,9 +201,10 @@
         box-shadow: inset 0 0 0 2px var(--gn-ink);
     }
     img {
-        width: 100%;
-        max-width: 110px;
+        width: 110px;
+        height: 110px;
         display: block;
         border-radius: var(--gn-r-sm);
+        object-fit: contain;
     }
 </style>
