@@ -1,10 +1,10 @@
 <script>
-    import EstimatedPriceCalculator from './estimated-price-calculator.svelte';
+    import CarbonSavings from './carbon-savings.svelte';
 </script>
 
 <div class="footer-wrap">
     <div class="footer-panel">
-        <EstimatedPriceCalculator />
+        <CarbonSavings />
     </div>
 </div>
 
