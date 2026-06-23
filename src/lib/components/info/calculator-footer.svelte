@@ -1,12 +1,9 @@
 <script>
-    import CarbonSavings from './carbon-savings.svelte';
     import EstimatedPriceCalculator from './estimated-price-calculator.svelte';
 </script>
 
 <div class="footer-wrap">
     <div class="footer-panel">
-        <CarbonSavings />
-        <div class="divider" aria-hidden="true"></div>
         <EstimatedPriceCalculator />
     </div>
 </div>
@@ -37,11 +34,6 @@
         justify-content: space-between;
         gap: 20px;
         font-family: var(--gn-font-sans);
-    }
-    .divider {
-        width: 1px;
-        align-self: stretch;
-        background: rgba(244, 244, 244, 0.12);
     }
     @media (max-width: 540px) {
         .footer-panel {
