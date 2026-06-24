@@ -134,7 +134,6 @@
         <ul>
             <li><a class="icon-link" href="/">order form</a></li>
             <li><a class="icon-link" href="/projects">projects</a></li>
-            <li><a class="icon-link" href="/studio">dream</a></li>
         </ul>
     </nav>
     <div class="project-picker">
