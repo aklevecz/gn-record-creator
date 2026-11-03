@@ -1,0 +1,317 @@
+<script>
+    import { colors } from '$lib';
+    import project from '$lib/project.svelte';
+    import { onDestroy, onMount } from 'svelte';
+
+    /** @type {import('$lib/MockupScene').default | null} */
+    let mockup = $state(null);
+    /** @type {HTMLElement | null} */
+    let stage = $state(null);
+
+    let vinylColor = $state('cosmicBlack');
+    let slide = $state(0.55);
+    let gloss = $state(false);
+    let autoRotate = $state(true);
+    let exporting = $state(false);
+
+    /** @type {Record<'cover' | 'back' | 'label', string>} */
+    let art = $state({ cover: '', back: '', label: '' });
+
+    /** @param {string} key */
+    const prettyName = (key) => key.replace(/([A-Z])/g, ' $1').toLowerCase();
+
+    onMount(async () => {
+        const { default: MockupScene } = await import('$lib/MockupScene.js');
+        if (!stage) return;
+        mockup = new MockupScene(stage);
+        mockup.onAutoRotateChange = (on) => (autoRotate = on);
+        mockup.setAutoRotate(true);
+    });
+
+    onDestroy(() => {
+        mockup?.dispose();
+        for (const url of Object.values(art)) if (url) URL.revokeObjectURL(url);
+    });
+
+    // Default the cover to the active project's artwork until something is uploaded
+    $effect(() => {
+        if (mockup && !art.cover) mockup.model.setCoverImage(project.activeTextureUrl || null);
+    });
+    $effect(() => {
+        mockup?.model.setVinylColor(colors[vinylColor]);
+    });
+    $effect(() => {
+        mockup?.model.setSlide(slide);
+    });
+    $effect(() => {
+        mockup?.model.setGloss(gloss);
+    });
+    $effect(() => {
+        mockup?.setAutoRotate(autoRotate);
+    });
+
+    /**
+     * @param {'cover' | 'back' | 'label'} slot
+     * @param {Event} event
+     */
+    function upload(slot, event) {
+        const input = /** @type {HTMLInputElement} */ (event.target);
+        const file = input.files?.[0];
+        input.value = '';
+        if (!file || !mockup) return;
+        if (art[slot]) URL.revokeObjectURL(art[slot]);
+        art[slot] = URL.createObjectURL(file);
+        apply(slot);
+    }
+
+    /** @param {'cover' | 'back' | 'label'} slot */
+    function clear(slot) {
+        if (art[slot]) URL.revokeObjectURL(art[slot]);
+        art[slot] = '';
+        apply(slot);
+    }
+
+    /** @param {'cover' | 'back' | 'label'} slot */
+    function apply(slot) {
+        if (!mockup) return;
+        const url = art[slot] || null;
+        if (slot === 'cover') mockup.model.setCoverImage(url || project.activeTextureUrl || null);
+        if (slot === 'back') mockup.model.setBackImage(url);
+        if (slot === 'label') mockup.model.setLabelImage(url);
+    }
+
+    async function savePng() {
+        if (!mockup) return;
+        exporting = true;
+        const blob = await mockup.exportPng();
+        exporting = false;
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `record-mockup-${prettyName(vinylColor).replace(/ /g, '-')}.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    const artSlots = /** @type {const} */ ([
+        ['cover', 'Front cover'],
+        ['back', 'Back cover'],
+        ['label', 'Center label']
+    ]);
+</script>
+
+<svelte:head>
+    <title>Record Mockup - Good Neighbor Record Creator</title>
+</svelte:head>
+
+<div class="mockup">
+    <div class="stage" bind:this={stage}>
+        {#if !mockup}<p class="loading gn-small">Pressing the record…</p>{/if}
+        <p class="hint gn-label">Drag to rotate</p>
+    </div>
+
+    <aside class="panel">
+        <section>
+            <h2 class="gn-label">Artwork</h2>
+            {#each artSlots as [slot, name]}
+                <div class="art-row">
+                    <label class="gn-btn--paper gn-btn--small file-btn">
+                        <input type="file" accept="image/*" onchange={(e) => upload(slot, e)} />
+                        {art[slot] ? 'Replace' : 'Upload'}
+                    </label>
+                    <span class="gn-small art-name">
+                        {name}
+                        {#if slot === 'cover' && !art.cover && project.activeTextureUrl}<em>(project art)</em>{/if}
+                    </span>
+                    {#if art[slot]}<button class="gn-btn--small clear" onclick={() => clear(slot)} aria-label="Remove {name}">×</button>{/if}
+                </div>
+            {/each}
+        </section>
+
+        <section>
+            <h2 class="gn-label">Vinyl · {prettyName(vinylColor)}</h2>
+            <div class="swatches">
+                {#each Object.entries(colors) as [key, hex]}
+                    <button
+                        class="swatch"
+                        class:active={vinylColor === key}
+                        style="--swatch: {hex}"
+                        title={prettyName(key)}
+                        aria-label={prettyName(key)}
+                        onclick={() => (vinylColor = key)}
+                    ></button>
+                {/each}
+            </div>
+        </section>
+
+        <section>
+            <h2 class="gn-label">Record out of sleeve</h2>
+            <input type="range" min="0" max="1" step="0.01" bind:value={slide} />
+        </section>
+
+        <section class="toggles">
+            <label class="gn-small"><input type="checkbox" bind:checked={gloss} /> Gloss jacket</label>
+            <label class="gn-small"><input type="checkbox" bind:checked={autoRotate} /> Turntable spin</label>
+        </section>
+
+        <button class="gn-btn--sunshine save" onclick={savePng} disabled={!mockup || exporting}>
+            {exporting ? 'Rendering…' : 'Save PNG'}
+        </button>
+        <p class="gn-small note">Transparent background, 3× screen resolution: ready for a deck.</p>
+    </aside>
+</div>
+
+<style>
+    .mockup {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        height: calc(100dvh - 76px);
+        min-height: 520px;
+    }
+    .stage {
+        position: relative;
+        min-height: 0;
+        background: radial-gradient(ellipse at 50% 40%, #fff 0%, var(--gn-paper) 55%, var(--gn-n-200) 100%);
+        overflow: hidden;
+        cursor: grab;
+        touch-action: none;
+    }
+    .stage :global(canvas) {
+        position: absolute;
+        inset: 0;
+        display: block;
+    }
+    .stage:active {
+        cursor: grabbing;
+    }
+    .loading,
+    .hint {
+        position: absolute;
+        left: 20px;
+        margin: 0;
+        color: var(--gn-fg-3);
+        pointer-events: none;
+    }
+    .loading {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .hint {
+        top: 16px;
+    }
+    .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+        overflow-y: auto;
+        background: var(--gn-paper-warm);
+        border-left: 1px solid var(--gn-n-150);
+    }
+    section h2 {
+        margin-bottom: 10px;
+        color: var(--gn-fg-2);
+    }
+    .art-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+    }
+    .file-btn {
+        display: inline-flex;
+        min-width: 86px;
+        justify-content: center;
+        border-radius: var(--gn-r-md);
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .file-btn input {
+        display: none;
+    }
+    .art-name {
+        flex: 1;
+    }
+    .art-name em {
+        color: var(--gn-fg-3);
+        font-style: normal;
+    }
+    .clear {
+        padding: 4px 10px;
+        background: transparent;
+        color: var(--gn-fg-2);
+        font-size: 18px;
+    }
+    .clear:hover:not(:disabled) {
+        background: var(--gn-n-200);
+    }
+    .swatches {
+        display: grid;
+        grid-template-columns: repeat(6, 36px);
+        gap: 10px;
+    }
+    .swatch {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: var(--gn-r-full);
+        background: var(--swatch);
+        box-shadow:
+            inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+            0 0 0 0 var(--gn-ink);
+    }
+    .swatch:hover:not(:disabled) {
+        background: var(--swatch);
+    }
+    .swatch.active {
+        box-shadow:
+            inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+            0 0 0 2px var(--gn-paper-warm),
+            0 0 0 4px var(--gn-ink);
+    }
+    input[type='range'] {
+        width: 100%;
+        padding: 0;
+        border: 0;
+        accent-color: var(--gn-ink);
+        background: transparent;
+    }
+    input[type='range']:focus {
+        box-shadow: none;
+    }
+    .toggles {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .toggles label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    .toggles input {
+        accent-color: var(--gn-ink);
+    }
+    .save {
+        width: 100%;
+    }
+    .note {
+        margin: -14px 0 0;
+        color: var(--gn-fg-3);
+    }
+
+    @media (max-width: 860px) {
+        .mockup {
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows: 62vh auto;
+            height: auto;
+        }
+        .panel {
+            border-left: 0;
+            border-top: 1px solid var(--gn-n-150);
+            padding: 20px 16px;
+        }
+    }
+</style>
