@@ -3,6 +3,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { JACKET_SIZE, SleeveModel } from './models/SleeveModel';
 
+const TAU = Math.PI * 2;
+
+/** @param {number} angle */
+const wrapAngle = (angle) => ((angle % TAU) + TAU) % TAU;
+
 /**
  * Product-shot scene for showing a record in its jacket:
  * studio lighting, soft floor shadow, drag to rotate.
@@ -13,6 +18,15 @@ export class MockupScene {
     constructor(container) {
         this.container = container;
         this.frame = 0;
+        /** While true the render loop leaves the canvas alone (video export owns it) */
+        this.recording = false;
+        /** @type {number | null} - azimuth the camera is easing toward (arrow buttons) */
+        this.azimuthGoal = null;
+        this.lastAzimuth = NaN;
+        /** @type {(radians: number) => void} */
+        this.onAzimuthChange = () => {};
+        /** @type {(on: boolean) => void} */
+        this.onAutoRotateChange = () => {};
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -46,9 +60,10 @@ export class MockupScene {
         this.controls.autoRotateSpeed = 0.6;
         this.controls.target.set(this.model.centerX, JACKET_SIZE / 2, 0);
         // stop the turntable as soon as someone grabs it
-        this.controls.addEventListener('start', () => this.setAutoRotate(false));
-        /** @type {(on: boolean) => void} */
-        this.onAutoRotateChange = () => {};
+        this.controls.addEventListener('start', () => {
+            this.azimuthGoal = null;
+            this.setAutoRotate(false);
+        });
 
         this.resizeObserver = new ResizeObserver(() => this.resize());
         this.resizeObserver.observe(container);
@@ -90,27 +105,161 @@ export class MockupScene {
         this.onAutoRotateChange(on);
     }
 
-    resize() {
-        const { clientWidth: width, clientHeight: height } = this.container;
-        if (!width || !height) return;
-        this.camera.aspect = width / height;
+    /** Camera angle around the sleeve, 0 = straight at the front cover, in [0, 2π) */
+    getAzimuth() {
+        return wrapAngle(this.controls.getAzimuthalAngle());
+    }
+
+    /** @param {number} angle - radians */
+    setAzimuth(angle) {
+        const offset = this.camera.position.clone().sub(this.controls.target);
+        const spherical = new THREE.Spherical().setFromVector3(offset);
+        spherical.theta = angle;
+        this.camera.position.copy(this.controls.target).add(offset.setFromSpherical(spherical));
+        this.camera.lookAt(this.controls.target);
+    }
+
+    /**
+     * Scrubbing takes over from the turntable and any arrow nudge in flight.
+     * @param {number} angle - radians
+     */
+    scrubTo(angle) {
+        this.azimuthGoal = null;
+        this.setAutoRotate(false);
+        this.setAzimuth(angle);
+    }
+
+    /** @param {number} angle - radians to ease around by, + is counter-clockwise from above */
+    nudge(angle) {
+        this.setAutoRotate(false);
+        this.azimuthGoal = (this.azimuthGoal ?? this.getAzimuth()) + angle;
+    }
+
+    /** @param {number} aspect */
+    setAspect(aspect) {
+        this.camera.aspect = aspect;
         // widen the vertical fov on portrait screens so the whole sleeve + record stays in frame
         const minAspect = 1.25;
         this.camera.fov =
-            this.camera.aspect >= minAspect
+            aspect >= minAspect
                 ? 30
-                : THREE.MathUtils.radToDeg(2 * Math.atan((Math.tan(THREE.MathUtils.degToRad(15)) * minAspect) / this.camera.aspect));
+                : THREE.MathUtils.radToDeg(2 * Math.atan((Math.tan(THREE.MathUtils.degToRad(15)) * minAspect) / aspect));
         this.camera.updateProjectionMatrix();
+    }
+
+    resize() {
+        if (this.recording) return;
+        const { clientWidth: width, clientHeight: height } = this.container;
+        if (!width || !height) return;
+        this.setAspect(width / height);
         this.renderer.setSize(width, height);
     }
 
     animate() {
         this.frame = requestAnimationFrame(this.animate);
+        if (this.recording) return;
+
         this.model.updateSlide();
         // keep the camera framed on whatever is visible as the record slides
         this.controls.target.x = THREE.MathUtils.lerp(this.controls.target.x, this.model.centerX, 0.1);
+
+        if (this.azimuthGoal !== null) {
+            const current = this.controls.getAzimuthalAngle();
+            // shortest way round
+            const diff = Math.atan2(Math.sin(this.azimuthGoal - current), Math.cos(this.azimuthGoal - current));
+            if (Math.abs(diff) < 0.001) this.azimuthGoal = null;
+            else this.setAzimuth(current + diff * 0.15);
+        }
+
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
+
+        const azimuth = this.getAzimuth();
+        if (!(Math.abs(azimuth - this.lastAzimuth) < 0.002)) {
+            this.lastAzimuth = azimuth;
+            this.onAzimuthChange(azimuth);
+        }
+    }
+
+    /**
+     * Video has no alpha, so recordings get the same soft studio backdrop as the page.
+     * @param {number} size
+     */
+    createBackdrop(size) {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+        const gradient = ctx.createRadialGradient(size / 2, size * 0.4, 0, size / 2, size * 0.4, size * 0.75);
+        gradient.addColorStop(0, '#ffffff');
+        gradient.addColorStop(0.55, '#f4f4f4');
+        gradient.addColorStop(1, '#e5e3e3');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size, size);
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        return texture;
+    }
+
+    /**
+     * Renders one full 360° turn from the current view, frame by frame, into an MP4.
+     * Offline rendering means no dropped frames and a seamless loop.
+     * @param {{ seconds?: number, fps?: number, size?: number, onProgress?: (progress: number) => void }} [options]
+     * @returns {Promise<Blob>}
+     */
+    async recordSpin({ seconds = 8, fps = 30, size = 1080, onProgress = () => {} } = {}) {
+        const { BufferTarget, CanvasSource, Mp4OutputFormat, Output, QUALITY_HIGH, getFirstEncodableVideoCodec } = await import('mediabunny');
+        const codec = await getFirstEncodableVideoCodec(['avc', 'hevc', 'vp9', 'av1'], { width: size, height: size });
+        if (!codec) throw new Error("This browser can't encode video. Try Chrome or Safari.");
+
+        this.recording = true;
+        const pixelRatio = this.renderer.getPixelRatio();
+        const startAzimuth = this.getAzimuth();
+        const wasAutoRotating = this.controls.autoRotate;
+        const backdrop = this.createBackdrop(1024);
+
+        this.azimuthGoal = null;
+        this.setAutoRotate(false);
+        this.model.updateSlide(true);
+        this.controls.target.x = this.model.centerX;
+        this.renderer.setPixelRatio(1);
+        this.renderer.setSize(size, size, false);
+        this.setAspect(1);
+        this.scene.background = backdrop;
+
+        // Copy each WebGL frame onto a 2D canvas so the encoder never reads a cleared drawing buffer
+        const frameCanvas = document.createElement('canvas');
+        frameCanvas.width = frameCanvas.height = size;
+        const frameCtx = /** @type {CanvasRenderingContext2D} */ (frameCanvas.getContext('2d'));
+
+        const output = new Output({ format: new Mp4OutputFormat({ fastStart: 'in-memory' }), target: new BufferTarget() });
+        const source = new CanvasSource(frameCanvas, { codec, bitrate: QUALITY_HIGH, keyFrameInterval: 2 });
+        output.addVideoTrack(source, { frameRate: fps });
+
+        try {
+            await output.start();
+            const frames = Math.round(seconds * fps);
+            for (let i = 0; i < frames; i++) {
+                this.setAzimuth(startAzimuth + (TAU * i) / frames);
+                this.renderer.render(this.scene, this.camera);
+                frameCtx.drawImage(this.renderer.domElement, 0, 0);
+                await source.add(i / fps, 1 / fps);
+                onProgress((i + 1) / frames);
+            }
+            await output.finalize();
+        } catch (error) {
+            await output.cancel();
+            throw error;
+        } finally {
+            this.scene.background = null;
+            backdrop.dispose();
+            this.setAzimuth(startAzimuth);
+            this.renderer.setPixelRatio(pixelRatio);
+            this.recording = false;
+            this.resize();
+            this.setAutoRotate(wasAutoRotating);
+        }
+
+        return new Blob([/** @type {ArrayBuffer} */ (output.target.buffer)], { type: 'video/mp4' });
     }
 
     /**
