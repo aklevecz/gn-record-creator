@@ -1,6 +1,5 @@
 <script>
     import { colors } from '$lib';
-    import project from '$lib/project.svelte';
     import { onDestroy, onMount } from 'svelte';
 
     /** @type {import('$lib/MockupScene').default | null} */
@@ -19,6 +18,9 @@
     /** 0–1 while a spin video is rendering, null otherwise */
     let recordProgress = $state(/** @type {number | null} */ (null));
     let recordError = $state('');
+
+    // Polygondwanaland: King Gizzard released it free for anyone to press, artwork included
+    const DEFAULT_COVER = '/covers/polygondwanaland.jpg';
 
     /** @type {Record<'cover' | 'back' | 'label', string>} */
     let art = $state({ cover: '', back: '', label: '' });
@@ -40,9 +42,8 @@
         for (const url of Object.values(art)) if (url) URL.revokeObjectURL(url);
     });
 
-    // Default the cover to the active project's artwork until something is uploaded
     $effect(() => {
-        if (mockup && !art.cover) mockup.model.setCoverImage(project.activeTextureUrl || null);
+        if (mockup && !art.cover) mockup.model.setCoverImage(DEFAULT_COVER);
     });
     $effect(() => {
         mockup?.model.setVinylColor(colors[vinylColor]);
@@ -82,7 +83,7 @@
     function apply(slot) {
         if (!mockup) return;
         const url = art[slot] || null;
-        if (slot === 'cover') mockup.model.setCoverImage(url || project.activeTextureUrl || null);
+        if (slot === 'cover') mockup.model.setCoverImage(url || DEFAULT_COVER);
         if (slot === 'back') mockup.model.setBackImage(url);
         if (slot === 'label') mockup.model.setLabelImage(url);
     }
@@ -173,7 +174,7 @@
                     </label>
                     <span class="gn-small art-name">
                         {name}
-                        {#if slot === 'cover' && !art.cover && project.activeTextureUrl}<em>(project art)</em>{/if}
+                        {#if slot === 'cover' && !art.cover}<em>(Polygondwanaland)</em>{/if}
                     </span>
                     {#if art[slot]}<button class="gn-btn--small clear" onclick={() => clear(slot)} aria-label="Remove {name}">×</button>{/if}
                 </div>

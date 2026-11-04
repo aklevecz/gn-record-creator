@@ -10,7 +10,7 @@ const CACHE = `cache-${version}`;
 
 const ASSETS = [
     ...build, // the app itself
-    ...files, // everything in `static`
+    ...files.filter((file) => !file.startsWith('/covers/')), // everything in `static` except big mockup art
     ...prerendered // prerendered pages
 ];
 

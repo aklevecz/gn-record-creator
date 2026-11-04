@@ -13,6 +13,7 @@
     import posthog from 'posthog-js'
     import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
     import project from '$lib/project.svelte';
+    import { page } from '$app/state';
 
     let { children } = $props();
 
@@ -143,7 +144,8 @@
 
 {@render children()}
 
-<CarbonVignette />
+<!-- the leaves would end up in mockup screenshots and recordings -->
+{#if page.url.pathname !== '/mockup'}<CarbonVignette />{/if}
 
 <style>
     .gn-header {
