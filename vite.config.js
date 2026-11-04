@@ -4,6 +4,12 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
+// Cloudflare Pages' build image sets NODE_OPTIONS=--use-openssl-ca, which Node 18
+// refuses to pass on to the worker SvelteKit forks during the build. Strip it first.
+if (process.env.NODE_OPTIONS?.includes('--use-openssl-ca')) {
+    process.env.NODE_OPTIONS = process.env.NODE_OPTIONS.replace('--use-openssl-ca', '').trim();
+}
+
 export default defineConfig({
     server: {
         allowedHosts: ['local-tix.yaytso.art']
